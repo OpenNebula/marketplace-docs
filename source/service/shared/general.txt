@@ -1,0 +1,3 @@
+Based on C7, contextualized with user's SSH key in OpenNebula (no password).
+
+Link to Overview with description of stages (install, config, bootstrap).

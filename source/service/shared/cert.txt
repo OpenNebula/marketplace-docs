@@ -1,0 +1,7 @@
+Custom certificates
+~~~~~~~~~~~~~~~~~~~
+
+This section should be ideally a template shared between all appliances.
+
+1. have own SSL keys
+2. generate own self-signed ``openssl req -x509 -nodes -newkey rsa:2048 -keyout key.pem -out certificate.pem -days 365 -batch``
