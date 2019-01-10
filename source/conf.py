@@ -102,13 +102,15 @@ html_show_sphinx = False
 # documentation.
 #
 # html_theme_options = {}
-html_theme_options = {'logo_only': True, 'display_version': False}
+html_theme_options = {'display_version': False}
 
 html_context = {
+    'project': 'Marketplace',
     'display_github': True,
     'github_user': 'OpenNebula',
     'github_repo': 'marketplace-docs',
     'github_version': 'master',
+    'conf_py_path': '/source/',
 }
 
 # Add any paths that contain custom static files (such as style sheets) here,
