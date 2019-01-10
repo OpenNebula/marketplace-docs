@@ -105,7 +105,7 @@ html_show_sphinx = False
 html_theme_options = {'display_version': False}
 
 html_context = {
-    'project': 'Marketplace',
+    'project': 'Marketplace Apps',
     'display_github': True,
     'github_user': 'OpenNebula',
     'github_repo': 'marketplace-docs',
