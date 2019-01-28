@@ -50,9 +50,9 @@ We can instantiate our template now - click on the blue button **Instantiate**. 
 
 There are also :ref:`contextualization <gitlab_context_param>` variables which you can set.
 
-The last three of those are so-called :ref:`bootstrap <gitlab_bootstrap_param>` variables - all of them must be set for the bootstrap to work. You don't need to set any of them, but in that case the GitLab will force you to setup password first.
+The last three of those are so-called :ref:`bootstrap parameters <gitlab_bootstrap_param>` - all of them must be set for the :ref:`bootstrap <gitlab_bootstrap>` to work. You don't need to set any of them, but in that case the GitLab will force you to setup password first.
 
-|image-bootstrap-values|
+|image-context-vars|
 
 After you are done, click the green button **Instantiate**. If you did everything correctly then you should have GitLab ready on the provided IP address in a few minutes.
 
@@ -118,8 +118,8 @@ Advanced Usage
 
 .. _gitlab_bootstrap:
 
-Bootstrap
----------
+Bootstrapping
+-------------
 
 Providing the bootstrapping values during instantiation of the appliance:
 

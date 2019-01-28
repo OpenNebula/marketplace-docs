@@ -113,8 +113,8 @@ Advanced Usage
 
 .. _wordpress_bootstrap:
 
-Bootstrap
----------
+Bootstrapping
+-------------
 
 Providing the bootstrapping values during instantiation of the appliance:
 
