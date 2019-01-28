@@ -1,0 +1,22 @@
+SSH keypair creation
+~~~~~~~~~~~~~~~~~~~~
+
+If you don't have any SSH key, you can create it (**RECOMMENDED**):
+
+New SSH keypair protected with a passphrase::
+
+    $ ssh-keygen -f $HOME/.ssh/identity
+
+You can also create one without any protection (**NOT RECOMMENDED**) - if you just hit Enter and don't type any passphrase. Or uninteractively with this command::
+
+    $ ssh-keygen -N "" -f $HOME/.ssh/identity
+
+In either case your private key is ``$HOME/.ssh/identity`` and the matching public key is ``$HOME/.ssh/identity.pub``.
+
+You can simply print the SSH pubkey::
+
+    $ cat $HOME/.ssh/identity.pub
+
+Copy the whole content and paste it into the proper web form.
+
+**IMPORTANT**: Handle your private key with care - especially if you did not protect it with a passphrase. Anyone who can copy your key can use it to login to your machines!
