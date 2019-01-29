@@ -1,3 +1,8 @@
-Based on C7, contextualized with user's SSH key in OpenNebula (no password).
+* ONE service appliance is installed on top of **CentOS 7** Linux distribution
+* Appliances go through three stages before they are completely deployed:
 
-Link to Overview with description of stages (install, config, bootstrap).
+    * :ref:`install <one_service_stage_install>` - this one does not concern you - executed during image build
+    * :ref:`configure <one_service_stage_configure>` - most important one - it brings service up and running
+    * :ref:`bootstrap <one_service_stage_bootstrap>` - it follows the configure part and where it makes sense it spares the user of manual steps to enable the service
+
+* More general info about appliances: :ref:`ONE service appliance <one_service_appliance>`
