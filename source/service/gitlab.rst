@@ -4,167 +4,118 @@
 Service GitLab
 ==============
 
-ONE service appliance which deploys a `GitLab <https://about.gitlab.com/>`_ instance.
+OpenNebula `Marketplace Appliance <https://marketplace.opennebula.systems/appliance/6b54a412-03a5-11e9-8652-f0def1753696>`_  with preinstalled `GitLab <https://about.gitlab.com/>`_ service.
 
-If you don't provide any :ref:`contextualization <gitlab_context_param>` then the GitLab appliance will still be autoconfigured properly, but it will not attempt a bootstrap and it will greet you with it's initial web page for setting up the password.
+Without any parameters provided, the appliance boots into the web setup wizard and user has to finish the GitLab initial configuration manually in the browser. This part can be automated (as part of the bootstrap process) with :ref:`contextualization <gitlab_context_param>` parameters.
 
 .. include:: shared/general.txt
-
-|
 
 Quick Start
 ===========
 
-Download GitLab appliance image
--------------------------------
+.. include:: shared/import.txt
+.. include:: shared/update.txt
+.. include:: shared/run.txt
 
-Open your OpenNebula's web interface (Sunstone). After the login, go to **Storage->Apps** and import the GitLab appliance to your datastore (blue button with a cloud):
-
-|image-download|
-
-Tweak GitLab VM template
-------------------------
-
-After the download go to **Templates->VMs**, click on the new GitLab template and update it via the button on the top (**Update**). On the first screen you can customize memory and cpu (and other) how you see fit - or leave it as it is - it will be sufficient to start off.
-
-When you are happy with the values here switch to the tab **Context**. You can add your SSH public key here:
-
-|image-ssh-context|
-
-.. include:: shared/ssh.txt
-
-We can also just set the root's password in the **Custom vars** (pick a better one than what is on the picture):
-
-|image-custom-vars-password|
-
-There is a better way via **User Inputs** but we will not cover this here.
-
-Whether you setup SSH or just password is up to you, the point is that we can login to the VM now if we need.
-
-We are done with the template for now so just click the green button called **Update**.
-
-Instantiation of the GitLab appliance
-----------------------------------------
-
-We can instantiate our template now - click on the blue button **Instantiate**. You must fill in the **VM name** and you should setup the network properly with a routable IP address.
-
-There are also :ref:`contextualization <gitlab_context_param>` variables which you can set.
-
-The last three of those are so-called :ref:`bootstrap parameters <gitlab_bootstrap_param>` - all of them must be set for the :ref:`bootstrap <gitlab_bootstrap>` to work. You don't need to set any of them, but in that case the GitLab will force you to setup password first.
+The initial configuration can be customized with :ref:`contextualization <gitlab_context_param>` parameters:
 
 |image-context-vars|
 
-After you are done, click the green button **Instantiate**. If you did everything correctly then you should have GitLab ready on the provided IP address in a few minutes.
+.. note::
 
-|
+    The last three inputs are the :ref:`bootstrap parameters <gitlab_bootstrap>` - **all of them must be set** for the bootstrap stage to work. The stage is skipped if any of them are missing.
 
-.. _gitlab_context_param:
+After you are done, click on the button **Instantiate**. Virtual machine with running service should be ready in a few minutes.
 
-Contextualization Parameters
-============================
+.. include:: shared/report.txt
 
-Table of configure & bootstrap contextualization parameters
-
-===================================== ========= ==== ========= ===========
-Parameter                             Mandatory Auto Stage     Description
-===================================== ========= ==== ========= ===========
-``ONEAPP_SITE_HOSTNAME``                        yes  configure Fully qualified domain name or IP
-``ONEAPP_SITE_RELATIVE_URL``                    yes  configure Relative URL to the service (default: /)
-``ONEAPP_HTTP_REDIRECT``                        yes  configure Automatic HTTP to HTTPS redirection (default: yes)
-``ONEAPP_SSL_LETSENCRYPT``                      yes  configure Enable Let's Encrypt for SSL (default: no)
-``ONEAPP_SSL_CERT``                                  configure SSL certificate
-``ONEAPP_SSL_PRIVKEY``                               configure SSL private key
-``ONEAPP_SSL_CHAIN``                                 configure SSL CA chain
-``ONEAPP_ADMIN_USERNAME``                            bootstrap Site Administrator Login
-``ONEAPP_ADMIN_PASSWORD``                            bootstrap Site Administrator Password
-``ONEAPP_ADMIN_EMAIL``                               bootstrap Site Administrator E-mail
-===================================== ========= ==== ========= ===========
-
-Site address
-------------
-
-The appliance will listen on the address defined in ``ONEAPP_SITE_HOSTNAME``. If you don't provide this contextualization parameter then it will try to use the first routable address of the VM instance. If there are only loopback address(es) then it will fallback to ``localhost``, but at that point the appliance will function only from within the VM instance - which is meaningless in most of the cases. Therefore assign a proper IP address to your ONE service appliance. And to make everything certain - set this address as a value to ``ONEAPP_SITE_HOSTNAME``.
-
-Value of the ``ONEAPP_SITE_HOSTNAME`` once provisioned is stored in the settings of the running appliance. It can be changed in the ``/etc/gitlab/gitlab.rb`` on the line with ``external_url`` after which you must run::
-
-   $ gitlab-ctl reconfigure
-
-Certificates
-------------
-
-If ``ONEAPP_SSL_CERT`` and ``ONEAPP_SSL_PRIVKEY`` are set then the appliance will be configured to listen on both http (tcp port 80) and https (tcp port 443). Redirection http -> https is enabled by default - you can disable it with ``ONEAPP_HTTP_REDIRECT`` setting to **no**.
-
-Provided values must be valid of course. The ``ONEAPP_SSL_CHAIN`` is not mandatory for service script to setup SSL (https), but that mainly depends on the certs which you will be using (:ref:`self-signed vs signed by CA <gitlab_ssl>`).
-
-GitLab has builtin support for `Let's Encrypt <https://letsencrypt.org>`_ certificates. You can just set the contextualization parameter ``ONEAPP_SSL_LETSENCRYPT`` to **yes** and ``ONEAPP_SITE_ADDRESS`` to a valid fully qualified domain name and if your appliance is reachable from the internet then GitLab should automate Let's Encrypt certificates for you.
-
-**NOTE**: If you set ``ONEAPP_SSL_CERT`` and ``ONEAPP_SSL_PRIVKEY`` then ``ONEAPP_SSL_LETSENCRYPT`` is ignored.
-
-.. _gitlab_bootstrap_param:
-
-Bootstrap
----------
-
-The bootstrap's stage contextualization parameters must be defined all together to take effect. Otherwise the bootstrap cannot be done:
-
-* ``ONEAPP_ADMIN_USERNAME``: cannot be **admin** - `reserved words <https://docs.gitlab.com/ce/user/reserved_names.html>`_
-* ``ONEAPP_ADMIN_PASSWORD``: must be at least eight characters long
-* ``ONEAPP_ADMIN_EMAIL``
-
-For more information about GitLab's configuration - visit their `documentation <https://docs.gitlab.com/omnibus/settings/configuration.html>`_.
-
-Advanced Usage
-==============
-
-.. _gitlab_bootstrap:
-
-Bootstrapping
--------------
-
-Providing the bootstrapping values during instantiation of the appliance:
-
-|image-bootstrap-values|
-
-.. _gitlab_ssl:
-
-SSL
----
-
-If you provide SSL :ref:`contextualization <gitlab_context_param>` then your appliance will be reacheable over **https**.
-
-.. include:: shared/cert.txt
-
-Filling up the the contextualization parameters with our self-signed certificate:
-
-|image-ssl-context-values|
-
-The browser will complain because of our self-signed certificate but you can add the exception for this site and it will function properly.
-
-Let's Encrypt automation
-~~~~~~~~~~~~~~~~~~~~~~~~
-
-GitLab has it builtin - see ``ONEAPP_SSL_LETSENCRYPT`` in :ref:`contextualization parameters <gitlab_context_param>`.
-
-Config report
--------------
-
-When ONE service appliance's configure & bootstrap stage is finished then there is created a :ref:`report config file <one_service_logs>` which stores many important information about the running appliance.
-
-Login to the VM of the appliance::
+.. code::
 
        ___   _ __    ___
       / _ \ | '_ \  / _ \   OpenNebula Service Appliance
      | (_) || | | ||  __/
       \___/ |_| |_| \___|
-   
+
     All set and ready to serve 8)
-   
+
    [root@localhost ~]# cat /etc/one-appliance/config
    [GitLab]
    site_url = https://192.168.122.10
-   username = osp
+   username = john
    password = 18lv0wBG5
-   email = pospaly@opennebula.systems
+   email = john@example.com
+
+.. _gitlab_context_param:
+
+Contextualization
+=================
+
+Contextualization parameters provided in the Virtual Machine template controls the initial VM configuration. Except for the `common set <http://docs.opennebula.org/stable/operation/references/template.html#context-section>`_ of parameters supported by every appliance on the OpenNebula Marketplace, there are few specific to the particular service appliance. The parameters should be provided in the ``CONTEXT`` section of the Virtual Machine template, read the OpenNebula `Operation Guide <http://docs.opennebula.org/stable/operation/vm_setup/kvm.html#set-up-the-virtual-machine-template>`__ for more details.
+
+===================================== ========= ============== ========= ===========
+Parameter                             Mandatory Default        Stage     Description
+===================================== ========= ============== ========= ===========
+``ONEAPP_SITE_HOSTNAME``                        routable IP    configure Fully qualified domain name or IP
+``ONEAPP_SITE_RELATIVE_URL``                    ``/``          configure Relative URL to the service
+``ONEAPP_HTTP_REDIRECT``                        ``yes``        configure Automatic HTTP to HTTPS redirection
+``ONEAPP_SSL_CERT``                                            configure SSL certificate
+``ONEAPP_SSL_PRIVKEY``                                         configure SSL private key
+``ONEAPP_SSL_CHAIN``                                           configure SSL CA chain
+``ONEAPP_ADMIN_USERNAME``                       ``root``       bootstrap Site Administrator Login
+``ONEAPP_ADMIN_PASSWORD``                                      bootstrap Site Administrator Password
+``ONEAPP_ADMIN_EMAIL``                                         bootstrap Site Administrator E-mail
+===================================== ========= ============== ========= ===========
+
+.. include:: shared/site_address.txt
+
+The initial value of ``ONEAPP_SITE_HOSTNAME`` is stored on your running virtual machine in the GitLab configuration. It can be changed in the file ``/etc/gitlab/gitlab.rb`` with the parameter ``external_url``. After the change, it's necessary to trigger the GitLab reconfiguration:
+
+.. prompt:: text $ auto
+
+    $ gitlab-ctl reconfigure
+
+SSL
+---
+
+If ``ONEAPP_SSL_CERT`` and ``ONEAPP_SSL_PRIVKEY`` are set, the service will be configured to listen to both on HTTP (port 80) and secured HTTPS (port 443). The ``ONEAPP_SSL_CHAIN`` is optional for the service configuration but may be necessary for the connection verification by the clients.
+
+.. note::
+
+    Automatic redirection from HTTP to HTTPS **is enabled by default**. You can disable this behaviour by setting the contextualization parameter ``ONEAPP_HTTP_REDIRECT`` to ``no``.
+
+.. include:: shared/cert.txt
+
+Let's Encrypt automation
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+Not supported yet.
+
+.. GitLab has it builtin - see ``ONEAPP_SSL_LETSENCRYPT`` in :ref:`contextualization parameters <gitlab_context_param>`.
+
+.. GitLab has builtin support for `Let's Encrypt <https://letsencrypt.org>`_ certificates. You can just set the contextualization parameter ``ONEAPP_SSL_LETSENCRYPT`` to **yes** and ``ONEAPP_SITE_ADDRESS`` to a valid fully qualified domain name and if your appliance is reachable from the internet then GitLab should automate Let's Encrypt certificates for you.
+
+.. **NOTE**: If you set ``ONEAPP_SSL_CERT`` and ``ONEAPP_SSL_PRIVKEY`` then ``ONEAPP_SSL_LETSENCRYPT`` is ignored.
+
+.. _gitlab_bootstrap:
+
+Bootstrap
+---------
+
+.. note::
+
+    All parameters must be defined all together to take effect. Otherwise, the bootstrap is skipped.
+
+Bootstrap configures the initial parameters inside the GitLab service itself (GitLab user name, password and e-mail of the administrator). It's controlled by following contextualization parameters:
+
+* ``ONEAPP_ADMIN_USERNAME`` - cannot be **admin** - `reserved words <https://docs.gitlab.com/ce/user/reserved_names.html>`_
+* ``ONEAPP_ADMIN_PASSWORD`` - at least 8 characters long
+* ``ONEAPP_ADMIN_EMAIL``
+
+or, can be specified in the OpenNebula Sunstone on VM template instantiation:
+
+|image-bootstrap-values|
+
+For more information about GitLab's configuration - visit their `documentation <https://docs.gitlab.com/omnibus/settings/configuration.html>`_.
 
 .. |image-download| image:: /images/gitlab/gitlab-download.png
 .. |image-ssl-context-values| image:: /images/gitlab/gitlab-ssl-context-values.png

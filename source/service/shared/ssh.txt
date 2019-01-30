@@ -1,22 +1,20 @@
-SSH keypair creation
-~~~~~~~~~~~~~~~~~~~~
+Create SSH Keypair
+~~~~~~~~~~~~~~~~~~
 
-If you don't have any SSH key, you can create it (**RECOMMENDED**):
+If you don't have tre SSH key, you can create it by running:
 
-New SSH keypair protected with a passphrase::
+.. prompt:: text $ auto
 
-    $ ssh-keygen -f $HOME/.ssh/identity
+    $ ssh-keygen -f ~/.ssh/one
 
-You can also create one without any protection (**NOT RECOMMENDED**) - if you just hit Enter and don't type any passphrase. Or uninteractively with this command::
+Find the private key in ``~/.ssh/one`` and the matching public key in ``~/.ssh/one.pub``. Print the generated SSH public key by:
 
-    $ ssh-keygen -N "" -f $HOME/.ssh/identity
+.. prompt:: text $ auto
 
-In either case your private key is ``$HOME/.ssh/identity`` and the matching public key is ``$HOME/.ssh/identity.pub``.
+    $ cat ~/.ssh/one.pub
 
-You can simply print the SSH pubkey::
+and, copy and paste the whole content into the proper form area in the OpenNebula.
 
-    $ cat $HOME/.ssh/identity.pub
+.. important::
 
-Copy the whole content and paste it into the proper web form.
-
-**IMPORTANT**: Handle your private key with care - especially if you did not protect it with a passphrase. Anyone who can copy your key can use it to login to your machines!
+    Handle your SSH keys with care! Anyone who can access your SSH private key can also log in your virtual machines!

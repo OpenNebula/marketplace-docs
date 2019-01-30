@@ -1,20 +1,19 @@
-Custom SSL certificates
-~~~~~~~~~~~~~~~~~~~~~~~
+Self-signed SSL certificate
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-You may either already have valid SSL keys, either self-signed or properly signed by Certification Authority (CA) - like `Let's Encrypt <https://letsencrypt.org>`_.
+For the non-production or development purposes, you can generate your own dedicated SSL certificate following way:
 
-If so then you can just copy-paste them during instantiation to the proper text fields:
+.. prompt:: text $ auto
 
-* SSL certificate
-* SSL private key
-* SSL CA chain
-
-Another option is to create your own self-signed certificate::
-
-    $ mkdir self-signed-certs
-    $ cd self-signed-certs
+    $ mkdir mycerts
+    $ cd mycerts
     $ openssl req -x509 -nodes -newkey rsa:2048 -keyout key.pem -out certificate.pem -days 365 -batch
-    $ cat key.pem # copy-paste to the 'SSL private key' field
-    $ cat certificate.pem # copy-paste to the 'SSL certificate' field
 
-**IMPORTANT**: Beware that usage of a self-signed certificate is impractical for production and we will showcase it here only to demonstrate how to setup custom SSL keys! Take a look at `Let's Encrypt <https://letsencrypt.org>`_ - you can obtain valid certificates from them free of charge.
+Get the content of files:
+
+- ``key.pem`` for contextualization param ``ONEAPP_SSL_PRIVKEY``
+- ``certificate.pem`` for param ``ONEAPP_SSL_CERT``
+
+.. important::
+
+    The self-signed certificates are impractical for a production environment! For the serious use, you should get SSL certificates from the trusted certificate authority or use the `Let's Encrypt <https://letsencrypt.org>`_.
