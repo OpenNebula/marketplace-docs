@@ -6,26 +6,26 @@ Overview
 
 .. _one_service_appliance:
 
-The service appliances extend the OpenNebula `Marketplace <https://marketplace.opennebula.systems/>`_ with easy-to-use deployable services. These are the images with all necessary packages installed for the service run, but they go through the final configuration on the very first run on the users' side on. It allows to modify the required service state by the user through new appliance specific contextualization parameters.
+The service appliances extend the OpenNebula `Marketplace <https://marketplace.opennebula.systems/>`_ with easy-to-use deployable services. These are the images with all necessary packages installed for the service run, but they go through the final configuration on the very first run on the users' side on. It allows to customize the final service state by the cloud user via special contextualization parameters.
 
-Thanks to the dynamic nature of the service appliances, no security credentials are persisted in the distributed images. Initial passwords are provided via the contextualization parameters or are dynamically generated for each new virtual machine. No two virtual machines with default contextualization parameters share same passwords, database credentials etc.
+Thanks to the dynamic nature of the service appliances, no security credentials are persisted in the distributed appliances. Initial passwords are provided via the contextualization parameters or are dynamically generated for each new virtual machine. No two virtual machines with default contextualization parameters share the same passwords or database credentials.
 
-Each of service appliance comes with our script which does the heavy lifting of bringing the service up and running.
+Each of service appliance comes with the script which does the heavy lifting of bringing the service up.
 
 .. _one_service_script:
 
 Life Cycle
 ----------
 
-Every appliance goes through following stages:
+Every appliance goes through the following stages:
 
 1. :ref:`install <one_service_stage_install>` (build time)
-2. :ref:`configure <one_service_stage_configure>` (instantiaton time)
-3. :ref:`bootstrap <one_service_stage_bootstrap>` (instantiaton time)
+2. :ref:`configure <one_service_stage_configure>` (instantiation time)
+3. :ref:`bootstrap <one_service_stage_bootstrap>` (instantiation time)
 
-Each stage is handled by the shell script ``/etc/one-appliance/service`` installed in the appliance. For the **install** stage, it's triggered externally. For the rest stages, it's triggered as part of the regular OS contextualization. The selected stage is an argument of this script.
+Each stage is handled by the shell script ``/etc/one-appliance/service`` installed in the appliance. For the **install** stage, it's triggered during the image build. For the rest stages, it's triggered as part of the regular OS contextualization. The selected stage is an argument of this script.
 
-To find more about this service script and about the important contextualization variables (per appliance), run with argument ``help``:
+To find more about the service script and the appliance specific contextualization parameters, run with argument ``help``:
 
 .. prompt:: text $ auto
 
@@ -36,42 +36,36 @@ To find more about this service script and about the important contextualization
 Install
 ~~~~~~~
 
-This stage is already done on the service applinaces downloaded from the OpenNebula Marketplace. It runs during the image build.
+For the service appliances downloaded from the OpenNebula Marketplace, this stage was already done during the image build.
 
-It's responsible for configuration of the package repositories, installation of all required packages, and download anything the service would need for the proper start. Service isn't started nor configured, it's left on the next stages which run on the very first instantion in the users' environment.
+It's responsible for configuration of the package repositories, installation of all required packages, and download anything the service would need for the proper start. Service isn't started nor configured, it's left on the next stages which run on the very first run in the users' environment.
+
+**Example steps:** install Apache, MySQL, download and extract WordPress
 
 .. _one_service_stage_configure:
 
 Configure
 ~~~~~~~~~
 
-This is the crucial stage and one which will be run on every instantiation. Also for this step to be successful the user can provide contextualization parameters which will drive the configuration process in a direction the user wants.
+The most important stage, which runs on every new instantiation in the users' environment. It configures the installed services on the virtual machine (with defaults or user-provided contextualization parameters), enables and runs them. At the end of this stage, the services are ready to use.
 
-Some appliances will not require any variables to be set (all variables will have working default values), some appliances may require a few variables which would be mandatory.
-
-At the end of this stage the service is actually provisioned and running - but of course only if all mandatory contextualization variables have been provided and all used contextualization variables have been set with valid values.
+**Example steps:** create database, configure connections, setup web virtual hosts and place SSL certificates, enable and start web server and database
 
 .. _one_service_stage_bootstrap:
 
 Bootstrap
 ~~~~~~~~~
 
-We call the last stage bootstrap and it kind of overlaps with the previous configuration stage. Similarly to the configure stage here are also recognized some contextualization parameters. We intended this stage as an opportunity to streamline the appliance start up to a full service by bootstrapping some necessary manual steps. To understand better what we mean here, imagine the service where upon your first use you are forced to create some user first. The bootstrap stage can do this for you if you provide relevant contextualization variables.
+Bootstrap is an optional stage and, if available, makes additional configuration of the running service based on user-provided contextualization parameters. There are no defaults for this stage, it's skipped if all required parameters aren't specified. It offers an opportunity to streamline the service start to a fully configured service, avoiding any manual steps which would be necessary (e.g., click through the initial web wizard).
 
-Another responsibility of this stage is to report ``READY=yes`` to the OneGate, but only when the service is ready and properly working. The time needed to do so depends on the type of an appliance. Some appliances can configure and bootstrap very quickly, but others can take more time - usually in a matter of minutes (this also will depend on a power of your virtual machines).
+**Example steps:** configure initial WordPress blog name and administrator
 
 .. _one_service_logs:
 
 Reports and Logs
 ----------------
 
-After the successful run of :ref:`configure <one_service_stage_configure>` and  :ref:`bootstrap <one_service_stage_bootstrap>` stages, you can find service related information (credentials, connection settings) in the file:
-
-.. code::
-
-    /etc/one-appliance/config
-
-If any of the stages fail, there are debug logs for each stage you can troubleshoot the problem:
+After the successful run of :ref:`configure <one_service_stage_configure>` and  :ref:`bootstrap <one_service_stage_bootstrap>` stages, you can find service-related information (credentials, connection settings) in the file ``/etc/one-appliance/config``. If any of the stages fail, there are debug logs for each stage which can help with problem troubleshooting:
 
 - ``/var/log/one-appliance/ONE_install.log``
 - ``/var/log/one-appliance/ONE_configure.log``
