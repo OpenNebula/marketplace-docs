@@ -6,11 +6,11 @@ Overview
 
 .. _one_service_appliance:
 
-The service appliances extend the OpenNebula `Marketplace <https://marketplace.opennebula.systems/>`_ with easy-to-use deployable services. These are the images with all necessary packages installed for the service run, but they go through the final configuration on the very first run on the users' side on. It allows to customize the final service state by the cloud user via special contextualization parameters.
+The service appliances extend the OpenNebula `Marketplace <https://marketplace.opennebula.systems/>`_ with easy-to-use deployable services. These are the images with all necessary packages installed for the service run, but they go through the final configuration on the very first run on the users' side. It allows to customize the final service state by the cloud user via special contextualization parameters.
 
 Thanks to the dynamic nature of the service appliances, no security credentials are persisted in the distributed appliances. Initial passwords are provided via the contextualization parameters or are dynamically generated for each new virtual machine. No two virtual machines with default contextualization parameters share the same passwords or database credentials.
 
-Each of service appliance comes with the script which does the heavy lifting of bringing the service up.
+Each service appliance comes with the script which does the heavy lifting of bringing the service up.
 
 .. _one_service_script:
 
@@ -23,9 +23,9 @@ Every appliance goes through the following stages:
 2. :ref:`configure <one_service_stage_configure>` (instantiation time)
 3. :ref:`bootstrap <one_service_stage_bootstrap>` (instantiation time)
 
-Each stage is handled by the shell script ``/etc/one-appliance/service`` installed in the appliance. For the **install** stage, it's triggered during the image build. For the rest stages, it's triggered as part of the regular OS contextualization. The selected stage is an argument of this script.
+Each stage is handled by the shell script ``/etc/one-appliance/service`` installed in the appliance. For the **install** stage, it's triggered during the image build. For the remaining stages, it's triggered as part of the regular OS contextualization. The selected stage is an argument of this script.
 
-To find more about the service script and the appliance specific contextualization parameters, run with argument ``help``:
+To find out more about the service script and the appliance-specific contextualization parameters, run with argument ``help``:
 
 .. prompt:: text $ auto
 
@@ -38,7 +38,7 @@ Install
 
 For the service appliances downloaded from the OpenNebula Marketplace, this stage was already done during the image build.
 
-It's responsible for configuration of the package repositories, installation of all required packages, and download anything the service would need for the proper start. Service isn't started nor configured, it's left on the next stages which run on the very first run in the users' environment.
+It's responsible for configuration of the package repositories, installation of all required packages, and download of everything the service would need for the proper start. Service isn't started nor configured, it's left on the next stages which run on the very first run in the users' environment.
 
 **Example steps:** install Apache, MySQL, download and extract WordPress
 
