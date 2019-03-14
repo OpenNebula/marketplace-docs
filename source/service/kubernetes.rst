@@ -23,7 +23,7 @@ The initial configuration can be customized with :ref:`contextualization <k8s_co
 
 .. note::
 
-    The first input (master node address) is very important and it's value may differ for the master node and the worker node in the same cluster. More about this in :ref:`contextualization <k8s_context_param>`. The following two inputs (token and hash) are relevant for worker nodes only and they need to be set with values found on the master node in :ref:`/etc/one-appliance/config <one_service_logs>`. Below is :ref:`an example <report_file_example>` of such file. These three inputs are mandatory for the worker node to join the cluster - **all of them must be set** - otherwise a new single master node will be created.
+    The first input (master node address) is very important and it's (exact) value may differ for the master node and the worker node in the same cluster - master node's value can be a network from which an ip will be derived (for example), but worker node's must be an actual ip address (in every case). More about this in :ref:`contextualization <k8s_context_param>`. The following two inputs (token and hash) are relevant for worker nodes only and they need to be set with values found on the master node in :ref:`/etc/one-appliance/config <one_service_logs>`. Below is an :ref:`example <report_file_example>` of a such file. These three inputs are mandatory for the worker node to join the cluster - **all of them must be set** - otherwise a new single master node will be created.
 
 After you are done, click on the button **Instantiate**. A virtual machine with the running service should be ready in a few minutes.
 
@@ -110,7 +110,7 @@ If you don't set this parameter then the master node (and worker nodes in either
 
 .. important::
 
-   Please, do **NOT** change the default value of ``ONEAPP_K8S_PODS_NETWORK`` if you are not sure what you are doing! You can break the internal kubernetes networking!
+   Please, **DO NOT** change the default value of ``ONEAPP_K8S_PODS_NETWORK`` if you are not sure what you are doing! You can break the internal kubernetes networking!
 
 ``ONEAPP_K8S_ADMIN_USERNAME`` defaults to ``admin-user``. It is the service account name under which a kubernetes token is created to enable login into :ref:`UI dashboard <k8s_dashboard>`. The token is stored in :ref:`/etc/one-appliance/config <one_service_logs>` as ``k8s_ui_login_token`` (you can see one in the :ref:`example <report_file_example>` above).
 
@@ -206,14 +206,14 @@ And as a last step we cannot forget to check this button:
 
 .. important::
 
-   The checkbox **Wait for VMs to report that they are READY via OneGate to consider them running** must be enabled - otherwise all nodes defined in the service will be spawned together and all of them become a kubernetes master node. That means that instead of a one cluster with one master node and two worker nodes, we would get three single node clusters...
+   Both the parent relationship and the checkbox **Wait for VMs to report that they are READY via OneGate to consider them running** must be set properly and/or enabled - otherwise all nodes defined in the service will be spawned together and all of them become a kubernetes master node. That means that instead of a one cluster with one master node and two worker nodes, we would get three single node clusters...
 
 Finally click on the green **Create** button at the top and we are done.
 
 Instantiate the service template
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-We will instantiate the service template like the following picture demonstrates - notice that we are telling the template to use specific network for kubernetes:
+We will instantiate the service template like the following picture demonstrates - notice that we are telling the template to use a specific network for kubernetes:
 
 |image-oneflow-part5|
 
@@ -221,7 +221,7 @@ We will instantiate the service template like the following picture demonstrates
 
    **DO NOT** set any input fields for the **worker** role - those will be provisioned automatically via OneFlow feature of the Kubernetes service appliance.
 
-After few minutes you should see all nodes deployed and ready:
+After a few minutes you should see all nodes deployed and ready:
 
 |image-oneflow-part6|
 
@@ -261,7 +261,7 @@ After you deploy a kubernetes **master** node - log into it via ssh:
 
 .. prompt:: text $ auto
 
-    % ssh root@192.168.122.10
+    % ssh root@192.168.122.10 # change to your master node address
 
 .. note::
 
@@ -278,7 +278,7 @@ You should get something similar to this::
    NAME                                    STATUS   ROLES    AGE     VERSION
    onekube-ip-192-168-122-10.localdomain   Ready    master   4m38s   v1.13.4
 
-If the previous command ran successfully then you can logout from the master node and we can continue by configuring the ``kubectl`` cli utility. So you can apply kubernetes manifests (yaml formatted files with kubernetes configuration) and access :ref:`UI dashboard <k8s_dashboard>` comfortably from your workstation.
+If the previous command ran successfully then you can logout from the master node and we can continue by configuring the ``kubectl`` CLI utility. So you can apply kubernetes manifests (yaml formatted files with kubernetes configuration) and access :ref:`UI dashboard <k8s_dashboard>` comfortably from your workstation.
 
 .. _k8s_tutorial_kubectl:
 
@@ -291,7 +291,7 @@ You should be able to run this command now:
 
 .. prompt:: text $ auto
 
-    % kubectl version
+    % kubectl --help
 
 We will now prepare our local kubectl config file (notice the master node's ip address!):
 
@@ -320,12 +320,12 @@ Alternatively, you can also just copy the ``admin.conf`` and run ``kubectl`` lik
     % kubectl --kubeconfig=${HOME}/admin.conf get nodes
 
 
-Examplary application
-~~~~~~~~~~~~~~~~~~~~~
+Example application
+~~~~~~~~~~~~~~~~~~~
 
-We will loosely follow an `official guide <https://kubernetes.io/docs/tasks/run-application/run-stateless-application-deployment/>`_ as a demonstration how to deploy an application to our newly created kubernetes cluster.
+We will loosely follow the `official guide <https://kubernetes.io/docs/tasks/run-application/run-stateless-application-deployment/>`_ as a demonstration how to deploy an application to our newly created kubernetes cluster.
 
-Start with creating a manifest file:
+Start with creating a manifest file (change the ``externalIPs`` to your master node ip **!**):
 
 .. prompt:: text $ auto
 
@@ -460,7 +460,7 @@ Now you can reach the UI dashboard in your browser:
 
    `http://localhost:8001/api/v1/namespaces/kube-system/services/https:kubernetes-dashboard:/proxy/ <http://localhost:8001/api/v1/namespaces/kube-system/services/https:kubernetes-dashboard:/proxy/>`_
 
-The dashboard's login screen will greets you there. Select the ``Token`` option and copy-paste the value of ``k8s_ui_login_token`` from :ref:`/etc/one-appliance/config <one_service_logs>` to this form. You should see something like this:
+The dashboard's login screen will greet you there. Select the ``Token`` option and copy-paste the value of ``k8s_ui_login_token`` from :ref:`/etc/one-appliance/config <one_service_logs>` to this form. You should see something like this:
 
 |image-ui-login|
 
