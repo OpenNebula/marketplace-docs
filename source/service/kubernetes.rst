@@ -167,7 +167,88 @@ OneFlow service template
 
 We can leverage the OpenNebula's feature of a `OneFlow service <http://docs.opennebula.org/5.6/advanced_components/application_flow_and_auto-scaling/appflow_use_cli.html>`_ and deploy a multi-node kubernetes cluster with one click.
 
-TODO
+Create a new service template
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+- Open your OpenNebula and log in
+- Go to **Templates → Services** tab
+- Click on the green **+** button at the top
+- Fill the name of the new service template
+- Fill the role name as ``master`` (**!!!**)
+- Pick the ``Service Kubernetes - KVM`` (VM template)
+
+.. important::
+
+   The role name for the master node **MUST** be **master** - otherwise the OneFlow deployment will not work!
+
+The current status should resemble this picture:
+
+|image-oneflow-part1|
+
+As the next step we setup a worker role:
+
+- Click on the blue button **+** next to **Roles**
+- Fill the role name as ``worker``
+- Optionally set the **Number of VMs** to your liking (we will set it to two)
+- Pick the ``Service Kubernetes - KVM`` (VM template)
+
+The next status should resemble this picture:
+
+|image-oneflow-part2|
+
+Still on the **worker** role we must tell the OneFlow service that for this role the parent is **master** role:
+
+|image-oneflow-part3|
+
+And as a last step we cannot forget to check this button:
+
+|image-oneflow-part4|
+
+.. important::
+
+   The checkbox **Wait for VMs to report that they are READY via OneGate to consider them running** must be enabled - otherwise all nodes defined in the service will be spawned together and all of them become a kubernetes master node. That means that instead of a one cluster with one master node and two worker nodes, we would get three single node clusters...
+
+Finally click on the green **Create** button at the top and we are done.
+
+Instantiate the service template
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+We will instantiate the service template like the following picture demonstrates - notice that we are telling the template to use specific network for kubernetes:
+
+|image-oneflow-part5|
+
+.. important::
+
+   **DO NOT** set any input fields for the **worker** role - those will be provisioned automatically via OneFlow feature of the Kubernetes service appliance.
+
+After few minutes you should see all nodes deployed and ready:
+
+|image-oneflow-part6|
+
+Check the cluster status
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+Log into the master node:
+
+.. prompt:: text $ auto
+
+    % ssh root@192.168.122.10 # change to your master node address
+
+Now we can check that our cluster truly consists of the three nodes (or a count you defined)::
+
+   [root@onekube-ip-192-168-122-10 ~]# kubectl get nodes
+   NAME                                    STATUS   ROLES    AGE     VERSION
+   onekube-ip-192-168-122-10.localdomain   Ready    master   15m     v1.13.4
+   onekube-ip-192-168-122-11.localdomain   Ready    <none>   9m53s   v1.13.4
+   onekube-ip-192-168-122-12.localdomain   Ready    <none>   9m34s   v1.13.4
+
+We can also check that kubernetes is using the second network interface as we requested (internal ip - ``192.168.233.0/24``)::
+
+   [root@onekube-ip-192-168-122-10 ~]# kubectl get nodes -o wide
+   NAME                                    STATUS   ROLES    AGE     VERSION   INTERNAL-IP       EXTERNAL-IP   OS-IMAGE                KERNEL-VERSION              CONTAINER-RUNTIME
+   onekube-ip-192-168-122-10.localdomain   Ready    master   16m     v1.13.4   192.168.233.100   <none>        CentOS Linux 7 (Core)   3.10.0-957.5.1.el7.x86_64   docker://18.6.3
+   onekube-ip-192-168-122-11.localdomain   Ready    <none>   10m     v1.13.4   192.168.233.101   <none>        CentOS Linux 7 (Core)   3.10.0-957.5.1.el7.x86_64   docker://18.6.3
+   onekube-ip-192-168-122-12.localdomain   Ready    <none>   9m49s   v1.13.4   192.168.233.102   <none>        CentOS Linux 7 (Core)   3.10.0-957.5.1.el7.x86_64   docker://18.6.3
 
 .. _k8s_tutorial:
 
@@ -395,5 +476,11 @@ More info about UI dashboard can be found in the `web/UI documentation <https://
 .. |image-ui-login| image:: /images/kubernetes/kubernetes-ui-login.png
 .. |image-ui-create| image:: /images/kubernetes/kubernetes-ui-create.png
 .. |image-kubetest| image:: /images/kubernetes/kubernetes-kubetest.png
+.. |image-oneflow-part1| image:: /images/kubernetes/kubernetes-oneflow-part1.png
+.. |image-oneflow-part2| image:: /images/kubernetes/kubernetes-oneflow-part2.png
+.. |image-oneflow-part3| image:: /images/kubernetes/kubernetes-oneflow-part3.png
+.. |image-oneflow-part4| image:: /images/kubernetes/kubernetes-oneflow-part4.png
+.. |image-oneflow-part5| image:: /images/kubernetes/kubernetes-oneflow-part5.png
+.. |image-oneflow-part6| image:: /images/kubernetes/kubernetes-oneflow-part6.png
 .. |image-ssh-context| image:: /images/appliance-ssh-context.png
 .. |image-custom-vars-password| image:: /images/appliance-custom-vars-password.png
