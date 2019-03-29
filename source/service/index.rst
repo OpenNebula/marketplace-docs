@@ -9,5 +9,5 @@ Service Appliances
 
    Overview <overview>
    GitLab <gitlab>
-   WordPress <wordpress>
    Kubernetes <kubernetes>
+   WordPress <wordpress>
