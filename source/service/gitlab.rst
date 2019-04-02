@@ -8,7 +8,7 @@ OpenNebula `Marketplace Appliance <https://marketplace.opennebula.systems/applia
 
 Without any parameters provided, the appliance boots into the web setup wizard and user has to finish the GitLab initial configuration manually in the browser. This part can be automated (as part of the bootstrap process) with :ref:`contextualization <gitlab_context_param>` parameters.
 
-.. include:: shared/general.txt
+.. include:: shared/features.txt
 
 Quick Start
 ===========

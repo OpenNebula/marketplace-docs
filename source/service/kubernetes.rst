@@ -8,8 +8,10 @@ OpenNebula `Marketplace Appliance <https://marketplace.opennebula.systems/applia
 
 Without any parameters provided, the appliance deploys as a single Kubernetes master node. Appliance can be customized with :ref:`contextualization <k8s_context_param>` parameters to support manually managed multi-node deployments, or automatically managed multi-node cluster as OpenNebula `OneFlow service <http://docs.opennebula.org/stable/advanced_components/application_flow_and_auto-scaling/appflow_use_cli.html>`_.
 
-.. include:: shared/general.txt
-* Preconfigured with Canal CNI (`Calico <https://www.projectcalico.org/>`_, `Flannel <https://github.com/coreos/flannel>`_)
+.. include:: shared/features.txt
+* **Only single master clusters supported**.
+* Preconfigured with Canal CNI networking (`Calico <https://www.projectcalico.org/>`_, `Flannel <https://github.com/coreos/flannel>`_).
+* Optional: :ref:`Kubernetes Dashboard <k8s_dashboard>`.
 
 Quick Start
 ===========
@@ -337,6 +339,8 @@ Validate the tool is configured properly by checking the cluster nodes status:
     - env. variable, e.g. ``KUBECONFIG=${HOME}/admin.conf kubectl get nodes``
     - CLI argument, e.g. ``kubectl --kubeconfig=${HOME}/admin.conf get nodes``
 
+.. _k8s_dashboard:
+
 Dashboard
 ---------
 
@@ -477,8 +481,6 @@ Validate the service works from the command line, e.g.:
 Or, in the web browser, e.g.:
 
 |image-kubetest|
-
-.. _k8s_dashboard:
 
 Destroy the example application at the end, e.g.:
 

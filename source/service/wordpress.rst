@@ -8,7 +8,7 @@ OpenNebula `Marketplace Appliance <http://marketplace.opennebula.systems/applian
 
 Without any parameters provided, the appliance boots into the web setup wizard and user has to finish the WordPress initial configuration manually in the browser. This part can be automated (as part of the bootstrap process) with :ref:`contextualization <wordpress_context_param>` parameters.
 
-.. include:: shared/general.txt
+.. include:: shared/features.txt
 
 Quick Start
 ===========
