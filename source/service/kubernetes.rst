@@ -217,10 +217,11 @@ In the **Advanced service parameters**, check item **Wait for VMs to report that
 Step 2 - Role Master
 ^^^^^^^^^^^^^^^^^^^^
 
-- Fill the role name as ``master`` (**!!!**)
+- Fill the role name as ``master`` (**nothing else!**)
 - Pick the ``Service Kubernetes - KVM`` (VM template)
+- In **Advanced role parameters**, set **VM template content** to: ``ONEGATE_ENABLE="YES"``
 
-The current status should resemble this picture:
+The current status should resemble this picture with important parts highlighted:
 
 |image-oneflow-part1|
 
@@ -230,21 +231,26 @@ Step 3 - Role Worker
 As the next step, we setup a worker role:
 
 - Click on the blue button **+** next to **Roles**
-- Fill the role name as ``worker`` (**!!!**)
+- Fill the role name as ``worker`` (**nothing else!**)
 - Optional: Set the **Number of VMs** run initially
 - Pick the ``Service Kubernetes - KVM`` (VM template)
+- In **Parent roles**, set **master** as a parent role
+- In **Advanced role parameters**, set **VM template content** to: ``ONEGATE_ENABLE="YES"``
 
-The next status should resemble this picture:
+The next status should resemble this picture with important parts highlighted:
 
 |image-oneflow-part2|
 
-In the **Parent roles** section, set the **master** as a parent role:
-
-|image-oneflow-part3|
-
 .. important::
 
-    Don't forget to check ✓ the option **Wait for VMs to report that they are READY via OneGate to consider them running** for both - **master** and **worker**, and also the **Parent roles** for the **worker** node. Otherwise, the deployment will not work! With the wrong service template, all nodes might be started at the same time and configured as independent single-node clusters.
+    Don't forget to
+
+    - check the option **Wait for VMs to report that they are READY via OneGate to consider them running**
+    - use only **master** and **worker** role names
+    - set the **Parent roles** for the **worker** node
+    - specify **VM template content** for both **master** and **worker roles**
+
+    Otherwise, the deployment will not work! With the wrong service template, all nodes might be started at the same time and configured as independent single-node clusters.
 
 At the end, click on the green **Create** button at the top.
 
@@ -274,6 +280,7 @@ Service template:
           "name": "master",
           "cardinality": 1,
           "vm_template": <<<VM_TEMPLATE_ID>>> ,
+          "vm_template_contents": "ONEGATE_ENABLE=\"YES\"",
           "elasticity_policies": [],
           "scheduled_policies": []
         },
@@ -281,6 +288,7 @@ Service template:
           "name": "worker",
           "cardinality": 1,
           "vm_template": <<<VM_TEMPLATE_ID>>> ,
+          "vm_template_contents": "ONEGATE_ENABLE=\"YES\"",
           "parents": [
             "master"
           ],
@@ -305,7 +313,7 @@ To run the multi-node service:
 
 .. important::
 
-   You don't need to provide any inputs, unless you need to customize the default deployment parameters. **DO NOT** set any inputs for the **worker** role, the parameters will be configured automatically from the **master** node.
+   Mostly you shouldn't be asked for any inputs, but in case the OpenNebula provides you with a list of all K8s specific contextualization variables per role to customize before instantiation, you can leave all the parameters empty. **DO NOT** set any inputs for the **worker** role, the parameters will be configured automatically from the **master** node.
 
 |image-oneflow-part5|
 
