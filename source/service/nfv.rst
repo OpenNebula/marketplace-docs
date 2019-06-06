@@ -19,7 +19,7 @@ Quick Start
 
 The initial configuration can be customized with :ref:`contextualization <nfv_context_param>` parameters:
 
-|image-context-vars|
+.. TODO: add |image-context-vars|
 
 
 After you are done, click on the button **Instantiate**. Virtual machine with running service should be ready in a few minutes.
@@ -78,16 +78,16 @@ Contextualization parameters provided in the Virtual Machine template controls t
 Parameter                             Mandatory Default        Stage     Description
 ===================================== ========= ============== ========= ===========
 ``ONEAPP_LB_BACKENDS``                YES                      configure IPs from the backends separated by spaces
-``ONEAPP_LB_PORT``                    YES                      configure Listening port on the LB frontend              
-``ONEAPP_LB_USER``                    NO                       configure Username for the management portal                 
-``ONEAPP_LB_PASSWORD``                NO                       configure Password for the management portal                
-``ONEAPP_NAT_NIC``                    YES                      configure Out interface for the NAT traffic                 
-``ONEAPP_PF_ENTRIES``                 YES                      configure Port Forward entries separated by spaces in the 
-                                                                         format: INCOMING_IP:PORT-DEST_IP:PORT                 
-``ONEAPP_DHCP_RANGE``                 YES                      configure DHCP IP pool in the format: start_ip-end_ip                
-``ONEAPP_DHCP_GATEWAY``               NO        LOCAL_IP       configure Gateway that the DHCP server will advertise.                
-``ONEAPP_VPN_NETWORK``                YES                      configure Network and mask that the VPN will use in the format "IP Dot-decimal_net_mask"               
-``ONEAPP_VPN_SERVER``                 YES                      configure IP Where VPN server is listening                             
+``ONEAPP_LB_PORT``                    YES                      configure Listening port on the LB frontend
+``ONEAPP_LB_USER``                    NO                       configure Username for the management portal
+``ONEAPP_LB_PASSWORD``                NO                       configure Password for the management portal
+``ONEAPP_NAT_NIC``                    YES                      configure Out interface for the NAT traffic
+``ONEAPP_PF_ENTRIES``                 YES                      configure Port Forward entries separated by spaces in the
+                                                                         format: INCOMING_IP:PORT-DEST_IP:PORT
+``ONEAPP_DHCP_RANGE``                 YES                      configure DHCP IP pool in the format: start_ip-end_ip
+``ONEAPP_DHCP_GATEWAY``               NO        LOCAL_IP       configure Gateway that the DHCP server will advertise.
+``ONEAPP_VPN_NETWORK``                YES                      configure Network and mask that the VPN will use in the format "IP Dot-decimal_net_mask"
+``ONEAPP_VPN_SERVER``                 YES                      configure IP Where VPN server is listening
 ===================================== ========= ============== ========= ===========
 
 .. _nfv_lb:
@@ -116,37 +116,4 @@ Port Forwarding:
 ----------------
 
 It will perform DNAT using iptables to all entries listed on **ONEAPP_PF_ENTRIES**.
-
-Dynamic Host Configuration Protocol:
-------------------------------------
-It will enable a DHCP server based on dnsmasq serving IPs defined from a pool configured on
-**ONEAPP_DHCP_RANGE**. It can also push a default route into the client if the parameter
-**ONEAPP_DHCP_GATEWAY** is defined.
-
-Virtual Private Network:
-------------------------
-It will deploy a VPN based on OpenVPN. **ONEAPP_VPN_NETWORK** and **ONEAPP_VPN_SERVER**
-are required. A client configuration file will be generated and dumped on
-*/root/client.ovpn*.
-
-To generate new client configs:
-
-* Generate a keypair/request to the existing PKI:
-
-.. prompt:: bash # auto
-
-    # /etc/openvpn/easy_rsa/easyrsa --pki-dir=/etc/openvpn/pki --batch gen-req new_client nopass
-
-* Sign the request as the correct type:
-
-.. prompt:: bash # auto
-
-    # /etc/openvpn/easy_rsa/easyrsa --pki-dir=/etc/openvpn/pki --batch sign-req client new_client
-
-You will find the new key on */etc/openvpn/pki/private/new_client.key* and the certificate on 
-*/etc/openvpn/pki/issued/new_client.crt*. Create a copy of */root/client.ovpn* and modify the client's 
-certificate and key.
-
-
-
 
