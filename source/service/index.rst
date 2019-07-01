@@ -9,4 +9,6 @@ Service Appliances
 
    Overview <overview>
    GitLab <gitlab>
+   Kubernetes <kubernetes>
    WordPress <wordpress>
+   NFV <nfv>

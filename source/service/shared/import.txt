@@ -7,6 +7,6 @@ Steps:
 - go to **Storage → Apps** tab
 - select the appliance and click on import (the "cloud") button
 
-|image-download|
+..  TODO: add image download |image-download|
 
 To import the appliance over CLI, follow the OpenNebula `Operation Guide <http://docs.opennebula.org/stable/operation/vm_setup/add_content.html#use-the-opennebula-marketplace>`__.

@@ -1,9 +1,0 @@
-* Main stages of service deployment:
-
-    1. :ref:`install <one_service_stage_install>` - already done on appliance build
-    2. :ref:`configure <one_service_stage_configure>` - finalize configuration and bring the service up on very first start
-    3. :ref:`bootstrap <one_service_stage_bootstrap>` - optionally automate the initial service configuration
-
-* Based on the latest **CentOS 7** x86-64 Linux distribution
-* No default login (local or SSH) password, must be provided with `contextualization <http://docs.opennebula.org/stable/operation/vm_setup/kvm.html#user-credentials>`_.
-* More general :ref:`information <one_service_appliance>`.
