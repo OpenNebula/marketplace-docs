@@ -4,7 +4,7 @@
 Service WordPress
 =================
 
-OpenNebula `Marketplace Appliance <http://marketplace.opennebula.systems/appliance/4505693c-5905-41c5-a05e-9860115eae7e>`_ with preinstalled `WordPress <https://wordpress.org/>`_ service.
+OpenNebula `Marketplace Appliance <http://marketplace.opennebula.systems/appliance/84bd27fe-5d14-4e70-a79a-eb3fdd0072ae>`_ with preinstalled `WordPress <https://wordpress.org/>`_ service.
 
 Without any parameters provided, the appliance boots into the web setup wizard and user has to finish the WordPress initial configuration manually in the browser. This part can be automated (as part of the bootstrap process) with :ref:`contextualization <wordpress_context_param>` parameters.
 
