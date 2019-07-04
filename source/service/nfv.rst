@@ -117,3 +117,6 @@ Port Forwarding:
 
 It will perform DNAT using iptables to all entries listed on **ONEAPP_PF_ENTRIES**.
 
+.. |image-download| image:: /images/kubernetes/kubernetes-download.png
+.. |image-ssh-context| image:: /images/appliance-ssh-context.png
+.. |image-custom-vars-password| image:: /images/appliance-custom-vars-password.png
