@@ -596,6 +596,7 @@ After a few moments all work should be done:
     devices_dir = /greengrass/device
     devices_count = 5
 
+.. |image-download| image:: /images/kubernetes/kubernetes-download.png
 .. |image-context-vars| image:: /images/aws-greengrass/awsgg-context-vars.png
 .. |image-context-bulk-api| image:: /images/aws-greengrass/awsgg-bulk-api-context-values.png
 .. |image-context-core-api| image:: /images/aws-greengrass/awsgg-core-api-context-values.png
