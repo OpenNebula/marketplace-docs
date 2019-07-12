@@ -8,6 +8,7 @@ Service Appliances
    :maxdepth: 2
 
    Overview <overview>
+   AWS IoT Greengrass <aws-greengrass>
    GitLab <gitlab>
    Kubernetes <kubernetes>
    WordPress <wordpress>
