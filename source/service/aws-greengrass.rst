@@ -4,16 +4,16 @@
 Service AWS IoT Greengrass
 ==========================
 
-OpenNebula `Marketplace Appliance (FIX LINK) <https://marketplace.opennebula.systems/appliance/placeholder>`_  with preinstalled `AWS IoT Greengrass <https://docs.aws.amazon.com/greengrass/latest/developerguide/what-is-gg.html>`_ SDK and services to run IoT Core, device, or both.
+OpenNebula `Marketplace Appliance <https://marketplace.opennebula.systems/appliance/13449c22-17c3-46cd-b1bf-7cbec55b504b>`_  with preinstalled `AWS IoT Greengrass <https://aws.amazon.com/greengrass/>`_ SDK and services to run IoT Core, device, or both.
 
-If no parameters are provided, the appliance boots without any Greengrass services running and user can manage the deployment on his own leveraging all the preinstalled AWS IoT Greengrass SDKs and AWS CLI. The real power is in the :ref:`contextualization <awsgg_context_param>` parameters, which can specify what and how to configure and start in the appliances automatically on first boot.
+If no parameters are provided, the appliance boots without any Greengrass services running and the user can manage the deployment on his own leveraging all the preinstalled AWS IoT Greengrass SDKs and AWS CLI. The real power is in the :ref:`contextualization <awsgg_context_param>` parameters, which can specify what and how to configure and start in the appliances automatically on first boot.
 
 .. _awsgg_features:
 
 .. include:: shared/features.txt
 * Running on CentOS 7 ELRepo LTS kernel.
 * Appliance can report IoT *thing* names of Core and IoT devices via OpenNebula `OneGate service <http://docs.opennebula.org/stable/advanced_components/application_insight/>`_ (if applicable).
-* Instance Greengrass roles: Core, IoT device, combination of both
+* Instance Greengrass roles: Core, IoT device, a combination of both
 * Provision modes of Greengrass entities: **manual** and **automatic**
 
 .. _awsgg_requirements:
@@ -72,7 +72,7 @@ The initial configuration can be customized with :ref:`contextualization <awsgg_
 
 .. note::
 
-    The first input **Deployment role** determines if the appliance creates a Core device (possibly with Group), IoT device or both (bulk) and based on that it will expect certain inputs to be set. If you don't intend to provision the appliance either by configuration files or by providing the API credentials then leave **\*ALL*** inputs empty - otherwise the appliance will fail. In the case of provisioned appliance (most of the cases) jump to :ref:`contextualization <awsgg_context_param>` where are descriptions of valid contexts and modes.
+    The first input **Deployment Role** determines if the appliance creates a Core device (possibly with Group), IoT device or both (bulk) and based on that it will expect certain inputs to be set. If you don't intend to provision the appliance either by configuration files or by providing the API credentials then leave **\*ALL*** inputs empty - otherwise the appliance will fail. In the case of provisioned appliance (most of the cases) jump to :ref:`contextualization <awsgg_context_param>` where are descriptions of valid contexts and modes.
 
 After you are done, click on the button **Instantiate**. A virtual machine with the running service should be ready in a few minutes.
 
@@ -114,25 +114,25 @@ Contextualization parameters provided in the Virtual Machine template controls t
 Parameter                            Default        Stage     Roles          Modes       Description
 ==================================== ============== ========= ============== =========== ===========
 ``ONEAPP_AWSGG_ROLE``                               configure                            Deployment role: ``core``, ``device``, ``bulk``, empty
-``ONEAPP_AWSGG_BULK_DEVICES``        ``1``          configure bulk                       Number of devices created in **bulk** role
+``ONEAPP_AWSGG_BULK_DEVICES``        ``1``          configure bulk                       Number of devices to be created in **bulk** role
 ``ONEAPP_AWSGG_SSL_CERT``                           configure core,device    manual      Core/Device certificate
-``ONEAPP_AWSGG_SSL_PRIVKEY``                        configure core,device                Core/Device private key
-``ONEAPP_AWSGG_SSL_PUBKEY``                         configure core,device                Core/Device public key
+``ONEAPP_AWSGG_SSL_PRIVKEY``                        configure core,device                Core/Device private Key
+``ONEAPP_AWSGG_SSL_PUBKEY``                         configure core,device                Core/Device public Key
 ``ONEAPP_AWSGG_CONFIG``                             configure core                       Greengrass Group config file
-``ONEAPP_AWSGG_GROUP``                              configure                automatic   Greengrass Group name to create
-``ONEAPP_AWSGG_DEVICE_NAME``                        configure device,bulk                Device Name (postfixed by random for bulk role)
-``ONEAPP_AWSGG_DEVICE_HASH``         ``device``     configure device         manual      Hash prefix (created by AWS)
+``ONEAPP_AWSGG_GROUP``                              configure                automatic   Greengrass Group Name to create
+``ONEAPP_AWSGG_DEVICE_NAME``                        configure device,bulk                Device name (postfixed by random for bulk role)
+``ONEAPP_AWSGG_DEVICE_HASH``         ``device``     configure device         manual      Device Hash prefix (created by AWS)
 ``ONEAPP_AWSGG_ENDPOINT``                           configure                            IoT Greengrass Endpoint
 ``ONEAPP_AWSGG_ACCESS_KEY_ID``                      configure                            AWS Access Key ID
 ``ONEAPP_AWSGG_ACCESS_SECRET_KEY``                  configure                            AWS Access Secret Key
-``ONEAPP_AWSGG_GGC_USER``            ``ggc_user``   configure                            OS user name to own process/files
-``ONEAPP_AWSGG_GGC_GROUP``           ``ggc_group``  configure                            OS user group to own process/files
+``ONEAPP_AWSGG_GGC_USER``            ``ggc_user``   configure                            Instance OS user (files/processes owner)
+``ONEAPP_AWSGG_GGC_GROUP``           ``ggc_group``  configure                            Instance OS group (files/processes owner)
 ``ONEAPP_AWSGG_IOTMQTTPORT``         ``8883``       configure core                       MQTT port to IoT (8883 or 443)
 ``ONEAPP_AWSGG_IOTHTTPPORT``         ``8443``       configure core                       HTTPS port to IoT (8443 or 443)
 ``ONEAPP_AWSGG_GGHTTPPORT``          ``8443``       configure core                       HTTPS port to GG (8443 or 443)
 ==================================== ============== ========= ============== =========== ===========
 
-If no suitable contextualization parameters are provided, the virtual machines boots only into the AWS IoT Greengrass compatible system environment and don't configure anything.
+If no suitable contextualization parameters are provided, the virtual machines boot only into the AWS IoT Greengrass compatible system environment and don't configure anything.
 
 Appliance on-boot configuration for the AWS IoT Greengrass via contextualization parameters support 2 main ways of deployment:
 
@@ -161,7 +161,7 @@ Appliance on-boot configuration for the AWS IoT Greengrass via contextualization
 
 .. important::
 
-   For the manual mode, you don't need to provide AWS credentials to setup AWS CLI. In the case of automatic mode, the AWS credentials are mandatory. If you provide contextualization parameters for both modes, then the **manual mode will take precedence**.
+   For the manual mode, you don't need to provide AWS credentials to configure AWS CLI. In the case of automatic mode, the AWS credentials are mandatory. If you provide contextualization parameters for both modes, then the **manual mode will take precedence**.
 
 .. _awsgg_manual_mode:
 
@@ -173,7 +173,7 @@ In this deployment mode, the certificate files and a config file (in the case of
 Deploy Core Device
 ~~~~~~~~~~~~~~~~~~
 
-Greengrass Group and Core device must be already created (by tool, API, AWS Management Console etc.) and you should have prepared all the necessary files (certificates and config). These files can be extracted from the archive which should have been downloaded when the Greengrass Group and Core device were created, e.g. steps to follow when `using the AWS Management Console <https://docs.aws.amazon.com/greengrass/latest/developerguide/gg-config.html>`__.
+Greengrass Group and Core device must be already created (by tool, API, AWS Management Console, etc.) and you should have prepared all the necessary files (certificates and config). These files can be extracted from the archive which should have been downloaded when the Greengrass Group and Core device were created, e.g. steps to follow when `using the AWS Management Console <https://docs.aws.amazon.com/greengrass/latest/developerguide/gg-config.html>`__.
 
 Relevant contextualization parameters:
 
@@ -232,12 +232,12 @@ Parameter                              Comment
 
 Device certificates are stored on running instance in ``/greengrass/device/`` directory.
 
-There is no dedicated service/daemon running on the instance with device role. The appliance only provides the preinstalled SDK(s) and runtimes, and configures the instance with provided device certificates. The deployment and run of the code on device is up to the user. Check out the `device documentation <https://docs.aws.amazon.com/greengrass/latest/developerguide/module4.html>`_.
+There is no dedicated service/daemon running on the instance with a device role. The appliance only provides the preinstalled SDK(s) and runtimes, and configures the instance with provided device certificates. The deployment and run of the code on a device are up to the user. Check out the `device documentation <https://docs.aws.amazon.com/greengrass/latest/developerguide/module4.html>`_.
 
 Deploy Core and automatically IoT device(s)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Behaves as manual deployment of the precreated Core device, but also creates one or more IoT devices over AWS API and stores their certificates in ``/greengrass/device/`` directory.
+Behaves as the manual deployment of the precreated Core device, but also creates one or more IoT devices over AWS API and stores their certificates in ``/greengrass/device/`` directory.
 
 Relevant contextualization parameters:
 
@@ -278,7 +278,7 @@ Provisioned files are stored in these locations:
 Automatic Mode
 --------------
 
-In this deployment mode, there is no precreated Greengrass Group, Core, or IoT device(s). The automation inside the appliance ensures the required entities are created over the AWS API on the fly. Appliance must be contextualized with the required role and AWS connection parameters (IoT endpoint in `supported region <https://docs.aws.amazon.com/general/latest/gr/rande.html#greengrass_region>`_ and `AWS credentials <https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html>`_).
+In this deployment mode, there is no precreated Greengrass Group, Core, or IoT device(s). The automation inside the appliance ensures the required entities are created over the AWS API on the fly. Appliance must be contextualized with the required role and AWS connection parameters (IoT endpoint in the `supported region <https://docs.aws.amazon.com/general/latest/gr/rande.html#greengrass_region>`_ and `AWS credentials <https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html>`_).
 
 .. important::
 
@@ -287,7 +287,7 @@ In this deployment mode, there is no precreated Greengrass Group, Core, or IoT d
 Deploy Core Device
 ~~~~~~~~~~~~~~~~~~
 
-The appliance will create a Greengrass Group and the Core device entities in the designated IoT endpoint over AWS API. If Greengrass Group with same name already exists, the deployment fails.
+The appliance will create a Greengrass Group and the Core device entities in the designated IoT endpoint over AWS API. If Greengrass Group with the same name already exists, the deployment fails.
 
 Relevant contextualization parameters:
 
@@ -340,7 +340,7 @@ Parameter                              Comment
 
 Device certificates are stored on running instance in ``/greengrass/device/`` directory.
 
-There is no dedicated service/daemon running on the instance with device role. The appliance only provides the preinstalled SDK(s) and runtimes, creates IoT device over AWS API and configures the instance with new device certificates. The deployment and run of the code on device is up to the user. Check out the `device documentation <https://docs.aws.amazon.com/greengrass/latest/developerguide/module4.html>`_.
+There is no dedicated service/daemon running on the instance with device role. The appliance only provides the preinstalled SDK(s) and runtimes, creates IoT device over AWS API and configures the instance with new device certificates. The deployment and run of the code on device are up to the user. Check out the `device documentation <https://docs.aws.amazon.com/greengrass/latest/developerguide/module4.html>`_.
 
 Deploy Core and IoT device(s)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -397,7 +397,7 @@ Examples
 
 In this section, we demonstrate the practical use of the appliance. Please ensure to meet the :ref:`requirements <awsgg_requirements>` before you start.
 
-We follow the official AWS GreenGrass `Getting Started <https://docs.aws.amazon.com/greengrass/latest/developerguide/gg-gs.html>`_ tutorial.
+We follow the official AWS Greengrass `Getting Started <https://docs.aws.amazon.com/greengrass/latest/developerguide/gg-gs.html>`_ tutorial.
 
 Deploy Core in Manual Mode
 --------------------------
@@ -410,7 +410,7 @@ A. Prepare AWS
 
   - Skip step 10
   - IMPORTANT step 8: Download the security resources by clicking on **"Download these resources as a tar.gz"** and archive for future use.
-  - When group is ready, you get a similar page:
+  - When the group is ready, you get a similar page:
 
 |image-console-create-group-2|
 
@@ -428,7 +428,7 @@ B. Run Core Instance
 
 To be able to run the AWS IoT Greengrass appliance, we need to prepare the contextualization data.
 
-Get the security resources tar.gz archive from previous section.
+Get the security resources tar.gz archive from the previous section.
 
 1. Unpack the content and find files matching
 
@@ -437,13 +437,13 @@ Get the security resources tar.gz archive from previous section.
   - ``*.private.key`` - private key file
   - ``*.public.key`` - public key file
 
-2. Copy and paste content of those files into appropriate contextualization parameters. For example:
+2. Copy and paste the content of those files into appropriate contextualization parameters. For example:
 
 |image-context-core-files|
 
 3. Run the instance.
 
-After a while, the instance should be ready to be used as Core device. Login the virtual machine and check the status and configuration. For example:
+After a while, the instance should be ready to be used as Core device. Log in the virtual machine and check the status and configuration. For example:
 
 .. code::
 
@@ -493,14 +493,14 @@ You should see **Successfully completed** deployment:
 
 2. Check the Lambda function is working on your Core device by following `all steps <https://docs.aws.amazon.com/greengrass/latest/developerguide/lambda-check.html>`__.
 
-Your should get a similar output:
+You should get a similar output:
 
 |image-console-test|
 
 Deploy Core in Automatic Mode
 -----------------------------
 
-We'll reproduce the above example of deployment of core by leveraging the automation provided by the OpenNebula AWS IoT Greengrass appliance.
+We'll reproduce the above example of deployment of the Core device by leveraging the automation provided by the OpenNebula AWS IoT Greengrass appliance.
 
 A. Prepare AWS
 ~~~~~~~~~~~~~~
@@ -518,7 +518,7 @@ B. Run Core Instance
 
 2. Run the instance.
 
-After a while, the instance should be ready to be used as Core device without need to precreate the Greengrass group or Core device. Login the virtual machine and check the status and configuration. For example:
+After a while, the instance should be ready to be used as Core device without the need to precreate the Greengrass group or Core device. Log in the virtual machine and check the status and configuration. For example:
 
 .. code::
 
@@ -565,7 +565,7 @@ Follow the same procedure as before in :ref:`Deploy Lambda Function <awsgg_deplo
 Deploy Device in Automatic Mode
 -------------------------------
 
-In following section we'll automatically deploy 2 IoT devices into existing Greengrass Group with running Core device. The steps described below follows the official `tutorial <https://docs.aws.amazon.com/greengrass/latest/developerguide/module4.html>`_. In case of problems, consult the commands with the referenced tutorial.
+In the following section we'll automatically deploy 2 IoT devices into existing Greengrass Group with running Core device. The steps described below follow the official `tutorial <https://docs.aws.amazon.com/greengrass/latest/developerguide/module4.html>`_. In case of problems, consult the commands with the referenced tutorial.
 
 .. important::
 
@@ -578,13 +578,13 @@ A. Run Device Instances
 
 |image-context-device-publisher-api|
 
-Login the virtual machine and check the deployment status.
+Log in the virtual machine and check the deployment status.
 
 2. Run 2nd IoT device instance ``HelloWorld_Subscriber``, provide relevant context parameters. For example:
 
 |image-context-device-subscriber-api|
 
-Login the virtual machine and check the deployment status.
+Log in the virtual machine and check the deployment status.
 
 B. Prepare AWS
 ~~~~~~~~~~~~~~
@@ -599,9 +599,9 @@ B. Prepare AWS
 C. Test Code
 ~~~~~~~~~~~~
 
-We are going to deploy a test code inside both devices. The test code generates messages on one device and demonstrates the working deployment by receiving the same message on second device.
+We are going to deploy a test code inside both devices. The test code generates messages on one device and demonstrates the working deployment by receiving the same message on the second device.
 
-1. On both IoT device instances, run following commands:
+1. On both IoT device instances, run the following commands:
 
 .. prompt:: text [remote]$ auto
 
@@ -652,15 +652,15 @@ We are going to deploy a test code inside both devices. The test code generates 
 Deploy Bulk in Automatic Mode
 -----------------------------
 
-Last example is dedicated to deployment of **bulk** role in the automatic mode. A new dedicated Greengrass Group, Core device and a set of IoT devices will be deployed on a single dedicated instance.
+The last example is dedicated to the deployment of **bulk** role in the automatic mode. A new dedicated Greengrass Group, Core device and a set of IoT devices will be deployed on a single dedicated instance.
 
 Provide relevant contextualization parameters, for example:
 
 |image-context-bulk-api|
 
-and, run start the instance. After a while, login the virtual machine and check the deployment status.
+and, start the instance. After a while, log in the virtual machine and check the deployment status.
 
-.. |image-download| image:: /images/kubernetes/kubernetes-download.png
+.. |image-download| image:: /images/aws-greengrass/awsgg-download.png
 .. |image-context-vars| image:: /images/aws-greengrass/awsgg-context-vars.png
 .. |image-context-bulk-api| image:: /images/aws-greengrass/awsgg-bulk-api-context-values.png
 .. |image-context-core-api| image:: /images/aws-greengrass/awsgg-core-api-context-values.png
