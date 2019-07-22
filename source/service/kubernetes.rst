@@ -4,7 +4,7 @@
 Service Kubernetes
 ==================
 
-OpenNebula `Marketplace Appliance (FIX LINK) <https://marketplace.opennebula.systems/appliance/edc648b6-5958-4370-9b66-555fd5846182>`_  with preinstalled `Kubernetes <https://kubernetes.io/>`_ service.
+OpenNebula `Marketplace Appliance <https://marketplace.opennebula.systems/appliance/edc648b6-5958-4370-9b66-555fd5846182>`_  with preinstalled `Kubernetes <https://kubernetes.io/>`_ service.
 
 Without any parameters provided, the appliance deploys as a single Kubernetes master node. Appliance can be customized with :ref:`contextualization <k8s_context_param>` parameters to support manually managed multi-node deployments, or automatically managed multi-node cluster as OpenNebula `OneFlow service <http://docs.opennebula.org/stable/advanced_components/application_flow_and_auto-scaling/appflow_use_cli.html>`_.
 
