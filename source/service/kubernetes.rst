@@ -24,12 +24,12 @@ Component                     Version
 Kubernetes                    1.15
 Docker                        18.09 CE
 Calico                        3.8
-Contextualization package     5.8.0
+Contextualization package     5.10.0
 ============================= ==================
 
 Requirements:
 
-* OpenNebula 4.14 - 5.8
+* OpenNebula 4.14 - 5.10
 * `OneFlow <http://docs.opennebula.org/stable/advanced_components/application_flow_and_auto-scaling/index.html>`_ and `OneGate <http://docs.opennebula.org/stable/advanced_components/application_insight/index.html>`_ for multi-node orchestration
 * Min. Memory: 3 GB (master), 1 GB (worker)
 * Min. Cores (VCPU): 2 (master), 1 (worker)

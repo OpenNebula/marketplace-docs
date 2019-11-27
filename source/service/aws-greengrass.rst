@@ -49,12 +49,12 @@ AWS Lambda Runtimes           Python 2.7
 Python 2 - greengrasssdk      1.4.0
 Python 2 - AWSIoTPythonSDK    1.4.7
 Python 2 - boto3              1.9.183
-Contextualization package     5.8.0
+Contextualization package     5.10.0
 ============================= ==================
 
 Requirements:
 
-* OpenNebula 4.14 - 5.8
+* OpenNebula 4.14 - 5.10
 * `OneGate <http://docs.opennebula.org/stable/advanced_components/application_insight/index.html>`_ for optional reporting back from the VM
 * Min. Memory: 2 GB
 * Min. Cores (VCPU): 1
