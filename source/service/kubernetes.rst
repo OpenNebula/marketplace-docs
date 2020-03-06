@@ -21,14 +21,15 @@ Appliance components versions:
 ============================= ==================
 Component                     Version
 ============================= ==================
-Kubernetes                    1.13.4
-Docker                        18.06 CE
-Contextualization package     5.8.0
+Kubernetes                    1.15
+Docker                        18.09 CE
+Calico                        3.8
+Contextualization package     5.10.0
 ============================= ==================
 
 Requirements:
 
-* OpenNebula 4.14 - 5.8
+* OpenNebula 4.14 - 5.10
 * `OneFlow <http://docs.opennebula.org/stable/advanced_components/application_flow_and_auto-scaling/index.html>`_ and `OneGate <http://docs.opennebula.org/stable/advanced_components/application_insight/index.html>`_ for multi-node orchestration
 * Min. Memory: 3 GB (master), 1 GB (worker)
 * Min. Cores (VCPU): 2 (master), 1 (worker)
@@ -126,7 +127,7 @@ If you don't set this parameter, the master node (and worker nodes) will have as
 
 ``ONEAPP_K8S_PORT`` provides a facility to change the default Kubernetes API port (``6443``).
 
-``ONEAPP_K8S_PODS_NETWORK`` defines a range of private addresses on which pods will be deployed. By default, it is ``10.244.0.0/16``. Kubernetes service appliance uses the CNI networking plugin `Canal (Calico+Flannel) <https://docs.projectcalico.org/v3.6/getting-started/kubernetes/installation/flannel>`_ which combines two projects:
+``ONEAPP_K8S_PODS_NETWORK`` defines a range of private addresses on which pods will be deployed. By default, it is ``10.244.0.0/16``. Kubernetes service appliance uses the CNI networking plugin `Canal (Calico+Flannel) <https://docs.projectcalico.org/v3.8/getting-started/kubernetes/installation/flannel>`_ which combines two projects:
 
 * `Calico <https://www.projectcalico.org/>`_
 * `Flannel <https://github.com/coreos/flannel>`_
@@ -322,7 +323,7 @@ Follow the service deployment status in **Instances → Services** tab.
 Check Kubernetes Cluster Status
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Log into the master node over SSH and check the cluster contains all the deployed nodes.
+Log into the **master node** over SSH and check the cluster contains all the deployed nodes.
 
 For example:
 
@@ -387,7 +388,7 @@ Run the proxy command (command remains running on foreground, hit ``CTRL+C`` to 
 
 On the same host, open the web browser and reach the Kubernetes Dashboard URL:
 
-   `http://localhost:8001/api/v1/namespaces/kube-system/services/https:kubernetes-dashboard:/proxy/ <http://localhost:8001/api/v1/namespaces/kube-system/services/https:kubernetes-dashboard:/proxy/>`_
+   `http://localhost:8001/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/ <http://localhost:8001/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/>`_
 
 You'll get on the Kubernetes Dashboard login screen.
 
