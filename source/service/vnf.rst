@@ -122,6 +122,19 @@ Advanced parameter                    Mandatory Default        Stage     Descrip
 ``ONEAPP_VNF_DHCP4_LEASE_DATABASE``             Empty          configure ISC Kea JSON database definition in base64: ``<base64>``
 ===================================== ========= ============== ========= ===========
 
+.. important::
+
+   VNF appliance also supports `network aliases <https://docs.opennebula.io/stable/operation/vm_management/vm_templates.html#network-interfaces-alias>`_ - although VRouter currently does not. So the following contextualization parameters are working only inside the VM VNF not VRouter (and obviously only when the relevant aliases are actually present).
+
+=============================================== ========= ============== ========= ===========
+Network alias parameter                         Mandatory Default        Stage     Description
+=============================================== ========= ============== ========= ===========
+``ONEAPP_VNF_DHCP4_<ETH?>_<ALIAS?>``                      Empty          configure Explicit subnet and pool definition: ``<CIDR>:<start>-<end>``
+``ONEAPP_VNF_DHCP4_<ETH?>_<ALIAS?>_DNS``                  Empty          configure Nameservers option for <ETH?>_<ALIAS?> subnet definition: ``<ip> ...``
+``ONEAPP_VNF_DHCP4_<ETH?>_<ALIAS?>_GATEWAY``              Empty          configure Routers option for <ETH?>_<ALIAS?> subnet definition: ``<ip> ...``
+``ONEAPP_VNF_DHCP4_<ETH?>_<ALIAS?>_MTU``                  Empty          configure MTU option for <ETH?>_<ALIAS?> subnet definition: ``<number>``
+=============================================== ========= ============== ========= ===========
+
 .. _vnf_dns_context_param:
 
 DNS
@@ -314,15 +327,13 @@ If a parameter supports multiple of values then they are separated by spaces, co
 
    ONEAPP_VNF_DHCP4_INTERFACES="eth1 eth2 eth3"
 
-If you wish to have a full control over this VNF then you can provide the complete configuration via ``ONEAPP_VNF_DHCP4_CONFIG``. It must be a valid ISC Kea config file (JSON) encoded in base64. How to create one you can take a look in the `documentation <https://kea.readthedocs.io/en/latest/arm/dhcp4-srv.html>`_.
+If you wish to have a full control over this VNF then you can provide the complete configuration via ``ONEAPP_VNF_DHCP4_CONFIG``. It must be a valid ISC Kea config file (JSON) encoded in base64. How to create one you can take a look in the `ISC Kea documentation <https://kea.readthedocs.io/en/latest/arm/dhcp4-srv.html>`_.
 
 The most important context variable is the ``ONEAPP_VNF_DHCP4_INTERFACES``. Firstly it will determine on which interface it will listen for DHCP requests and secondly it will determine for which subnets it will provide leases - it will auto-generate subnet lease configuration (if no ``ONEAPP_VNF_DHCP4_SUBNET*`` is provided).
 
-..
-   TODO: fix kea-config-generator - fails when one interface is used more than once
+.. note::
 
-..
-   The value can be either just an interface name (like ``eth0``) or with appended IP address (e.g.: ``eth0/192.168.1.1``) to pinpoint the listening address and subnet leases - if more than one address is used on the interface and each is in a different subnet (you can use one interface more than once if IPs will differ: ``eth0/192.168.1.1`` ``eth0/10.0.0.1``).
+   The value can be either just an interface name (like ``eth0``) or with appended IP address (e.g.: ``eth0/192.168.1.1``) to pinpoint the listening address and subnet creation - if more than one address is assigned to the interface.
 
 For more tailored subnet configuration you can use ``ONEAPP_VNF_DHCP4_SUBNET`` context variables (you can use more than one by adding numbering: ``ONEAPP_VNF_DHCP4_SUBNET0``). The value here must be a valid JSON configuration for ISC Kea `subnet4 section <https://kea.readthedocs.io/en/latest/arm/dhcp4-srv.html#configuration-of-ipv4-address-pools>`_ and the result must be base64 encoded.
 
@@ -335,13 +346,77 @@ For example: if we defined ``eth0`` as a one of the listening interfaces then th
     ONEAPP_VNF_DHCP4_ETH0_GATEWAY=<ip> ...
     ONEAPP_VNF_DHCP4_ETH0_MTU=<number>
 
+The same dynamic parameters can be used per network alias::
+
+    ONEAPP_VNF_DHCP4_ETH0_ALIAS0=<cidr subnet>:<start ip>-<end ip>
+    ONEAPP_VNF_DHCP4_ETH0_ALIAS0_DNS=<ip> ...
+    ONEAPP_VNF_DHCP4_ETH0_ALIAS0_GATEWAY=<ip> ...
+    ONEAPP_VNF_DHCP4_ETH0_ALIAS0_MTU=<number>
+
+These NIC alias parameters are applicated only if the alias subnet is unique - that means no interface defines the same subnet - otherwise these variables are ignored. In another words - context variables derived from a subnet based on a primary address of an interface have always precedence to the variables derived from an alias for the same subnet.
+
+For example: let's have an interface **eth0** with ``ETH0_IP=192.168.0.1`` and ``ETH0_MASK=255.255.0.0`` and alias ``ETH0_ALIAS0_IP=192.168.1.100`` with the same netmask ``ETH0_ALIAS0_MASK=255.255.0.0``. On top of it we define::
+
+   ONEAPP_VNF_DHCP4_ETH0_DNS=8.8.8.8
+   ONEAPP_VNF_DHCP4_ETH0_ALIAS0_DNS=4.4.4.4
+   ONEAPP_VNF_DHCP4_ETH0_ALIAS0=192.168.0.0/16:192.168.100.100-192.168.200.250
+
+In this case both the ``ETH0`` and ``ALIAS0`` have the same subnet but two different overrides for nameserver option data and subnet pool (default vs explicitly defined one). And so when VNF tries to create a DHCP4 configuration it encounters a conflict between the subnet pools and the option data (``DNS``, ``GATEWAY`` and ``MTU``) of the two. That is why the interface variables (``ONEAPP_VNF_DHCP4_ETH0``) will **always** take precedence in such scenarios (all ``ONEAPP_VNF_DHCP4_ETH0_ALIAS0`` will be ignored).
+
+The result then will be::
+
+   ...
+   "subnet4": [
+   {
+     "subnet": "192.168.0.0/16",
+     "pools": [
+       {
+         "pool": "192.168.0.2-192.168.255.254"
+       }
+     ],
+     "option-data": [
+       {
+         "name": "domain-name-servers",
+         "data": "8.8.8.8"
+       },
+       {
+         "name": "routers",
+         "data": "192.168.0.1"
+       }
+     ],
+     "reservations": [
+       {
+         "flex-id": "'DO-NOT-LEASE-192.168.101.1'",
+         "ip-address": "192.168.0.1"
+       },
+       {
+         "flex-id": "'DO-NOT-LEASE-192.168.101.100'",
+         "ip-address": "192.168.1.100"
+       }
+     ],
+     "reservation-mode": "all"
+   },
+   ...
+
 .. note::
 
+   Similarly if we have multiple interfaces in the same subnet (for whatever reason) then the variables associated with the firstly enumerated will take precedence for subnet generation (``ETH0`` over ``ETH1``).
+
+.. important::
+
    Subnets defined by ``ONEAPP_VNF_DHCP4_SUBNET*`` params take precedence over ``ONEAPP_VNF_DHCP4_<IFACE>*`` params - so if you define even one ``ONEAPP_VNF_DHCP4_SUBNET`` then only these subnets will be configured.
+
+   We emphasize: **subnet definition must be unique in DHCP4 configuration** - we cannot have two stanzas for the same subnet!
+
+   **Although** it is valid to have overlapping subnet definitions! So it is possible to have ``192.168.0.0/16`` **AND** ``192.168.101.0/24`` next to it.
+
+   If you have overlapping subnets on the same interface or other non-trivial setup then consult the `ISC Kea documentation <https://kea.readthedocs.io/en/latest/arm/dhcp4-srv.html>`_ for the better understanding how DHCP lease will function in you case.
 
 .. important::
 
    This appliance allows reconfiguration - so some previously defined variables will be still respected! This can pose a problem if for example a ``ONEAPP_VNF_DHCP4_SUBNET0`` was defined already but now you wish to use dynamic per interface variables instead (``ONEAPP_VNF_DHCP4_<IFACE>*``). In that case you must also provide an override for the old ``ONEAPP_VNF_DHCP4_SUBNET0`` variable...simply set it empty: ``ONEAPP_VNF_DHCP4_SUBNET0=""``
+
+   Best practice would be to not delete once used context variable but reset it with empty string. You can then safely delete it after a next full recontextualization (or reboot).
 
 The DHCP4 VNF also provides other contextualization parameters among which is prominent the **ONElease** hook (via ``ONEAPP_VNF_DHCP4_MAC2IP_ENABLED``). It serves a simple purpose of leasing IP addresses which match HW/MAC addresses of OpenNebula's VMs. This behavior is by default enabled - if you wish to disable it then just simply set ``ONEAPP_VNF_DHCP4_MAC2IP_ENABLED`` to ``false``.
 
@@ -434,6 +509,10 @@ Keepalived VNF can be still configured quite flexibly especially if you wish to 
 .. note::
 
    If you will use this appliance as VRouter then most of the context variables are prefilled for you - you will only need to check few boxes and fill out the IP address which will serve as a floating IP.
+
+.. important::
+
+   Please bear in mind that a multitude of rapid recontextualizations could break your Keepalived cluster. You should always verify that the appliance is in the desired state after each change to either the context or NICs and regardless if VNF is running as VM or VRouter.
 
 .. _vnf_tutorials:
 
