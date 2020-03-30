@@ -12,4 +12,4 @@ Service Appliances
    GitLab <gitlab>
    Kubernetes <kubernetes>
    WordPress <wordpress>
-   VNF (VRouter) <vnf>
+   Virtual Network Functions (VNF) <vnf>

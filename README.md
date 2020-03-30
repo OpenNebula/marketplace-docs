@@ -1,3 +1,3 @@
-# OpenNebula Marketplace Documentation
+# OpenNebula Appliances Documentation
 
-Repository for [OpenNebula Marketplace Documentation](https://marketplace.opennebula.systems/docs/).
+Repository for [OpenNebula Appliances Documentation](https://docs.opennebula.io/appliances/).
