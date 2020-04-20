@@ -21,9 +21,9 @@ Appliance components versions:
 ============================= ==================
 Component                     Version
 ============================= ==================
-Kubernetes                    1.15
-Docker                        18.09 CE
-Calico                        3.8
+Kubernetes                    1.18
+Docker                        19.03 CE
+Calico                        3.13
 Contextualization package     5.10.0
 ============================= ==================
 
