@@ -10,6 +10,18 @@ Without any parameters provided, the appliance boots into the web setup wizard a
 
 .. include:: shared/features.txt
 
+Platform Notes
+==============
+
+Appliance components versions:
+
+============================= ==================
+Component                     Version
+============================= ==================
+GitLab                        12.9.3 CE
+Contextualization package     5.10.0
+============================= ==================
+
 Quick Start
 ===========
 
