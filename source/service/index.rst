@@ -11,5 +11,6 @@ Service Appliances
    AWS IoT Greengrass <aws-greengrass>
    GitLab <gitlab>
    Kubernetes <kubernetes>
+   Docker <docker>
    WordPress <wordpress>
    Virtual Network Functions (VNF) <vnf>
