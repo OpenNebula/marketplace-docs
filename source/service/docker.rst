@@ -4,15 +4,28 @@
 Service Docker
 ==============
 
-OpenNebula `Marketplace Appliance <https://marketplace.opennebula.io/appliance/a8330cf6-111a-11ea-9183-f0def1753696>`_  with preinstalled `Docker <https://docker.com/>`_ service.
+OpenNebula `Marketplace Appliance <https://marketplace.opennebula.io/appliance/a8330cf6-111a-11ea-9183-f0def1753696>`_  with preinstalled `Docker <https://docker.com>`_ service.
 
-The Docker Appliance available on the OpenNebula marketplace brings a Docker Engine pre-installed and the contextualization packages configured to create Docker Hosts in a single click. Alternatively you can prepare your own image, using your favourite distribution, as long as it’s supported by Docker Machine and it has the latest OpenNebula Contextualization packages.
+This Docker Appliance brings the Docker Engine pre-installed and the contextualization packages configured to create Docker Hosts in a single click. Alternatively you can prepare your own image, using your favourite distribution, as long as it’s supported by Docker Machine and it has the latest OpenNebula Contextualization packages.
 
-The Docker Appliance is based on Ubuntu and have installed Docker, you can found more information about ths specific versions at the `platform notes <http://docs.opennebula.io/stable/intro_release_notes/release_notes/platform_notes.html>`_. In order to access the appliance once it's have been deployed it's necessary to update the template with the network and the password for the root user or the SSH key.
+* Based on the Ubuntu 16.04 x86-64 Linux distribution.
+* No default login (local or SSH) password - must be provided via `contextualization <http://docs.opennebula.org/stable/operation/vm_setup/kvm.html#user-credentials>`_.
+
+Platform Notes
+==============
+
+Appliance components versions:
+
+============================= ==================
+Component                     Version
+============================= ==================
+Docker                        19.03 CE
+Contextualization package     5.10.0-1
+============================= ==================
 
 .. important::
 
-   This appliance predates and differs from the other service appliances - there is no three-stage contextualization support. The only supported contextualization is the same as for any other VM.
+   This appliance differs from the other service appliances - there is no three-stage contextualization support but only the standard VM contextualization.
 
 Quick Start
 ===========
@@ -190,6 +203,6 @@ If you want to save changes like the ones performed in Step 3 and Step 4, the di
 .. |image-persistent| image:: /images/docker/ubuntu-docker-image-persistent.png
 .. |disk-saveas| image:: /images/docker/disksaveas-docker.png
 .. |vm-running| image:: /images/docker/docker-appliance-running.png
-.. |image-download| image:: /images/docker/ubuntu1604-docker-kvm-marketplace.png
+.. |image-download| image:: /images/docker/docker-download.png
 .. |image-ssh-context| image:: /images/appliance-ssh-context.png
 .. |image-custom-vars-password| image:: /images/appliance-custom-vars-password.png
