@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# OpenNebula Marketplace documentation build configuration file, created by
+# OpenNebula Appliances documentation build configuration file, created by
 # sphinx-quickstart on Wed Jan  9 15:41:58 2019.
 #
 # This file is execfile()d with the current directory set to its
@@ -48,8 +48,8 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'OpenNebula Marketplace'
-copyright = u'2019, OpenNebula Systems'
+project = u'OpenNebula Appliances'
+copyright = u'2020, OpenNebula Systems'
 author = u'OpenNebula Systems'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -105,7 +105,7 @@ html_show_sphinx = False
 html_theme_options = {'display_version': False}
 
 html_context = {
-    'project': 'Marketplace Apps',
+    'project': 'Appliances',
     'display_github': True,
     'github_user': 'OpenNebula',
     'github_repo': 'marketplace-docs',
@@ -135,7 +135,7 @@ html_sidebars = {
 # -- Options for HTMLHelp output ------------------------------------------
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'OpenNebulaMarketplacedoc'
+htmlhelp_basename = 'OpenNebulaAppliancesdoc'
 
 
 # -- Options for LaTeX output ---------------------------------------------
@@ -162,7 +162,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'OpenNebulaMarketplace.tex', u'OpenNebula Marketplace Documentation',
+    (master_doc, 'OpenNebulaAppliances.tex', u'OpenNebula Appliances Documentation',
      u'OpenNebula Systems', 'manual'),
 ]
 
@@ -172,7 +172,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'opennebulamarketplace', u'OpenNebula Marketplace Documentation',
+    (master_doc, 'opennebulaappliances', u'OpenNebula Appliances Documentation',
      [author], 1)
 ]
 
@@ -183,8 +183,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'OpenNebulaMarketplace', u'OpenNebula Marketplace Documentation',
-     author, 'OpenNebulaMarketplace', 'One line description of project.',
+    (master_doc, 'OpenNebulaAppliances', u'OpenNebula Appliances Documentation',
+     author, 'OpenNebulaAppliances', 'One line description of project.',
      'Miscellaneous'),
 ]
 
