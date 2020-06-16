@@ -44,17 +44,17 @@ Appliance components versions:
 Component                     Version
 ============================= ==================
 AWS Greengrass Core           1.9.1
-AWS CLI                       1.16.193
+AWS CLI                       1.18.75
 AWS Lambda Runtimes           Python 2.7
-Python 2 - greengrasssdk      1.4.0
-Python 2 - AWSIoTPythonSDK    1.4.7
-Python 2 - boto3              1.9.183
-Contextualization package     5.10.0
+Python 2 - greengrasssdk      1.5.0
+Python 2 - AWSIoTPythonSDK    1.4.8
+Python 2 - boto3              1.13.25
+Contextualization package     5.12.0
 ============================= ==================
 
 Requirements:
 
-* OpenNebula 4.14 - 5.10
+* OpenNebula 4.14 - 5.12
 * `OneGate <http://docs.opennebula.org/stable/advanced_components/application_insight/index.html>`_ for optional reporting back from the VM
 * Min. Memory: 2 GB
 * Min. Cores (VCPU): 1
