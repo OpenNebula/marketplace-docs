@@ -43,12 +43,12 @@ Appliance components versions:
 ============================= ==================
 Component                     Version
 ============================= ==================
-AWS Greengrass Core           1.9.1
-AWS CLI                       1.18.75
+AWS Greengrass Core           1.10.2
+AWS CLI                       1.18.84
 AWS Lambda Runtimes           Python 2.7
 Python 2 - greengrasssdk      1.5.0
 Python 2 - AWSIoTPythonSDK    1.4.8
-Python 2 - boto3              1.13.25
+Python 2 - boto3              1.14.7
 Contextualization package     5.12.0
 ============================= ==================
 
