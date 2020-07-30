@@ -13,4 +13,4 @@ Service Appliances
    Kubernetes <kubernetes>
    Docker <docker>
    WordPress <wordpress>
-   Virtual Network Functions (VNF) <vnf>
+   VNF and Virtual Router <vnf>

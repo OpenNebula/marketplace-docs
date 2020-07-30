@@ -2,5 +2,5 @@ Features
 ========
 
 * Deployed in 3 stages (:ref:`install <one_service_stage_install>`, :ref:`configure <one_service_stage_configure>`, :ref:`bootstrap <one_service_stage_bootstrap>`). More general :ref:`information <one_service_appliance>`.
-* Based on the `Alpine x86-64 Linux distribution <https://alpinelinux.org>`_.
+* Based on the `Alpine Linux <https://alpinelinux.org>`_ distribution (for x86-64).
 * No default login (local or SSH) password - must be provided via `contextualization <http://docs.opennebula.org/stable/operation/vm_setup/kvm.html#user-credentials>`_.
