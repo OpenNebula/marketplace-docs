@@ -6,7 +6,6 @@ Virtual Network Functions (VNF) and Virtual Router
 
 OpenNebula `Marketplace Appliance <http://marketplace.opennebula.systems/appliance/>`_ implementing various **Virtual Network Functions** (VNFs) and `Virtual Router <http://docs.opennebula.org/stable/operation/network_management/vrouter.html>`_.
 
-
 .. note::
 
     This appliance replaces the Virtual Routers available on the Marketplace in the past as **Vrouter Alpine** for KVM and vCenter platforms. These old versions are referrenced as **legacy** from now on. Templates and contextualization parameters are compatible with new appliance, you only need to update reference in the old imported template to the new image. It's highly recommended to migrate to the new appliance.
@@ -726,7 +725,7 @@ Step 6 - Test Clients
 
 We are done with configuring VNF and we'll run few client VMs, for which the VNF will provide services (DNS, DHCP, routing with NAT).
 
-You can export any image with your favourite operating system from `OpenNebula Marketplace <http://docs.opennebula.io/stable/advanced_components/marketplace/market_one.html>`_ for following tests, but the examples below are running on the `Alpine Linux image <http://marketplace.opennebula.org/appliance/193631c3-7082-4528-bfdb-31b2ecb3d9f5>`_. Instantiate 2 VMs with no special configuration, only attach one NIC to each client VM from different network
+You can export any image with your favourite operating system from `OpenNebula Marketplace <http://docs.opennebula.io/stable/advanced_components/marketplace/market_one.html>`_ for following tests, but the examples below are running on the `Alpine Linux image <http://marketplace.opennebula.org/appliance/193631c3-7082-4528-bfdb-31b2ecb3d9f5>`__. Instantiate 2 VMs with no special configuration, only attach one NIC to each client VM from different network
 
 1. VM - NIC from ``vnet_a``
 2. VM - NIC from ``vnet_b``
@@ -904,7 +903,7 @@ This instance is running in a standby (backup) mode waiting for the time when ma
 Step 4 - Test Clients
 ~~~~~~~~~~~~~~~~~~~~~
 
-We are done with Virtual Router configuration and as a final step, we are going to instantiate two client VMs. For example, you can take `Alpine Linux <http://marketplace.opennebula.org/appliance/193631c3-7082-4528-bfdb-31b2ecb3d9f5>`_ appliances from OpenNebula Marketplace. We don't need any special configuration, only attach one NIC to each client VM from different network
+We are done with Virtual Router configuration and as a final step, we are going to instantiate two client VMs. For example, you can take `Alpine Linux image <http://marketplace.opennebula.org/appliance/193631c3-7082-4528-bfdb-31b2ecb3d9f5>`__ from OpenNebula Marketplace. We don't need any special configuration, only attach one NIC to each client VM from different network
 
 1. VM - NIC from ``vnet_a``
 2. VM - NIC from ``vnet_b``
