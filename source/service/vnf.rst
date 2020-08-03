@@ -1,8 +1,8 @@
 .. _service_vnf:
 
-==========================================================
-Service Virtual Network Functions (VNF) and Virtual Router
-==========================================================
+==================================================
+Virtual Network Functions (VNF) and Virtual Router
+==================================================
 
 OpenNebula `Marketplace Appliance <http://marketplace.opennebula.systems/appliance/>`_ implementing various **Virtual Network Functions** (VNFs) and `Virtual Router <http://docs.opennebula.org/stable/operation/network_management/vrouter.html>`_.
 
@@ -20,10 +20,10 @@ OpenNebula `Marketplace Appliance <http://marketplace.opennebula.systems/applian
 * High-availability provided by `Keepalived <https://www.keepalived.org/>`_.
 * **Network Functions**
 
-  * DHCPv4
-  * DNS recursor
-  * NATv4
-  * Virtual Router
+  * :ref:`DHCPv4 <vnf_dhcp4_context_param>`
+  * :ref:`DNS recursor <vnf_dns_context_param>`
+  * :ref:`IPv4 Network Address Translation <vnf_nat4_context_param>`
+  * Virtual Router (:ref:`VR <vnf_vrouter_context_param>`, :ref:`VM <vnf_router4_context_param>`)
 
 Platform Notes
 ==============
@@ -34,6 +34,7 @@ Appliance components versions:
 Component                     Version
 ============================= ==================
 ISC Kea                       1.6.1
+ISC Kea MAC-to-IP hook        1.1.0
 Contextualization package     5.12.0
 ============================= ==================
 
@@ -233,7 +234,7 @@ For more information continue to VNF :ref:`Router4 <vnf_router4>` documentation.
 OpenNebula Virtual Router
 -------------------------
 
-Function implements another routing mechanism among connected network interfaces, but integrated with OpenNebula Virtual Router feature. In addition to all contextualization parameters above, the VNF appliance recognizes also the following variables passed by the OpenNebula when running over Virtual Router (VR) interface.
+Function implements another routing mechanism among connected networks, but integrated with `OpenNebula Virtual Router <http://docs.opennebula.io/stable/operation/network_management/vrouter.html>`_ interface. In addition to all contextualization parameters above, the VNF appliance recognizes also the following variables passed by the OpenNebula when running over Virtual Router (VR) interface.
 
 .. _vnf_legacy_vrouter_context_param:
 
@@ -360,13 +361,13 @@ Example: To disable :ref:`DHCP4 VNF <vnf_dhcp4_context_param>` on 3rd (i.e., ``e
 
 .. _vnf_list:
 
-List of VNFs
-============
+Network Functions
+=================
 
 .. _vnf_dhcp4:
 
-DHCP4 - DHCPv4 Service
-----------------------
+DHCP4
+-----
 
 See: :ref:`Contextualization Parameters <vnf_dhcp4_context_param>`
 
@@ -478,8 +479,8 @@ If DHCP VNF is provided to both OpenNebula (via MAC to IP) and custom addressed 
 
 .. _vnf_nat4:
 
-NAT4 - IPv4 Network Address Translation
----------------------------------------
+NAT4
+----
 
 See: :ref:`Contextualization Parameters <vnf_nat4_context_param>`
 
@@ -487,8 +488,8 @@ The VNF provides **IPv4 Network Address Translation** (Masquerade) to connected 
 
 .. _vnf_router4:
 
-IPv4 Router (ROUTER4)
----------------------
+ROUTER4
+-------
 
 See: :ref:`Contextualization Parameters <vnf_router4_context_param>`
 
@@ -500,8 +501,8 @@ The VNF provides *routing* functionality among different networks and allows the
 
 .. _vnf_dns:
 
-DNS Recursor (DNS)
-------------------
+DNS
+---
 
 See: :ref:`Contextualization Parameters <vnf_dns_context_param>`
 
@@ -540,29 +541,31 @@ To have full control over DNS VNF, you can provide the complete Unbound configur
 Tutorials
 =========
 
-In this section we will demonstrate how this appliance can be used - but there is a need for a few prerequisities. VNF appliance is useful only when there are networks involved so we will create a couple of virtual networks in OpenNebula - if you do not know how to create them then peek into `the vnet documentation <https://docs.opennebula.org/stable/operation/network_management/manage_vnets.html>`_.
+In this section we will demonstrate how this appliance can be used - but there is a need for a few prerequisities. VNF appliance is useful only when there are networks involved so we will create a couple of virtual networks in OpenNebula - if you do not know how to create them then peek into the `Virtual Network Management <https://docs.opennebula.org/stable/operation/network_management/manage_vnets.html>`_ documentation in OpenNebula.
 
-============ ================ ================================= =============== ===============
-Network name Subnet           Range                             Gateway         DNS
-============ ================ ================================= =============== ===============
-public       192.168.150.0/24 192.168.150.100 - 192.168.150.199 192.168.150.1
-vnet_a       192.168.101.0/24 192.168.101.100 - 192.168.101.199 192.168.101.111 192.168.101.111
-vnet_b       192.168.102.0/24 192.168.102.100 - 192.168.102.199 192.168.102.111 192.168.102.111
-vnet_mgt     192.168.103.0/24 192.168.103.100 - 192.168.103.199 192.168.103.111 192.168.103.111
-============ ================ ================================= =============== ===============
+================ ==================== ========================================= =================== ===============
+Network Name     Subnet               Range                                     Gateway             DNS
+================ ==================== ========================================= =================== ===============
+``public``       ``192.168.150.0/24`` ``192.168.150.100`` - ``192.168.150.199`` ``192.168.150.1``
+``vnet_a``       ``192.168.101.0/24`` ``192.168.101.100`` - ``192.168.101.199`` ``192.168.101.111`` ``192.168.101.111``
+``vnet_b``       ``192.168.102.0/24`` ``192.168.102.100`` - ``192.168.102.199`` ``192.168.102.111`` ``192.168.102.111``
+``vnet_mgt``     ``192.168.103.0/24`` ``192.168.103.100`` - ``192.168.103.199`` ``192.168.103.111`` ``192.168.103.111``
+================ ==================== ========================================= =================== ===============
 
 .. important::
 
-   Before you start with the tutorials, please, ensure that you followed the steps as was described in the :ref:`Quick Start <service_vnf_quick_start>`. Mainly that you downloaded the VNF image and prepared the template by setting up the password or ssh key or both.
+   Before you can start with the tutorials, ensure that you followed the steps as was described in the :ref:`Quick Start <service_vnf_quick_start>` section and that you have appliance(s) imported in your OpenNebula and templates updated with password and/or SSH key.
+
+This tutorial starts an instance of VNF appliance with following functions - router with NAT, DHCP server and DNS. It will have access to the Internet via ``public`` (external) network (where NAT will happen) and it will be attached to other two different local subnets (where it will provide DHCP and DNS services). It will forward packets between these networks and it will provide access to the Internet.
+
+We'll describe how to instantiate VNF as regular :ref:`Virtual Machine <vnf_tutorial_vnf>` and as :ref:`Virtual Router <vnf_tutorial_vrouter>`.
 
 .. _vnf_tutorial_vnf:
 
-VNF appliance as VM
--------------------
+VNF as Virtual Machine
+----------------------
 
-This demo creates a VNF VM which will serve as a router with a NAT and as a DHCP server and DNS. It will have access to the internet via public/external network where NAT will happen and it will be attached to other two different local subnets where it will provide DHCP and DNS service. Plus it will forward packets between these networks and it will provide access to the internet.
-
-We start with instantiation of the VNF appliance - no network is attached yet. The provided contextualization can be seen in this picture:
+At the beginning, let's instantiate Virtual Machine from the ``Service VNF`` template without attaching any no networks yet. The provided contextualization can be seen in this picture:
 
 |image-vnf-demo-vm1|
 
@@ -570,364 +573,388 @@ We start with instantiation of the VNF appliance - no network is attached yet. T
 
 .. note::
 
-   **Explanation**: We don't want to provide DHCP and DNS recursor service to the internet so we define interfaces for these VNF with a value of: "``!eth0``". For the NAT we must be explicit and we want to translate all outgoing traffic on the public/internet interface so that is why we set NAT interfaces to: "``eth0``". For the router service we want to forward packets between all the interfaces - so the clients in both the local networks can talk to each other and to the internet. For that we can leave it empty because that is the default when the VNF is enabled.
+   In this tutorial, we don't want to provide DHCP and DNS recursor functions to the Internet - so we specify interfaces for these VNFs with public interface excluded - ``"!eth0"``. For the NAT, we must be explicit and specify outgoing public interface over which address translation happens - ``"eth0"``.  For the routing, we want to forward packets between all the interfaces - so the clients in both the local networks can talk to each other and to the internet. For that we can leave it empty, because that is the default when the VNF is enabled.
 
-   The rest of the context is unchanged - it is left with defaults.
+   The rest of the contextualization parameters are unchanged, they are left with defaults.
 
-Click the **Instantiate** button and wait a minute. You should also be able to login inside and look around. There is only loopback interface so all enabled VNFs are just idle.
+Click the **Instantiate** button and wait until VM is properly started. You should also be able to login inside and look around. There is only loopback interface so all enabled VNFs are just idle.
 
-Let us attach three virtual networks and see what happens:
+Now let's attach three virtual networks and see what happens:
 
-* ``public``
-* ``vnet_a``
-* ``vnet_b``
+1. ``public`` (to be on ``eth0``)
+2. ``vnet_a`` (to be on ``eth1``)
+3. ``vnet_b`` (to be on ``eth2``)
 
-First we will attach ``public`` vnet - that will be our ``eth0``. It is an internet facing NIC through which we can reach public services like root DNS servers.
+Step 1 - Attach First NIC
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+First we will attach ``public`` virtual network (which will our first NIC, referenced by platform independent name ``eth0``). It is the Internet facing NIC through which we can reach public services like root DNS servers.
 
 Click on the instantiated VM and then **Network → Attach nic → public → Attach**.
 
-If you are logged in the VM you can tail the appliance log::
+If you are logged in the VM you can tail the appliance log
 
-       ___   _ __    ___
-      / _ \ | '_ \  / _ \   OpenNebula Service Appliance
-     | (_) || | | ||  __/
-      \___/ |_| |_| \___|
+.. code::
 
-    All set and ready to serve 8)
+        ___   _ __    ___
+       / _ \ | '_ \  / _ \   OpenNebula Service Appliance
+      | (_) || | | ||  __/
+       \___/ |_| |_| \___|
 
-   localhost:~# tail -f /var/log/one-appliance/ONE_configure.log
+     All set and ready to serve 8)
 
-You should see some activity there and the final lines should resemble::
+    localhost:~# tail -f /var/log/one-appliance/ONE_configure.log
 
-   ...
-   [Tue Mar 17 05:13:15 UTC 2020] => INFO: Save context/config variables as a report in: /etc/one-appliance/config
-   [Tue Mar 17 05:13:15 UTC 2020] => INFO: --- CONFIGURATION FINISHED ---
+You should see some activity there and the final lines should resemble
 
-Now we will attach ``vnet_a`` and ``vnet_b`` in exactly the same manner - you must just wait until the configuration is **twice** more finished...
+.. code::
 
-Our VM has altogether these IP addresses:
+    ...
+    [Tue Mar 17 05:13:15 UTC 2020] => INFO: Save context/config variables as a report in: /etc/one-appliance/config
+    [Tue Mar 17 05:13:15 UTC 2020] => INFO: --- CONFIGURATION FINISHED ---
+
+Step 2 -Attach Second and Third NICs
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Now we will attach ``vnet_a`` and ``vnet_b`` in the same manner. After each attach, you have to wait after the reconfiguration is finished (e.g., by following the log file above ``/var/log/one-appliance/ONE_configure.log``).
+
+Our VM has altogether 3 addresses IP addresses, for example:
 
 * ``192.168.150.102/24``
 * ``192.168.101.100/24``
 * ``192.168.102.100/24``
 
-You can verify that all have been configured by checking the report config file: ``/etc/one-appliance/config``
+.. note::
 
-There you should see all three interfaces::
+    Please, bear in mind that we are demoing specific environment and addresses might differ to yours. Adjust the examples accordingly.
 
-   ...
-   ONEAPP_VROUTER_ETH0_IP = '192.168.150.102'
-   ...
-   ONEAPP_VROUTER_ETH1_IP = '192.168.101.100'
-   ...
-   ONEAPP_VROUTER_ETH2_IP = '192.168.102.100'
-   ...
+Step 3 - Validation
+~~~~~~~~~~~~~~~~~~~
 
-For better understanding of the current state of the appliance you can checkout these config files:
+You can verify that all has been configured by checking the appliance configuration file with report in ``/etc/one-appliance/config``. You should find there all three interfaces and their IPs, for example:
 
-* **DHCP4**: ``/etc/kea/kea-dhcp4.conf``
-* **DNS**: ``/etc/unbound/unbound.conf``
-* **ROUTER4**: ``/etc/sysctl.d/01-one-router4.conf``
-* **NAT**: ``/etc/iptables/nat4-rules-enabled``
+.. code::
 
-We are still not done yet. DHCP4 and DNS are configured and running but DHCP does not provide the right options in the reply (it sends IP addresses preloaded from vnet options instead of its own).
-
-We must update the context to fix this problem: click again on the VM in OpenNebula's Sunstone and **Conf → Update Configuration → Context → Custom vars**
-
-And at the bottom is a "**plus**" button - click on it and create a couple of new context variables:
-
-=================================== ===============
-Variable name                       Value
-=================================== ===============
-ONEAPP_VNF_DHCP4_ETH1_DNS           192.168.101.100
-ONEAPP_VNF_DHCP4_ETH1_GATEWAY       192.168.101.100
-ONEAPP_VNF_DHCP4_ETH2_DNS           192.168.102.100
-ONEAPP_VNF_DHCP4_ETH2_GATEWAY       192.168.102.100
-=================================== ===============
-
-And apply these by clicking on **Update** button at the top.
-
-You can see that we configured IP address ``192.168.101.100`` and ``192.168.102.100`` as router and nameserver option to our DHCP clients (you can verify that in ``/etc/kea/kea-dhcp4.conf``).
+    ...
+    ONEAPP_VROUTER_ETH0_IP = '192.168.150.102'
+    ...
+    ONEAPP_VROUTER_ETH1_IP = '192.168.101.100'
+    ...
+    ONEAPP_VROUTER_ETH2_IP = '192.168.102.100'
+    ...
 
 .. note::
 
-   Please, bear in mind that we are demoing a concrete environment - if yours differs from ours the adjust this demo accordingly...
+    Advanced users can inspect the real configuration files of the VNF services to understand how they are configured to work, e.g.:
 
-Now we should be fine - but maybe our OpenNebula is deployed in a restricted environment and strangely DNS resolving does not work...::
+    * VNF **DHCP4**: ``/etc/kea/kea-dhcp4.conf``
+    * VNF **DNS**: ``/etc/unbound/unbound.conf``
+    * VNF **ROUTER4**: ``/etc/sysctl.d/01-one-router4.conf``
+    * VNF **NAT**: ``/etc/iptables/nat4-rules-enabled``
 
-   localhost:~# ping opennebula.org
-   ping: bad address 'opennebula.org'
-   localhost:~#
+Step 4 - Reconfigure DHCP
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Maybe the local admin forbid DNS queries to DNS root servers - in that case let us reconfigure our DNS VNF to use forward zone.
+We are still not done yet. DHCP4 and DNS functions are configured and running, but DHCP does not provide the right options to the clients - it offers parameters based on contextualization preloaded from Virtual Network instead of ones we want. We are going to configure the IP addresses or our VNF VM (``192.168.101.100`` and ``192.168.102.100``) as both gateways and name servers to our DHCP clients
+
+We must update the Virtual Machine context parameters to fix this problem. Open Virtual Machine details in the OpenNebula Sunstone and click on **Conf → Update Configuration → Context → Custom vars** and at the bottom, there is a "**plus**" button. Click on it and create following context variables with values:
+
+=================================== ===============
+Variable Name                       Value
+=================================== ===============
+``ONEAPP_VNF_DHCP4_ETH1_DNS``       ``192.168.101.100``
+``ONEAPP_VNF_DHCP4_ETH1_GATEWAY``   ``192.168.101.100``
+``ONEAPP_VNF_DHCP4_ETH2_DNS``       ``192.168.102.100``
+``ONEAPP_VNF_DHCP4_ETH2_GATEWAY``   ``192.168.102.100``
+=================================== ===============
+
+Apply changes by clicking on **Update** button at the top. After the recontextualization happens in your VNF VM, you can verify the changes in appliance configuration file (``/etc/one-appliance/config``) or in ISC Kea configuration (``/etc/kea/kea-dhcp4.conf``).
+
+
+Step 5 - Reconfigure DNS
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+Demo should be ready now, but maybe the OpenNebula is deployed in a restricted environment and direct DNS resolving through root servers doesn't work. For example, try on your VNF VM instance:
+
+.. code::
+
+    localhost:~# ping opennebula.org
+    ping: bad address 'opennebula.org'
+
+If resolving works for you, you can skip this step. If not, you might need to reconfigure your DNS function to forward to specific DNS servers.
+
+Update VNF VM context parameters one again. Go to the Virtual Machine details in the OpenNebula Sunstone, click on **Conf → Update Configuration → Context → Custom vars** and add following context variables:
+
+=================================== ===============
+Variable Name                       Value
+=================================== ===============
+``ONEAPP_VNF_DNS_USE_ROOTSERVERS``  ``NO``
+``ONEAPP_VNF_DNS_NAMESERVERS``      ``8.8.8.8, 8.8.4.4``
+=================================== ===============
+
+Apply changes by clicking on **Update** and wait until recontextualization is finished.
+
 
 .. note::
 
-   If your VNF appliance resolves fine then you can skip this step.
+    You can verify the change in the configuration of Unbound server in ``/etc/unbound/unbound.conf``, e.g.:
 
-Another context update (**Conf → Update Configuration → Context → Custom vars**):
+    .. code::
 
-=================================== ===============
-Variable name                       Value
-=================================== ===============
-ONEAPP_VNF_DNS_USE_ROOTSERVERS      NO
-ONEAPP_VNF_DNS_NAMESERVERS          8.8.8.8, 8.8.4.4
-=================================== ===============
+        localhost:~# tail -n 5 /etc/unbound/unbound.conf
+        forward-zone:
+            name: "."
+            forward-addr: 8.8.8.8
+            forward-addr: 8.8.4.4
 
-And **Update**.
+If provided parameters are correct and VM was reconfigured successfully, the resolving should work now:
 
-Wait few seconds for ``configuration finished`` and verify the config like this::
+.. code::
 
-   localhost:~# tail -n 5 /etc/unbound/unbound.conf
-   forward-zone:
-       name: "."
-       forward-addr: 8.8.8.8
-       forward-addr: 8.8.4.4
+    localhost:~# ping opennebula.org
+    PING opennebula.org (173.255.245.62): 56 data bytes
+    64 bytes from 173.255.245.62: seq=0 ttl=54 time=158.173 ms
+    64 bytes from 173.255.245.62: seq=1 ttl=54 time=158.410 ms
+    64 bytes from 173.255.245.62: seq=2 ttl=54 time=158.268 ms
+    ^C
+    --- opennebula.org ping statistics ---
+    3 packets transmitted, 3 packets received, 0% packet loss
+    round-trip min/avg/max = 158.173/158.283/158.410 ms
 
-   localhost:~#
+Step 6 - Test Clients
+~~~~~~~~~~~~~~~~~~~~~
 
-Does the ping works now?::
+We are done with configuring VNF and we'll run few client VMs, for which the VNF will provide services (DNS, DHCP, routing with NAT).
 
-   localhost:~# ping opennebula.org
-   PING opennebula.org (173.255.245.62): 56 data bytes
-   64 bytes from 173.255.245.62: seq=0 ttl=54 time=158.173 ms
-   64 bytes from 173.255.245.62: seq=1 ttl=54 time=158.410 ms
-   64 bytes from 173.255.245.62: seq=2 ttl=54 time=158.268 ms
-   ^C
-   --- opennebula.org ping statistics ---
-   3 packets transmitted, 3 packets received, 0% packet loss
-   round-trip min/avg/max = 158.173/158.283/158.410 ms
-   localhost:~#
+You can export any image with your favourite operating system from `OpenNebula Marketplace <http://docs.opennebula.io/stable/advanced_components/marketplace/market_one.html>`_ for following tests, but the examples below are running on the `Alpine Linux image <http://marketplace.opennebula.org/appliance/193631c3-7082-4528-bfdb-31b2ecb3d9f5>`_. Instantiate 2 VMs with no special configuration, only attach one NIC to each client VM from different network
 
-Great!
+1. VM - NIC from ``vnet_a``
+2. VM - NIC from ``vnet_b``
 
-We are done, but as a final test we instantiate two more VMs (e.g.: `Alpine appliance <http://marketplace.opennebula.org/appliance/193631c3-7082-4528-bfdb-31b2ecb3d9f5>`_)
+Login over the OpenNebula Sunstone VNC console into both VMs, run DHCP client and validate they received leases with expected parameters. For example, for VM 1 (with NIC in ``vnet_a``):
 
-We don't need anything fancy to configure there - just instantiate them along the instructions from the **Quick Start** (albeit with a different image!) and attach a network interface to both of them:
+.. code::
 
-* one will get: ``vnet_a``
-* the other: ``vnet_b``
+    localhost:~# udhcpc
+    udhcpc: started, v1.31.1
+    udhcpc: sending discover
+    udhcpc: sending select for 192.168.101.101
+    udhcpc: lease of 192.168.101.101 obtained, lease time 3600
 
-Login to the one connected to ``vnet_a``::
+    localhost:~# cat /etc/resolv.conf
+    nameserver 192.168.101.100
 
-   localhost:~# udhcpc
-   udhcpc: started, v1.31.1
-   udhcpc: sending discover
-   udhcpc: sending select for 192.168.101.101
-   udhcpc: lease of 192.168.101.101 obtained, lease time 3600
-   localhost:~# cat /etc/resolv.conf
-   nameserver 192.168.101.100
-   localhost:~# ip r
-   default via 192.168.101.100 dev eth0 metric 202
-   192.168.101.0/24 dev eth0 proto kernel scope link src 192.168.101.101
-   localhost:~#
+    localhost:~# ip r
+    default via 192.168.101.100 dev eth0 metric 202
+    192.168.101.0/24 dev eth0 proto kernel scope link src 192.168.101.101
 
-And similarly with the other on ``vnet_b``::
+For VM 2 (with NIC in ``vnet_b``):
 
-   localhost:~# udhcpc
-   udhcpc: started, v1.31.1
-   udhcpc: sending discover
-   udhcpc: sending select for 192.168.102.101
-   udhcpc: lease of 192.168.102.101 obtained, lease time 3600
-   localhost:~# cat /etc/resolv.conf
-   nameserver 192.168.102.100
-   localhost:~# ip r
-   default via 192.168.102.100 dev eth0 metric 202
-   192.168.102.0/24 dev eth0 proto kernel scope link src 192.168.102.101
-   localhost:~#
+.. code::
 
-Both of these network clients (on different subnets) should be able to talk between each other (e.g.: ``ping``) and should be able to resolve DNS and reach internet services.
+    localhost:~# udhcpc
+    udhcpc: started, v1.31.1
+    udhcpc: sending discover
+    udhcpc: sending select for 192.168.102.101
+    udhcpc: lease of 192.168.102.101 obtained, lease time 3600
 
-**Congratulations with your first successful VNF appliance deployment!**
+    localhost:~# cat /etc/resolv.conf
+    nameserver 192.168.102.100
+
+    localhost:~# ip r
+    default via 192.168.102.100 dev eth0 metric 202
+    192.168.102.0/24 dev eth0 proto kernel scope link src 192.168.102.101
+
+Both of these client VMs connected to different networks should be able to talk to each other (try ``ping``), resolve DNS and reach Internet services.
 
 .. _vnf_tutorial_vrouter:
 
-VNF appliance as VRouter
-------------------------
+VNF as Virtual Router
+---------------------
 
-This tutorial will be a VRouter version of the previous one - the result will differ only in the fact that the VNF appliance will be deployed in HA mode with Keepalived service running. To learn more visit `the VRouter documentation <https://docs.opennebula.org/stable/operation/network_management/vrouter.html>`_.
+In this part of tutorial, we'll instantiate appliance as Virtual Router. The functionality will be same as in previous VNF as Virtual Machine, but in addition it'll be deployed in HA mode with Keepalived service running with no extra work. In the OpenNebula Sunstone, go to the **Templates → Virtual Routers** and instantiate ``Service Virtual Router`` (also you continue to the `Virtual Routers documentation <https://docs.opennebula.org/stable/operation/network_management/vrouter.html>`_ to learn more about VRs).
 
-Instead of **Service VNF** template under **Templates → VMs** we will use **Service Virtual Router** under **Templates → Virtual Routers**.
-
-Our context will look like this:
+Ensure your contextualization is as follows, we'll start 2 instances:
 
 |image-vnf-demo-vrouter1|
 
-You will not be able instantiate the VRouter until you fill the name explicitly:
+You won't be able instantiate the VR until you fill the specific name:
 
 |image-vnf-demo-vrouter2|
 
 .. note::
 
-   **Explanation**: The context is almost the same as was with :ref:`the previous demo <vnf_tutorial_vnf_explanation>` the biggest differences here are the missing **router** option (it is always enabled in VRouter) and that VRouter has a option **Number of VM instances** which we raised to two.
+    The contextualization parameters are almost same as they were in the :ref:`previous VM tutorial <vnf_tutorial_vnf_explanation>`, the notable differences here is the missing **router** option (which is always enabled when instantiatead as VR) and that VR has option **Number of VM instances** which specifies number nodes in HA mode.
 
-We wait for the VRouter's VMs and we can login to each of them and verify if everything was configured as expected. Although we did not attached any network yet so all enabled VNFs are idle. The goal is to attach these three virtual networks:
+We wait until the VR machines are running and we can login to each of them via VNC in Sunstone to verify if everything was configured as expected. Although we did not attached any network yet, all enabled VNFs are idle. Now we attach these 3 virtual networks:
 
-* ``public``
-* ``vnet_a``
-* ``vnet_b``
+1. ``public`` (to be on ``eth0``)
+2. ``vnet_a`` (to be on ``eth1``)
+3. ``vnet_b`` (to be on ``eth2``)
 
-First we will attach ``public`` vnet - that will be our ``eth0``. It is an internet facing NIC through which we can reach public services like root DNS servers.
+Step 1 - Attach First NIC
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
-In the Sunstone pick **Instances → Virtual Routers** and click on your VRouter and then **Attach NIC → public → Attach**.
+First we will attach NIC from virtual network ``public``. It is an internet facing NIC through which we can reach public services like root DNS servers. In the OpenNebula Sunstone pick **Instances → Virtual Routers**, click on your Virtual Router and then **Attach NIC → public → Attach**.
 
-If you are logged in one of the VMs of your VRouter then you can tail the appliance log::
+If you are logged in one of the VMs of your Virtual Router, then you can tail the appliance log
 
-       ___   _ __    ___
-      / _ \ | '_ \  / _ \   OpenNebula Service Appliance
-     | (_) || | | ||  __/
-      \___/ |_| |_| \___|
+.. code::
 
-    All set and ready to serve 8)
+        ___   _ __    ___
+       / _ \ | '_ \  / _ \   OpenNebula Service Appliance
+      | (_) || | | ||  __/
+       \___/ |_| |_| \___|
 
-   localhost:~# tail -f /var/log/one-appliance/ONE_configure.log
+     All set and ready to serve 8)
 
-You should see some activity there and the final lines should resemble::
+    localhost:~# tail -f /var/log/one-appliance/ONE_configure.log
 
-   ...
-   [Tue Mar 17 08:04:52 UTC 2020] => INFO: Save context/config variables as a report in: /etc/one-appliance/config
-   [Tue Mar 17 08:04:52 UTC 2020] => INFO: --- CONFIGURATION FINISHED ---
+You should see an activity there and the final lines should resemble:
 
-Now we will attach ``vnet_a`` and ``vnet_b`` but there will be one extra but crucial step in it...
+.. code::
 
-Again pick **Instances → Virtual Routers** and click on your VRouter and then **Attach NIC**. Click on **vnet_a** and now we must fill in the textbox **Force IPv4** with value: ``192.168.101.111`` and tick the checkbox on the right: **Floating IP**. It should look like this:
+    ...
+    [Tue Mar 17 08:04:52 UTC 2020] => INFO: Save context/config variables as a report in: /etc/one-appliance/config
+    [Tue Mar 17 08:04:52 UTC 2020] => INFO: --- CONFIGURATION FINISHED ---
+
+Step 2 -Attach Second and Third NICs
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Now we will attach ``vnet_a`` and ``vnet_b`` with an extra (but crucial) step. Go again on **Instances → Virtual Routers**, click on your Virtual Router and then **Attach NIC**. Click on ``vnet_a``  and now you must fill in the text box **Force IPv4** with value ``192.168.101.111`` and tick the checkbox on the right with **Floating IP**. If your settings look like on screenshot below, click on **Attach**:
 
 |image-vnf-demo-vrouter3|
 
-And hit **Attach**. We do this once more for ``vnet_b`` in which case you set **Force IPv4** as ``192.168.102.111`` and again enable **Floating IP**:
+Wait until recontextualization is finished in the instances and attach another virtual network ``vnet_b`` the same way, but set **Force IPv4** with ``192.168.102.111`` and enable **Floating IP** as well.
 
 |image-vnf-demo-vrouter4|
 
-Wait till both VRouter's VMs are configured (``/var/log/one-appliance/ONE_configure.log``) - don't forget that reconfiguration is triggered with each attached NIC - so before you continue be sure that you see **twice** more: "``CONFIGURATION FINISHED``" in the log and that one of the VM is **Master** (``/etc/keepalived/ha-check-status.sh``).
+Step 3 - Validation
+~~~~~~~~~~~~~~~~~~~
 
-At that point both VRouter's VMs should have three interfaces with Keepalived running and one of them should have all VNFs up and ready and assigned all floating IPs. You can verify that by checking the report config file: ``/etc/one-appliance/config``
+Wait until both instances of Virtual Router are configured inside (follow log ``/var/log/one-appliance/ONE_configure.log``). Recontextualization is triggered with each attached NIC, before you continue be sure that you see two more "``CONFIGURATION FINISHED``" texts in the log and that one of the instances is **Master** (run ``/etc/keepalived/ha-check-status.sh``).
 
-There you should see all three interfaces for VM1::
+At that point both Virtual Router instances should have three interfaces with Keepalived running, one of them should have all VNFs running and assigned all floating IPs. You can verify that by checking the report file - ``/etc/one-appliance/config``.
 
-   ...
-   ONEAPP_VROUTER_ETH0_IP = '192.168.150.102'
-   ...
-   ONEAPP_VROUTER_ETH1_IP = '192.168.101.100'
-   ...
-   ONEAPP_VROUTER_ETH2_IP = '192.168.102.100'
-   ...
+There you should see all three interfaces for the first instance:
 
-And for VM2::
+.. code::
 
-   ...
-   ONEAPP_VROUTER_ETH0_IP = '192.168.150.103'
-   ...
-   ONEAPP_VROUTER_ETH1_IP = '192.168.101.102'
-   ...
-   ONEAPP_VROUTER_ETH2_IP = '192.168.102.102'
-   ...
+    ...
+    ONEAPP_VROUTER_ETH0_IP = '192.168.150.102'
+    ...
+    ONEAPP_VROUTER_ETH1_IP = '192.168.101.100'
+    ...
+    ONEAPP_VROUTER_ETH2_IP = '192.168.102.100'
+    ...
+
+And, for the second instance:
+
+.. code::
+
+    ...
+    ONEAPP_VROUTER_ETH0_IP = '192.168.150.103'
+    ...
+    ONEAPP_VROUTER_ETH1_IP = '192.168.101.102'
+    ...
+    ONEAPP_VROUTER_ETH2_IP = '192.168.102.102'
+    ...
 
 .. note::
 
-   The actual IP addresses in your case can differ of course - adjust this tutorial accordingly...
+    Advanced users can inspect the real configuration files of the VNF services to understand how they are configured to work, e.g.:
 
-For better understanding of the current state of the appliance you can checkout these config files:
+    * VNF **DHCP4**: ``/etc/kea/kea-dhcp4.conf``
+    * VNF **DNS**: ``/etc/unbound/unbound.conf``
+    * VNF **ROUTER4**: ``/etc/sysctl.d/01-one-router4.conf``
+    * VNF **NAT**: ``/etc/iptables/nat4-rules-enabled``
 
-* **DHCP4**: ``/etc/kea/kea-dhcp4.conf``
-* **DNS**: ``/etc/unbound/unbound.conf``
-* **ROUTER4**: ``/etc/sysctl.d/01-one-router4.conf``
-* **NAT**: ``/etc/iptables/nat4-rules-enabled``
-* **KEEPALIVED**: ``/etc/keepalived/keepalived.conf``
+The important point is that both floating IPs (VIPs) are assigned. Log into each instance of the Virtual Router and check the state. For example:
 
-The important thing is to have both floating IPs assigned - log into each of these VMs and checkout the situation::
+.. code::
 
-   localhost:~# /etc/keepalived/ha-check-status.sh
-   KEEPALIVED: RUNNING
-   VRRP-INSTANCE(ETH0): MASTER
-   VRRP-INSTANCE(ETH1): MASTER
-   VRRP-INSTANCE(ETH2): MASTER
-   SYNC-GROUP(vrouter): MASTER
-   localhost:~# ip a | grep -e 192.168.101.111 -e 192.168.102.111
-       inet 192.168.101.111/32 scope global eth1
-       inet 192.168.102.111/32 scope global eth2
-   localhost:~#
+    localhost:~# /etc/keepalived/ha-check-status.sh
+    KEEPALIVED: RUNNING
+    VRRP-INSTANCE(ETH0): MASTER
+    VRRP-INSTANCE(ETH1): MASTER
+    VRRP-INSTANCE(ETH2): MASTER
+    SYNC-GROUP(vrouter): MASTER
 
-From this output you can see that this particular VM is the **Master** and has all floating IPs assigned and ready. Let's see how is the situation in the other VM::
+    localhost:~# ip a | grep -e 192.168.101.111 -e 192.168.102.111
+        inet 192.168.101.111/32 scope global eth1
+        inet 192.168.102.111/32 scope global eth2
+    localhost:~#
 
-   localhost:~# /etc/keepalived/ha-check-status.sh
-   KEEPALIVED: RUNNING
-   VRRP-INSTANCE(ETH0): BACKUP
-   VRRP-INSTANCE(ETH1): BACKUP
-   VRRP-INSTANCE(ETH2): BACKUP
-   SYNC-GROUP(vrouter): BACKUP
-   localhost:~# ip a | grep -e 192.168.101.111 -e 192.168.102.111
-   localhost:~#
+On the output above we can see that the particular Virtual Router VM is the **Master** (among the Virtual Router instances which form a HA group) and has all two floating IPs configured on network interfaces. A different case is presented below:
 
-The other VM is now on standby.
+.. code::
 
-We are done, but as a final test we instantiate two more VMs (e.g.: `Alpine appliance <http://marketplace.opennebula.org/appliance/193631c3-7082-4528-bfdb-31b2ecb3d9f5>`_)
+    localhost:~# /etc/keepalived/ha-check-status.sh
+    KEEPALIVED: RUNNING
+    VRRP-INSTANCE(ETH0): BACKUP
+    VRRP-INSTANCE(ETH1): BACKUP
+    VRRP-INSTANCE(ETH2): BACKUP
+    SYNC-GROUP(vrouter): BACKUP
 
-We don't need anything fancy to configure there - just instantiate them along the instructions from the **Quick Start** (albeit with a different image!) and attach a network interface to both of them:
+    localhost:~# ip a | grep -e 192.168.101.111 -e 192.168.102.111
+    localhost:~#
 
-* one will get: ``vnet_a``
-* the other: ``vnet_b``
+This instance is running in a standby (backup) mode waiting for the time when master is down to take over the operations. Also, it doesn't have the floating IPs assigned.
 
-Login to the one connected to ``vnet_a``::
+Step 4 - Test Clients
+~~~~~~~~~~~~~~~~~~~~~
 
-   localhost:~# udhcpc
-   udhcpc: started, v1.31.1
-   udhcpc: sending discover
-   udhcpc: sending select for 192.168.101.101
-   udhcpc: lease of 192.168.101.101 obtained, lease time 3600
-   localhost:~# cat /etc/resolv.conf
-   nameserver 192.168.101.111
-   localhost:~# ip r
-   default via 192.168.101.111 dev eth0 metric 202
-   192.168.101.0/24 dev eth0 proto kernel scope link src 192.168.101.101
-   localhost:~#
+We are done with Virtual Router configuration and as a final step, we are going to instantiate two client VMs. For example, you can take `Alpine Linux <http://marketplace.opennebula.org/appliance/193631c3-7082-4528-bfdb-31b2ecb3d9f5>`_ appliances from OpenNebula Marketplace. We don't need any special configuration, only attach one NIC to each client VM from different network
 
-And similarly with the other on ``vnet_b``::
+1. VM - NIC from ``vnet_a``
+2. VM - NIC from ``vnet_b``
 
-   localhost:~# udhcpc
-   udhcpc: started, v1.31.1
-   udhcpc: sending discover
-   udhcpc: sending select for 192.168.102.101
-   udhcpc: lease of 192.168.102.101 obtained, lease time 3600
-   localhost:~# cat /etc/resolv.conf
-   nameserver 192.168.102.111
-   localhost:~# ip r
-   default via 192.168.102.111 dev eth0 metric 202
-   192.168.102.0/24 dev eth0 proto kernel scope link src 192.168.102.101
-   localhost:~#
+Login over the OpenNebula Sunstone VNC console into both VMs, run DHCP client and validate they received leases with expected parameters. For example, for VM 1 (with NIC in ``vnet_a``):
 
-Both of these network clients (on different subnets) should be able to talk between each other (e.g.: ``ping``) and should be able to resolve DNS and reach internet services.
+.. code::
 
-**Congratulations with your first successful VROUTER appliance deployment!**
+    localhost:~# udhcpc
+    udhcpc: started, v1.31.1
+    udhcpc: sending discover
+    udhcpc: sending select for 192.168.101.101
+    udhcpc: lease of 192.168.101.101 obtained, lease time 3600
 
-VRouter management
+    localhost:~# cat /etc/resolv.conf
+    nameserver 192.168.101.111
+
+    localhost:~# ip r
+    default via 192.168.101.111 dev eth0 metric 202
+    192.168.101.0/24 dev eth0 proto kernel scope link src 192.168.101.101
+
+For VM 2 (with NIC in ``vnet_b``):
+
+.. code::
+
+    localhost:~# udhcpc
+    udhcpc: started, v1.31.1
+    udhcpc: sending discover
+    udhcpc: sending select for 192.168.102.101
+    udhcpc: lease of 192.168.102.101 obtained, lease time 3600
+
+    localhost:~# cat /etc/resolv.conf
+    nameserver 192.168.102.111
+
+    localhost:~# ip r
+    default via 192.168.102.111 dev eth0 metric 202
+    192.168.102.0/24 dev eth0 proto kernel scope link src 192.168.102.101
+
+Both of these network clients (on different subnets) should be able to communicate with each other other (e.g., try to ``ping`` second VM from first VM) and should be able to resolve DNS and reach internet services.
+
+Management Network
 ~~~~~~~~~~~~~~~~~~
 
-VRouter has a option to attach a NIC which will have a special purpose - it will serve only as a entrypoint to the VRouter's VMs and no VNF and no service will be running on such interface. This interface we call **management** and here is how we can add it to our VRouter.
+An attached network card to the Virtual Router can be configured as **management** only. This allows only to connect to the Virtual Router instances, but no VNF and/or routing services will be running on management interfaces.
 
-Our management interface will be connected to the reserved virtual network ``vnet_mgt`` which we have already defined at :ref:`the beginning of the tutorials <vnf_tutorials>`.
-
-In the Sunstone pick **Instances → Virtual Routers** and click on your VRouter and then **Attach NIC → vnet_mgt**, tick the checkbox: **Management Interface** and follow with the final **Attach**.
+We'll attach to our running Virtual Router management interface from the reserved virtual network ``vnet_mgt``, which we have already created at the :ref:`beginning of the tutorials <vnf_tutorials>`.  In the OpenNebula Sunstone pick **Instances → Virtual Routers**, click on your Virtual Router and then **Attach NIC → vnet_mgt**. Tick the checkbox: **Management Interface** and continue with the final **Attach**.
 
 |image-vnf-demo-vrouter5|
 
-Again wait for all the VRouter's VMs to be configured and one of them voted as **Master**. You should see a new interface inside but nothing should be listening on it.
-
-VRouter failover test
-~~~~~~~~~~~~~~~~~~~~~
-
-Now we verify that HA works as the last part of this tutorial.
-
-Login to both of the network client VMs (``vnet_a`` and ``vnet_b``) and let them ping each other - that means on the VM1 (``vnet_a``)::
-
-   localhost:~# ping 192.168.102.101
-
-and on the VM2 (``vnet_b``)::
-
-   localhost:~# ping 192.168.101.101
-
-At this point they should ping each other without a problem - let them so. Now find which of the two VRouter's VMs is currently the master. Look up the Master VM (by IP address for example) in the Sunstone and click on it. Then in the top menu bar pick and click on **Reboot (hard)** - this will simulate failover.
-
-Go back to your pinging VMs and you should see a short freeze and quick resume of pinging - that means failover successfully happened. To make it double sure login to the former Backup VM and check its state again (``/etc/keepalived/ha-check-status.sh``). It should be the Master now and the former Master VM should be soon up and ready as a new Backup.
+Wait for all the Virtual Router instances to be reconfigured and one of them will be (re)selected as **Master**. You should see a new network interface inside, but no VNFs will be running on it.
 
 .. |image-download| image:: /images/vnf/vnf-download.png
 .. |image-context-vars| image:: /images/vnf/vnf-context-vars.png
