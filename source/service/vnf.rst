@@ -8,12 +8,12 @@ OpenNebula `Marketplace Appliance <http://marketplace.opennebula.systems/applian
 
 .. note::
 
-    This appliance replaces the Virtual Routers available on the Marketplace in the past as **Vrouter Alpine** for KVM and vCenter platforms. These old versions are referrenced as **legacy** from now on. Templates and contextualization parameters are compatible with new appliance, you only need to update reference in the old imported template to the new image. It's highly recommended to migrate to the new appliance.
+    This appliance replaces the Virtual Routers available on the Marketplace in the past as **Vrouter Alpine** for KVM and vCenter platforms. These old versions are referenced as **legacy** from now on. Templates and contextualization parameters are compatible with new appliance, you only need to update the reference in the old imported template to the new image. It's highly recommended to migrate to the new appliance.
 
-    To meet different use-cases, the core logic is provided via 2 appliances (sharing same image) on the Marketplace identified listed as
+    To meet different use-cases, the core logic is provided via 2 appliances (sharing the same image) on the Marketplace identified listed as
 
-    * ``Service VNF`` - exposing all features as regular VM
-    * ``Service Virtual Router`` - integration with OpenNebula Virtual Router interface
+    * `Service VNF <http://marketplace.opennebula.systems/appliance/7dba6a0d-73e8-4036-9cb8-73da669ee494>`__ - exposing all features as regular VM
+    * `Service Virtual Router <http://marketplace.opennebula.systems/appliance/cc96d537-f6c7-499f-83f1-15ac4058750e>`__ - integration with OpenNebula Virtual Router interface
 
 .. include:: shared/features-alpine.txt
 * High-availability provided by `Keepalived <https://www.keepalived.org/>`_.
@@ -33,7 +33,7 @@ Appliance components versions:
 Component                     Version
 ============================= ==================
 ISC Kea                       1.6.1
-ISC Kea MAC-to-IP hook        1.1.0
+ISC Kea MAC to IPv4 hook      1.1.0
 Contextualization package     5.12.0
 ============================= ==================
 
@@ -104,23 +104,23 @@ Contextualization parameters provided in the Virtual Machine template controls t
 
 .. note::
 
-    As described in the :ref:`Overview <service_vnf>`, there are 2 appliances available. Both share same image and support same set of contextualization parameters, the only difference is how they are managed in the OpenNebula - via Virtual Router (VR) interface or as regular Virtual Machine (VM).
+    As described in the :ref:`Overview <service_vnf>`, there are 2 appliances available. Both share the same image and support the same set of contextualization parameters, the only difference is how they are managed in the OpenNebula - via Virtual Router (VR) interface or as regular Virtual Machine (VM).
 
-If parameters support multiple values, the values can be are separated by spaces (``x y``), commas (``x,y``) or semicolons (``;``).
+If parameters support multiple values, the values can be are separated by spaces (``x y``), commas (``x,y``), or semicolons (``;``).
 
 .. _vnfs_context_param:
 
 Virtual Network Functions
 -------------------------
 
-Following parameters are supported in both deployment modes, as VR and VM.
+Following parameters are supported in both deployment modes, as Virtual Machine (VM) and Virtual Router (VR).
 
 .. _vnf_dhcp4_context_param:
 
 Function DHCP4
 ~~~~~~~~~~~~~~
 
-Function implements DHCPv4 service. If enabled without any specific configuration, it provides DHCP leases for all (non-management) interfaces and all their configured subnets.
+The function implements DHCPv4 service. If enabled without any specific configuration, it provides DHCP leases for all (non-management) interfaces and all their configured subnets.
 
 **Basic parameters**:
 
@@ -159,16 +159,16 @@ Parameter                                    Default        Description
 
 .. important::
 
-   Virtual Routers interface in the OpenNebula doesn't support managing `Network Interface Aliases <https://docs.opennebula.io/stable/operation/vm_management/vm_templates.html#network-interfaces-alias>`_. Aliases can be used only when appliance is used as regular Virtual Machine.
+   Virtual Routers interface in the OpenNebula doesn't support managing `Network Interface Aliases <https://docs.opennebula.io/stable/operation/vm_management/vm_templates.html#network-interfaces-alias>`_. Aliases can be used only when the appliance is used as a regular Virtual Machine.
 
-For more information continue to VNF :ref:`DHCP4 <vnf_dhcp4>` documentation.
+For more information continue to :ref:`DHCP4 <vnf_dhcp4>` VNF documentation.
 
 .. _vnf_dns_context_param:
 
 Function DNS
 ~~~~~~~~~~~~
 
-Function implements DNS service. It can delegate requests to upstream servers based on network contextualization or directly resolve requests on its own.
+The function implements DNS service. It can delegate requests to upstream servers based on network contextualization or directly resolve requests on its own.
 
 **Basic parameters**:
 
@@ -194,14 +194,14 @@ Advanced parameter                     Default        Description
 ``ONEAPP_VNF_DNS_UDP_DISABLED``        ``NO``         Enable/disable service over UDP (``YES``/``NO``)
 =====================================  ============== ===========
 
-For more information continue to VNF :ref:`DNS <vnf_dns>` documentation.
+For more information continue to :ref:`DNS <vnf_dns>` VNF documentation.
 
 .. _vnf_nat4_context_param:
 
 Function NAT4
 ~~~~~~~~~~~~~
 
-Function implements IPv4 Network Address Translation (Masquerade) service for the connected interfaces (except management), through the specified outgoing interface.
+The function implements IPv4 Network Address Translation (Masquerade) service for the connected interfaces (except management), through the specified outgoing interface.
 
 ===================================== ============== ===========
 Parameter                             Default        Description
@@ -210,14 +210,14 @@ Parameter                             Default        Description
 ``ONEAPP_VNF_NAT4_INTERFACES_OUT``     none          **Mandatory:** Outgoing :ref:`interface <vnf_interfaces>` for NAT (``<[!]ethX> ...``)
 ===================================== ============== ===========
 
-For more information confinue to VNF :ref:`NAT4 <vnf_nat4>` documentation.
+For more information continue to :ref:`NAT4 <vnf_nat4>` VNF documentation.
 
 .. _vnf_router4_context_param:
 
 Function ROUTER4
 ~~~~~~~~~~~~~~~~
 
-Function implements routing among connected network interfaces.
+The function implements routing among connected network interfaces.
 
 ===================================== ============== ===========
 Parameter                             Default        Description
@@ -226,14 +226,14 @@ Parameter                             Default        Description
 ``ONEAPP_VNF_ROUTER4_INTERFACES``     all ifaces     List of routed :ref:`interfaces <vnf_interfaces>` (``<[!]ethX> ...``)
 ===================================== ============== ===========
 
-For more information continue to VNF :ref:`Router4 <vnf_router4>` documentation.
+For more information continue to :ref:`Router4 <vnf_router4>` VNF documentation.
 
 .. _vnf_vrouter_context_param:
 
 OpenNebula Virtual Router
 -------------------------
 
-Function implements another routing mechanism among connected networks, but integrated with `OpenNebula Virtual Router <http://docs.opennebula.io/stable/operation/network_management/vrouter.html>`_ interface. In addition to all contextualization parameters above, the VNF appliance recognizes also the following variables passed by the OpenNebula when running over Virtual Router (VR) interface.
+The function implements another routing mechanism among connected networks but integrated with `OpenNebula Virtual Router <http://docs.opennebula.io/stable/operation/network_management/vrouter.html>`_ interface. In addition to all contextualization parameters above, the VNF appliance recognizes also the following variables passed by the OpenNebula when running over Virtual Router (VR) interface.
 
 .. _vnf_legacy_vrouter_context_param:
 
@@ -273,15 +273,15 @@ Parameter                             Default        Description
 Keepalived
 ----------
 
-`Keepalived <https://www.keepalived.org/>`_ is an open-source project implementing `VRRP protocol <https://en.wikipedia.org/wiki/Virtual_Router_Redundancy_Protocol>`_ and a pre-installed appliance service which provides high-availability to other VNFs running on the instance. It's not a self-contained and directly usable service. In case of incident, it's able to migrate the floating IP (VIP) addresses and services to another instance with as little downtime as possible.
+`Keepalived <https://www.keepalived.org/>`_ is an open-source project implementing `VRRP protocol <https://en.wikipedia.org/wiki/Virtual_Router_Redundancy_Protocol>`_ and a pre-installed appliance service which provides high-availability to other VNFs running on the instance. It's not a self-contained and directly usable service. In case of incident it's able to migrate the floating IP (VIP) addresses and services to another instance with as little downtime as possible.
 
 .. note::
 
-    OpenNebula **Virtual Router** interface transparently integrates with the Keepalived function to provide high-availability when multiple router instances are started. When running appliances as **Virtual Router** (over VR specific :ref:`context parameters <vnf_legacy_vrouter_context_param>`), it's not necessary to directly deal with following context parameters.
+    OpenNebula Virtual Router interface transparently integrates with the Keepalived function to provide high-availability when multiple router instances are started. When running appliances as Virtual Router (controlled over VR specific :ref:`context parameters <vnf_legacy_vrouter_context_param>`), it's not necessary to directly deal with the following context parameters.
 
 .. important::
 
-    You need to have at least one **VNF** enabled and at least one **floating IP** (VIP) configured.
+    You need to have at least **one VNF** enabled and at least **one floating IP** (VIP) configured.
 
 **Basic parameters**:
 
@@ -307,7 +307,7 @@ Parameter                                  Default        Description
 ``ONEAPP_VNF_KEEPALIVED_ETHx_INTERVAL``    ``1``          Advertising interval for ethX (seconds)
 ========================================== ============== ===========
 
-The fundamental part is the floating IP address (VIP), which must be always configured, otherwise function won't work. Also, the function must be provided with **Virtual Router ID** (``VRID``) unique for the subnets instance runs on (otherwise different VRs with same ``VRID`` could try to join into the single same cluster and both fail terribly)!
+The fundamental part is the floating IP address (VIP), which must be always configured otherwise function won't work. Also, the function must be provided with **Virtual Router ID** (``VRID``) unique for the subnets instance runs on (otherwise different VRs with same ``VRID`` could try to join into the single same cluster and both fail terribly)!
 
 .. warning::
 
@@ -318,13 +318,13 @@ The fundamental part is the floating IP address (VIP), which must be always conf
 Interfaces
 ----------
 
-Each VNF has **interfaces** context parameter which defines on which network interfaces the service is or isn't active . If no interfaces context variable is provided (or is empty), the enabled VNF is listening on all available interfaces (except loopback ``lo`` and :ref:`OpenNebula Virtual Router <vnf_legacy_vrouter_context_param>` management interfaces).
+Each VNF has **interface** context parameter which defines on which network interfaces the service is or isn't active. If no interfaces context variable is provided (or is empty), the enabled VNF is listening on all available interfaces (except loopback ``lo`` and :ref:`OpenNebula Virtual Router <vnf_legacy_vrouter_context_param>` management interfaces).
 
 .. note::
 
-   **NAT4 VNF**: A special case of NAT4 VNF uses a context parameter ``ONEAPP_VNF_NAT4_INTERFACES_OUT`` (with ``_OUT`` suffix) to emphasize the actual place where the network address translation will happen (outgoing/external interface). This parameter doesn't provide any default. If it's not specified, the NAT4 won't select any outgoing interface automatically and service won't work. For NAT4 the parameter ``ONEAPP_VNF_NAT4_INTERFACES_OUT`` is **always mandatory**.
+   **NAT4 VNF**: A special case is NAT4 VNF, which uses a context parameter ``ONEAPP_VNF_NAT4_INTERFACES_OUT`` (with ``_OUT`` suffix) to emphasize the actual place where the network address translation will happen (outgoing/external interface). This parameter doesn't provide any default. If it's not specified, NAT4 won't select any outgoing interface automatically and service won't behave. For NAT4 the parameter ``ONEAPP_VNF_NAT4_INTERFACES_OUT`` is **always mandatory**.
 
-The listed interface names must follow the naming of the interfaces in the OpenNebula (see `context parameters <http://docs.opennebula.io/stable/operation/references/template.html#context-section>`__). Always use ``eth`` interface names followed by index starting from 0, i.e. ``eth0`` for first NIC, ``eth4`` for fifth NIC. The real interface names in the running VR/VM might differ - have a different prefixes (e.g., ``enoX``, ``ensX``, ``enpXsY``) following Consistent Network Device Naming or even different interface index(!). Appliance scripts **automatically translates OpenNebula interface names from context into real instance names**.
+The listed interface names must follow the naming of the interfaces in the OpenNebula (see `context parameters <http://docs.opennebula.io/stable/operation/references/template.html#context-section>`__). Always use ``eth`` interface names followed by an index starting from 0, i.e. ``eth0`` for first NIC, ``eth4`` for fifth NIC. The real interface names inside the running VR/VM might differ - have different prefixes (e.g., ``enoX``, ``ensX``, ``enpXsY``) following Consistent Network Device Naming or even different interface index(!). Appliance scripts **automatically translate OpenNebula interface names from context names into real instance names**.
 
 Extra interfaces specified in context variables, but missing in the instance, are **ignored**.
 
@@ -341,7 +341,7 @@ Example: To enable :ref:`DNS VNF <vnf_dns_context_param>` only on 3rd and 4th ne
 Exclude Interfaces
 ~~~~~~~~~~~~~~~~~~
 
-To disable VNF on particular interface, you can use one of the following syntax:
+To disable VNF on a particular interface, you can use one of the following syntaxes:
 
 * **include**: name all interfaces where service should be enabled and skip the disabled interface(s)
 * **exclude**: prefix disabled interface(s) with ``!`` (e.g, ``!eth0``), rest available interfaces will be included automatically
@@ -356,7 +356,7 @@ Example: To disable :ref:`DHCP4 VNF <vnf_dhcp4_context_param>` on 3rd (i.e., ``e
 
 .. important::
 
-   Mixing include and exclude syntaxes within a single parameter is conflicting and must be avoided (e.g., ``!eth0 eth1 eth2``). The semantic of exclude syntax is to automatically include all the rest available interfaces (except those excluded). If both syntaxes are still used, the include syntax has higher priority and excluded interfaces are not respected.
+   Mixing **include** and **exclude** syntaxes within a single parameter is conflicting and must be avoided (e.g., ``!eth0 eth1 eth2``). The semantic of exclude syntax is to automatically include all the rest available interfaces (except those excluded). If both syntaxes are still used, the include syntax has higher priority and excluded interfaces are not respected.
 
 .. _vnf_list:
 
@@ -370,11 +370,11 @@ DHCP4
 
 See: :ref:`Contextualization Parameters <vnf_dhcp4_context_param>`
 
-The VNF provides *Dynamic Host Configuration Protocol* (DHCPv4) service implemented by `ISC Kea <https://www.isc.org/kea/>`_ software suite.
+The VNF provides *Dynamic Host Configuration Protocol* (DHCPv4) service implemented by the `ISC Kea <https://www.isc.org/kea/>`_ software suite.
 
 .. warning::
 
-    Be careful and always specify interfaces the DHCP service should operate on as you could negatively affect availability of other the devices and services running on the connected networks!
+    Be careful and always specify interfaces the DHCP service should operate on as you could negatively affect the availability of other the devices and services running on the connected networks!
 
 Enabled service without any other context parameters will run DHCP on all interfaces and their subnets. The context parameter ``ONEAPP_VNF_DHCP4_INTERFACES`` limits the functionality on particular interfaces. Firstly, it tells on which interface it will listen for DHCP requests. Secondly, it will determine for which subnets it will provide leases - it will auto-generate subnet lease configuration (if no ``ONEAPP_VNF_DHCP4_SUBNET[0-9]`` are provided).
 
@@ -383,7 +383,7 @@ The format of values in ``ONEAPP_VNF_DHCP4_INTERFACES`` can be
 * ``ethX`` - interface name (e.g., ``eth0``)
 * ``ethX/IP`` - interface name with IP address to pinpoint the listening address and subnet creation in case more than one IP address is assigned to the interface (e.g., ``eth0/192.168.1.1``)
 
-Service by default provides configuration to the remote DHCP clients based on IP configuration of interfaces on which it's enabled via ``ONEAPP_VNF_DHCP4_INTERFACES``. Interfaces configuration is taken from static network `contextualization parameters <http://docs.opennebula.org/stable/operation/references/template.html#context-section>`__ (e.g., ``ETH0_GATEWAY``), not from run-time configuration of the particular interfaces on the instance. Settings can be overridden by similarly named DHCP VNF specific contextualization parameters per NIC or NIC alias, e.g.:
+Service by default provides configuration to the remote DHCP clients based on IP configuration of interfaces on which it's enabled via ``ONEAPP_VNF_DHCP4_INTERFACES``. Interfaces configuration is taken from static network `contextualization parameters <http://docs.opennebula.org/stable/operation/references/template.html#context-section>`__ (e.g., ``ETH0_GATEWAY``), not from the run-time configuration of the particular interfaces on the instance. Settings can be overridden by similarly named DHCP VNF specific contextualization parameters per NIC or NIC alias, e.g.:
 
 .. code::
 
@@ -408,7 +408,7 @@ The context parameters for NIC aliases are applied only if the **subnet of NIC a
     * ``eth0``: ``192.168.0.1/255.255.0.0``
     * ``eth0`` alias 0: ``192.168.1.100/255.255.0.0``
 
-    with following overrides within VNF DHCP4:
+    with following overrides within DHCP4 VNF:
 
     .. code::
 
@@ -419,9 +419,9 @@ The context parameters for NIC aliases are applied only if the **subnet of NIC a
              ...
         ]
 
-    In this case both the ``eth0`` and its alias share same subnet, but with two different overrides for nameserver option data and subnet pool (default vs. explicitly defined one). And so when VNF tries to create a DHCP4 configuration it encounters a conflict between the subnet pools and the option data (``DNS``, ``GATEWAY`` and ``MTU``) of the two. That is why the interface variables (``ONEAPP_VNF_DHCP4_ETH0``) will **always** take precedence in such scenarios (all ``ONEAPP_VNF_DHCP4_ETH0_ALIAS0`` will be ignored).
+    In this case both the ``eth0`` and its alias share the same subnet, but with two different overrides for nameserver option data and subnet pool (default vs. explicitly defined one). And so when VNF tries to create a DHCP4 configuration it encounters a conflict between the subnet pools and the option data (``DNS``, ``GATEWAY``, and ``MTU``) of the two. That is why the interface variables (``ONEAPP_VNF_DHCP4_ETH0``) will **always** take precedence in such scenarios (all ``ONEAPP_VNF_DHCP4_ETH0_ALIAS0`` will be ignored).
 
-    For illustration the example of generated configuration for `ISC Kea <https://www.isc.org/kea/>`_ of the case above:
+    For illustration the example of a generated configuration for the `ISC Kea <https://www.isc.org/kea/>`_ of the case above:
 
     .. code::
 
@@ -442,37 +442,37 @@ The context parameters for NIC aliases are applied only if the **subnet of NIC a
         },
         ...
 
-For more tailored subnet configuration, you can use ``ONEAPP_VNF_DHCP4_SUBNET`` context variable(s) with **raw configuration** which is directly passed to the DHCP server and the value must be a valid Base64 encoded JSON configuration of `ISC Kea subnet4 section <https://kea.readthedocs.io/en/latest/arm/dhcp4-srv.html#configuration-of-ipv4-address-pools>`_. More subnet configuration variables can be specified and they must be suffixed with numerical index (e.g., ``ONEAPP_VNF_DHCP4_SUBNET0``). Subnets defined by these subnet context parameters always **take precedence** over other interface specific parameters (i.e., existence of ``ONEAPP_VNF_DHCP4_SUBNET`` disables any contextualization based on interface configuration). Subnet definitions **must be unique**, although it's possible to have overlapping subnets - in such (or other non-trivial) setup consult the `ISC Kea documentation <https://kea.readthedocs.io/en/latest/arm/dhcp4-srv.html>`_ to better understand how DHCP lease will work.
+For more tailored subnet configuration, you can use ``ONEAPP_VNF_DHCP4_SUBNET`` context variable(s) with **raw configuration** which is directly passed to the DHCP server and the value must be a valid Base64 encoded JSON configuration of `ISC Kea subnet4 section <https://kea.readthedocs.io/en/latest/arm/dhcp4-srv.html#configuration-of-ipv4-address-pools>`_. More subnet configuration variables can be specified and they must be suffixed with numerical index (e.g., ``ONEAPP_VNF_DHCP4_SUBNET0``). Subnets defined by these subnet context parameters always **take precedence** over other interface-specific parameters (i.e., the existence of ``ONEAPP_VNF_DHCP4_SUBNET`` disables any contextualization based on interface configuration). Subnet definitions **must be unique**, although it's possible to have overlapping subnets - in such (or other non-trivial) setup consult the `ISC Kea documentation <https://kea.readthedocs.io/en/latest/arm/dhcp4-srv.html>`_ to better understand how DHCP lease will work.
 
 .. warning::
 
-   The appliance allows (live) **reconfiguration** and adapts to the changes in context parameters as they happen. Known issue of this process is that some variables defined in the past might still remain active if they are removed! E.g., a problem could arise if ``ONEAPP_VNF_DHCP4_SUBNET``-like variable was defined, but now you wish to use dynamic per interface variables instead (``ONEAPP_VNF_DHCP4_ETHx``-like), remove the former variable, but it still remains in the appliance configuration to a certain extent. A workaround is not to remove old variable, but instead provide the empty content, e.g. ``ONEAPP_VNF_DHCP4_SUBNET0=""``.
+   The appliance allows (live) **reconfiguration** and adapts to the changes in context parameters as they happen. The known issue of this process is that some variables defined in the past might still remain active if they are removed! E.g., a problem could arise if ``ONEAPP_VNF_DHCP4_SUBNET``-like variable was defined, but now you wish to use dynamic per-interface variables instead (``ONEAPP_VNF_DHCP4_ETHx``-like), remove the former variable, but it still remains in the appliance configuration to a certain extent. A workaround is not to remove an old variable, but instead provide the empty content, e.g. ``ONEAPP_VNF_DHCP4_SUBNET0=""``.
 
-   **IMPORTANT:** It's recommended not to delete once used context variables, but set their content to empty string. You can remove them safely delete it after a next full recontextualization (or reboot).
+   **IMPORTANT:** It's recommended not to delete once used context variables, but set their content to empty string. You can remove them safely after the next full recontextualization (or reboot).
 
-To have full control over the DHCPv4 VNF, you can provide the complete ISC Kea configuration via ``ONEAPP_VNF_DHCP4_CONFIG`` contextualization parameter. It must be a valid Base64 encoded JSON configuration file following the `documentation <https://kea.readthedocs.io/en/latest/arm/dhcp4-srv.html>`_ and as required by ISC Kea service.
+To have full control over the DHCP4 VNF, you can provide the complete ISC Kea configuration via ``ONEAPP_VNF_DHCP4_CONFIG`` contextualization parameter. It must be a valid Base64 encoded JSON configuration file following the `documentation <https://kea.readthedocs.io/en/latest/arm/dhcp4-srv.html>`_ and as required by the ISC Kea service.
 
 OpenNebula MAC to IPv4 Translation
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-In the OpenNebula, there is clear relation between MAC (Hardware) and IPv4 addresses allocated for the Virtual Machine NICs. The MAC address for particular NIC is constructed as a concatenation of
+In the OpenNebula, there is a clear relation between MAC (Hardware) and IPv4 addresses allocated for the Virtual Machine NICs. The MAC address for particular NIC is constructed as a concatenation of
 
 - ``02:00`` (default) prefix followed by
 - hexadecimal representation of the allocated IPv4 address ``01:02:03:04`` (e.g., for ``1.2.3.4``)
 
-The leading prefix can be configured in OpenNebula via ``MAC_PREFIX`` option in `oned.conf <https://docs.opennebula.org/stable/deployment/references/oned_conf.html#virtual-networks>`_ (but then must be aligned with prefix configured for DHCPv4 VNF via ``ONEAPP_VNF_DHCP4_MAC2IP_MACPREFIX``)
+The leading prefix can be configured in OpenNebula via ``MAC_PREFIX`` option in `oned.conf <https://docs.opennebula.org/stable/deployment/references/oned_conf.html#virtual-networks>`_ (but then must be aligned with prefix configured for DHCP4 VNF via ``ONEAPP_VNF_DHCP4_MAC2IP_MACPREFIX``)
 
-The DHCPv4 VNF comes with **translation hook** (custom service plugin), which computes and offers the suitable IPv4 addresses just based on the MAC address same way as the OpenNebula does. It ensures that VM gets same IPv4 addresses via dynamic configuration (DHCP) as it would get through static contextualization (i.e., parameters on contextualization CD-ROM/service). This allows networking to unmodified VMs, which are not aware of the OpenNebula static contextualization.
+The DHCP4 VNF comes with a **translation hook** (custom DHCP server plugin), which computes and offers suitable IPv4 addresses just based on the MAC address the same way as the OpenNebula does. It ensures that VM gets same IPv4 addresses via dynamic configuration (DHCP) as it would get through static contextualization (i.e., parameters on contextualization CD-ROM/service). This allows networking to unmodified VMs, which are not aware of the OpenNebula static contextualization.
 
 .. note::
 
-    The OpenNebula `MAC to IP translation <https://github.com/OpenNebula/addon-kea-hooks>`_ hook for ISC Kea works completely offline, without need to directly query the OpenNebula front-end. It's enabled by default and can be disabled via context parameter ``ONEAPP_VNF_DHCP4_MAC2IP_ENABLED="NO"``.
+    The OpenNebula `MAC to IP translation <https://github.com/OpenNebula/addon-kea-hooks>`_ hook for ISC Kea works completely offline, without the need to directly query the OpenNebula front-end. It's enabled by default and can be disabled via context parameter ``ONEAPP_VNF_DHCP4_MAC2IP_ENABLED="NO"``.
 
-Translation hook can be restricted to work only on selected subnets via ``ONEAPP_VNF_DHCP4_MAC2IP_SUBNETS`` parameter, which accepts list of ranges in CIDR notation. For all the rest subnets and pools not covered in this parameter, the normal ISC Kea's lease behaviour is applied. Missing or empty parameter defaults to translation hook work on all subnets.
+Translation hook can be restricted to work only on selected subnets via ``ONEAPP_VNF_DHCP4_MAC2IP_SUBNETS`` parameter, which accepts a list of ranges in CIDR notation. For all the rest subnets and pools not covered in this parameter, the normal ISC Kea's lease behavior is applied. Missing or empty parameter defaults to translation hook work on all subnets.
 
 .. important::
 
-   On subnets managed by OpenNebula MAC to IP translation hook (by default all), the requests from MAC addresses which can't be converted to suitable IP address are ignored!
+   On subnets managed by OpenNebula MAC to IP translation hook (by default all), the requests from MAC addresses which **can't be converted to the suitable IP address are ignored**!
 
 If DHCP VNF is provided to both OpenNebula (via MAC to IP) and custom addressed clients, it must be either set ``ONEAPP_VNF_DHCP4_MAC2IP_SUBNETS`` or translation hook disabled completely (``ONEAPP_VNF_DHCP4_MAC2IP_ENABLED="NO"``). Otherwise, you could encounter issues with failed DHCP requests for all non-OpenNebula addressed DHCP clients.
 
@@ -483,7 +483,7 @@ NAT4
 
 See: :ref:`Contextualization Parameters <vnf_nat4_context_param>`
 
-The VNF provides **IPv4 Network Address Translation** (Masquerade) to connected interfaces over a specific outgoing interface. The outgoing interface **always must be set** in ``ONEAPP_VNF_NAT4_INTERFACES_OUT``, the default is empty list and with empty list the function won't work even if it's enabled. This is differs from how other functions deal with interface lists (where default empty list means all interfaces).
+The VNF provides **IPv4 Network Address Translation** (Masquerade) to connected interfaces over a specific outgoing interface. The outgoing interface **always must be set** in ``ONEAPP_VNF_NAT4_INTERFACES_OUT``, the default is an empty list and with an empty list the function won't run even if it's enabled. This differs from how other functions deal with interface lists (where default empty list means all interfaces).
 
 .. _vnf_router4:
 
@@ -492,11 +492,11 @@ ROUTER4
 
 See: :ref:`Contextualization Parameters <vnf_router4_context_param>`
 
-The VNF provides *routing* functionality among different networks and allows the Virtual Machines from different networks to talk to each other. If enabled (``ONEAPP_VNF_ROUTER4_ENABLED``) and by default, the routing is done among all connected interfaces (except management), but can be limited only to interfaces specified via ``ONEAPP_VNF_ROUTER4_INTERFACES``. The function is implemented on Linux kernel level by enabling IP packages forwarding on the selected network interfaces.
+The VNF provides *routing* functionality among different networks and allows Virtual Machines from different networks to talk to each other. If enabled (``ONEAPP_VNF_ROUTER4_ENABLED``) and by default, the routing is done among all connected interfaces (except management), but can be limited only to interfaces specified via ``ONEAPP_VNF_ROUTER4_INTERFACES``. The function is implemented on the Linux kernel level by enabling IP packages forwarding on the selected network interfaces.
 
 .. important::
 
-  This function provides only routing. Function must be combined with :ref:`NAT4 <vnf_nat4>` VNF if you want to, e.g. give your private network clients access to the public Internet services.
+  This function provides only routing. The function must be combined with :ref:`NAT4 <vnf_nat4>` VNF if you want to, e.g. give your private network clients access to the public Internet services.
 
 .. _vnf_dns:
 
@@ -505,11 +505,11 @@ DNS
 
 See: :ref:`Contextualization Parameters <vnf_dns_context_param>`
 
-The VNF provides *DNS recursor* service implemented by `Unbound <https://nlnetlabs.nl/documentation/unbound/>`_ server. Introduces the DNS resolving functionality for network clients, which cannot access the Internet or other locally configured name server directly. The VNF by default uses DNS **root servers** to resolve the requests on its own. It can also forward queries (when ``ONEAPP_VNF_DNS_USE_ROOTSERVERS="NO"``) to another configured name servers (set in ``ONEAPP_VNF_DNS_NAMESERVERS`` or auto-configured from your virtual networks).
+The VNF provides *DNS recursor* service implemented by the `Unbound <https://nlnetlabs.nl/documentation/unbound/>`_ server. Introduces the DNS resolving functionality for network clients, which cannot access the Internet or other locally configured name server directly. The VNF by default uses DNS **root servers** to resolve the requests on its own. It can also forward queries (when ``ONEAPP_VNF_DNS_USE_ROOTSERVERS="NO"``) to another configured name servers (set in ``ONEAPP_VNF_DNS_NAMESERVERS`` or auto-configured from your virtual networks).
 
 .. note::
 
-   In forward-only behaviour the auto-configurated settings usually **IS NOT** desired, don't forget to specify the upstream DNS name servers, e.g.:
+   In forward-only behavior the auto-configurated settings usually **IS NOT** desired, don't forget to specify the upstream DNS name servers, e.g.:
 
     .. code::
 
@@ -518,7 +518,7 @@ The VNF provides *DNS recursor* service implemented by `Unbound <https://nlnetla
             ...
         ]
 
-Service can restricted only to work on particular network interfaces via ``ONEAPP_VNF_DNS_INTERFACES``. Apart from described syntax to list the :ref:`interfaces <vnf_interfaces>` to include or exclude (``ethX``, ``!ethX``), in this VNF it's extended to also cover optional listening IP and port on the particular interface (with syntax ``ethX/IP[@port]``), e.g.:
+Service can be restricted only to work on particular network interfaces via ``ONEAPP_VNF_DNS_INTERFACES``. Apart from described syntax to list the :ref:`interfaces <vnf_interfaces>` to include or exclude (``ethX``, ``!ethX``), in this VNF it's extended to also cover optional listening IP and port on the particular interface (with syntax ``ethX/IP[@port]``), e.g.:
 
 .. code::
 
@@ -529,9 +529,9 @@ Service can restricted only to work on particular network interfaces via ``ONEAP
 
 .. important::
 
-   Beware of running the DNF VNF on any of your Internet-facing interfaces! It might become DNS recursor for the whole Internet and be a victim of some form of `Denial-of-Service Attack <https://en.wikipedia.org/wiki/Denial-of-service_attack>`_!
+   Beware of running the DNS VNF on any of your Internet-facing interfaces! It might become a DNS recursor for the whole Internet and be a victim of some form of `Denial-of-Service Attack <https://en.wikipedia.org/wiki/Denial-of-service_attack>`_!
 
-Function might be disabled to work over TCP (via ``ONEAPP_VNF_DNS_TCP_DISABLED="YES"``) or UDP (via ``ONEAPP_VNF_DNS_UDP_DISABLED="YES"``) protocols. But, it's not generally recommended disable UDP protocol as many public name server using UDP exclusively.
+Function might be disabled to work over TCP (via ``ONEAPP_VNF_DNS_TCP_DISABLED="YES"``) or UDP (via ``ONEAPP_VNF_DNS_UDP_DISABLED="YES"``) protocols. But, it's not generally recommended to disable UDP protocol as many public name servers are using UDP exclusively.
 
 To have full control over DNS VNF, you can provide the complete Unbound configuration file via ``ONEAPP_VNF_DNS_CONFIG`` contextualization parameter. It must a Base64 encoded string with valid `unbound.conf <https://nlnetlabs.nl/documentation/unbound/unbound.conf/>`_ content.
 
@@ -540,7 +540,7 @@ To have full control over DNS VNF, you can provide the complete Unbound configur
 Tutorials
 =========
 
-In this section we will demonstrate how this appliance can be used - but there is a need for a few prerequisities. VNF appliance is useful only when there are networks involved so we will create a couple of virtual networks in OpenNebula - if you do not know how to create them then peek into the `Virtual Network Management <https://docs.opennebula.org/stable/operation/network_management/manage_vnets.html>`_ documentation in OpenNebula.
+In this section, we will demonstrate how this appliance can be used - but there is a need for a few prerequisites. VNF appliance is useful only when there are networks involved so we will create a couple of virtual networks in OpenNebula - if you do not know how to create them then peek into the `Virtual Network Management <https://docs.opennebula.org/stable/operation/network_management/manage_vnets.html>`_ documentation in OpenNebula.
 
 ================ ==================== ========================================= =================== ===============
 Network Name     Subnet               Range                                     Gateway             DNS
@@ -553,18 +553,18 @@ Network Name     Subnet               Range                                     
 
 .. important::
 
-   Before you can start with the tutorials, ensure that you followed the steps as was described in the :ref:`Quick Start <service_vnf_quick_start>` section and that you have appliance(s) imported in your OpenNebula and templates updated with password and/or SSH key.
+   Before you can start with the tutorials, ensure that you followed the steps as was described in the :ref:`Quick Start <service_vnf_quick_start>` section and that you have appliance(s) imported in your OpenNebula and templates updated with the password and/or SSH key.
 
-This tutorial starts an instance of VNF appliance with following functions - router with NAT, DHCP server and DNS. It will have access to the Internet via ``public`` (external) network (where NAT will happen) and it will be attached to other two different local subnets (where it will provide DHCP and DNS services). It will forward packets between these networks and it will provide access to the Internet.
+This tutorial starts an instance of VNF appliance with the following functions - router with NAT, DHCP server, and DNS. It will have access to the Internet via the ``public`` (external) network (where NAT will happen) and it will be attached to the other two different local subnets (where it will provide DHCP and DNS services). It will forward packets between these networks and it will provide access to the Internet.
 
-We'll describe how to instantiate VNF as regular :ref:`Virtual Machine <vnf_tutorial_vnf>` and as :ref:`Virtual Router <vnf_tutorial_vrouter>`.
+We'll describe how to instantiate VNF as a regular :ref:`Virtual Machine <vnf_tutorial_vnf>` and as :ref:`Virtual Router <vnf_tutorial_vrouter>`.
 
 .. _vnf_tutorial_vnf:
 
 VNF as Virtual Machine
 ----------------------
 
-At the beginning, let's instantiate Virtual Machine from the ``Service VNF`` template without attaching any no networks yet. The provided contextualization can be seen in this picture:
+In the beginning, let's instantiate Virtual Machine from the ``Service VNF`` template without attaching any no networks yet. The provided contextualization can be seen in this picture:
 
 |image-vnf-demo-vm1|
 
@@ -572,11 +572,11 @@ At the beginning, let's instantiate Virtual Machine from the ``Service VNF`` tem
 
 .. note::
 
-   In this tutorial, we don't want to provide DHCP and DNS recursor functions to the Internet - so we specify interfaces for these VNFs with public interface excluded - ``"!eth0"``. For the NAT, we must be explicit and specify outgoing public interface over which address translation happens - ``"eth0"``.  For the routing, we want to forward packets between all the interfaces - so the clients in both the local networks can talk to each other and to the internet. For that we can leave it empty, because that is the default when the VNF is enabled.
+   In this tutorial, we don't want to provide DHCP and DNS recursor functions to the Internet - so we specify interfaces for these VNFs with public interface excluded - ``"!eth0"``. For the NAT, we must be explicit and specify outgoing public interface over which address translation happens - ``"eth0"``.  For the routing, we want to forward packets between all the interfaces - so the clients in both the local networks can talk to each other and to the internet. For that, we can leave it empty because that is the default when the VNF is enabled.
 
    The rest of the contextualization parameters are unchanged, they are left with defaults.
 
-Click the **Instantiate** button and wait until VM is properly started. You should also be able to login inside and look around. There is only loopback interface so all enabled VNFs are just idle.
+Click the **Instantiate** button and wait until VM is properly started. You should also be able to login inside and look around. There is only a loopback interface so all enabled VNFs are just idle.
 
 Now let's attach three virtual networks and see what happens:
 
@@ -587,7 +587,7 @@ Now let's attach three virtual networks and see what happens:
 Step 1 - Attach First NIC
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-First we will attach ``public`` virtual network (which will our first NIC, referenced by platform independent name ``eth0``). It is the Internet facing NIC through which we can reach public services like root DNS servers.
+First, we will attach the ``public`` virtual network (which will our first NIC, referenced by platform-independent name ``eth0``). It is the Internet-facing NIC through which we can reach public services like root DNS servers.
 
 Click on the instantiated VM and then **Network → Attach nic → public → Attach**.
 
@@ -625,7 +625,7 @@ Our VM has altogether 3 addresses IP addresses, for example:
 
 .. note::
 
-    Please, bear in mind that we are demoing specific environment and addresses might differ to yours. Adjust the examples accordingly.
+    Please, bear in mind that we are demoing a specific environment and addresses might differ to yours. Adjust the examples accordingly.
 
 Step 3 - Validation
 ~~~~~~~~~~~~~~~~~~~
@@ -646,17 +646,17 @@ You can verify that all has been configured by checking the appliance configurat
 
     Advanced users can inspect the real configuration files of the VNF services to understand how they are configured to work, e.g.:
 
-    * VNF **DHCP4**: ``/etc/kea/kea-dhcp4.conf``
-    * VNF **DNS**: ``/etc/unbound/unbound.conf``
-    * VNF **ROUTER4**: ``/etc/sysctl.d/01-one-router4.conf``
-    * VNF **NAT**: ``/etc/iptables/nat4-rules-enabled``
+    * **DHCP4** VNF: ``/etc/kea/kea-dhcp4.conf``
+    * **DNS** VNF: ``/etc/unbound/unbound.conf``
+    * **ROUTER4** VNF: ``/etc/sysctl.d/01-one-router4.conf``
+    * **NAT** VNF: ``/etc/iptables/nat4-rules-enabled``
 
 Step 4 - Reconfigure DHCP
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
 We are still not done yet. DHCP4 and DNS functions are configured and running, but DHCP does not provide the right options to the clients - it offers parameters based on contextualization preloaded from Virtual Network instead of ones we want. We are going to configure the IP addresses or our VNF VM (``192.168.101.100`` and ``192.168.102.100``) as both gateways and name servers to our DHCP clients
 
-We must update the Virtual Machine context parameters to fix this problem. Open Virtual Machine details in the OpenNebula Sunstone and click on **Conf → Update Configuration → Context → Custom vars** and at the bottom, there is a "**plus**" button. Click on it and create following context variables with values:
+We must update the Virtual Machine context parameters to fix this problem. Open Virtual Machine details in the OpenNebula Sunstone and click on **Conf → Update Configuration → Context → Custom vars** and at the bottom, there is a "**plus**" button. Click on it and create the following context variables with values:
 
 =================================== ===============
 Variable Name                       Value
@@ -667,13 +667,13 @@ Variable Name                       Value
 ``ONEAPP_VNF_DHCP4_ETH2_GATEWAY``   ``192.168.102.100``
 =================================== ===============
 
-Apply changes by clicking on **Update** button at the top. After the recontextualization happens in your VNF VM, you can verify the changes in appliance configuration file (``/etc/one-appliance/config``) or in ISC Kea configuration (``/etc/kea/kea-dhcp4.conf``).
+Apply changes by clicking on the **Update** button at the top. After the recontextualization happens in your VNF VM, you can verify the changes in the appliance configuration file (``/etc/one-appliance/config``) or in ISC Kea configuration (``/etc/kea/kea-dhcp4.conf``).
 
 
 Step 5 - Reconfigure DNS
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-Demo should be ready now, but maybe the OpenNebula is deployed in a restricted environment and direct DNS resolving through root servers doesn't work. For example, try on your VNF VM instance:
+The demo should be ready now, but maybe the OpenNebula is deployed in a restricted environment and direct DNS resolving through root servers doesn't work. For example, try on your VNF VM instance:
 
 .. code::
 
@@ -696,7 +696,7 @@ Apply changes by clicking on **Update** and wait until recontextualization is fi
 
 .. note::
 
-    You can verify the change in the configuration of Unbound server in ``/etc/unbound/unbound.conf``, e.g.:
+    You can verify the change in the configuration of the Unbound server in ``/etc/unbound/unbound.conf``, e.g.:
 
     .. code::
 
@@ -706,7 +706,7 @@ Apply changes by clicking on **Update** and wait until recontextualization is fi
             forward-addr: 8.8.8.8
             forward-addr: 8.8.4.4
 
-If provided parameters are correct and VM was reconfigured successfully, the resolving should work now:
+If the provided parameters are correct and VM was reconfigured successfully, the resolving should work now:
 
 .. code::
 
@@ -723,14 +723,14 @@ If provided parameters are correct and VM was reconfigured successfully, the res
 Step 6 - Test Clients
 ~~~~~~~~~~~~~~~~~~~~~
 
-We are done with configuring VNF and we'll run few client VMs, for which the VNF will provide services (DNS, DHCP, routing with NAT).
+We are done with configuring VNF and we'll run a few client VMs, for which the VNF will provide services (DNS, DHCP, routing with NAT).
 
-You can export any image with your favourite operating system from `OpenNebula Marketplace <http://docs.opennebula.io/stable/advanced_components/marketplace/market_one.html>`_ for following tests, but the examples below are running on the `Alpine Linux image <http://marketplace.opennebula.org/appliance/193631c3-7082-4528-bfdb-31b2ecb3d9f5>`__. Instantiate 2 VMs with no special configuration, only attach one NIC to each client VM from different network
+You can export any image with your favorite operating system from `OpenNebula Marketplace <http://docs.opennebula.io/stable/advanced_components/marketplace/market_one.html>`_ for the following tests, but the examples below are running on the `Alpine Linux image <http://marketplace.opennebula.org/appliance/193631c3-7082-4528-bfdb-31b2ecb3d9f5>`__. Instantiate 2 VMs with no special configuration, only attach one NIC to each client VM from different network
 
 1. VM - NIC from ``vnet_a``
 2. VM - NIC from ``vnet_b``
 
-Login over the OpenNebula Sunstone VNC console into both VMs, run DHCP client and validate they received leases with expected parameters. For example, for VM 1 (with NIC in ``vnet_a``):
+Login over the OpenNebula Sunstone VNC console into both VMs, run DHCP clients, and validate they received leases with expected parameters. For example, for VM 1 (with NIC in ``vnet_a``):
 
 .. code::
 
@@ -764,28 +764,28 @@ For VM 2 (with NIC in ``vnet_b``):
     default via 192.168.102.100 dev eth0 metric 202
     192.168.102.0/24 dev eth0 proto kernel scope link src 192.168.102.101
 
-Both of these client VMs connected to different networks should be able to talk to each other (try ``ping``), resolve DNS and reach Internet services.
+Both of these client VMs connected to different networks should be able to talk to each other (try ``ping``), resolve DNS, and reach Internet services.
 
 .. _vnf_tutorial_vrouter:
 
 VNF as Virtual Router
 ---------------------
 
-In this part of tutorial, we'll instantiate appliance as Virtual Router. The functionality will be same as in previous VNF as Virtual Machine, but in addition it'll be deployed in HA mode with Keepalived service running with no extra work. In the OpenNebula Sunstone, go to the **Templates → Virtual Routers** and instantiate ``Service Virtual Router`` (also you continue to the `Virtual Routers documentation <https://docs.opennebula.org/stable/operation/network_management/vrouter.html>`_ to learn more about VRs).
+In this part of the tutorial, we'll instantiate the appliance as a Virtual Router. The functionality will be the same as in previous VNF as Virtual Machine, but in addition, it'll be deployed in HA mode with Keepalived service running with no extra work. In the OpenNebula Sunstone, go to the **Templates → Virtual Routers** and instantiate ``Service Virtual Router`` (also you continue to the `Virtual Routers documentation <https://docs.opennebula.org/stable/operation/network_management/vrouter.html>`_ to learn more about VRs).
 
 Ensure your contextualization is as follows, we'll start 2 instances:
 
 |image-vnf-demo-vrouter1|
 
-You won't be able instantiate the VR until you fill the specific name:
+You won't be able to instantiate the VR until you fill the specific name:
 
 |image-vnf-demo-vrouter2|
 
 .. note::
 
-    The contextualization parameters are almost same as they were in the :ref:`previous VM tutorial <vnf_tutorial_vnf_explanation>`, the notable differences here is the missing **router** option (which is always enabled when instantiatead as VR) and that VR has option **Number of VM instances** which specifies number nodes in HA mode.
+    The contextualization parameters are almost the same as they were in the :ref:`previous VM tutorial <vnf_tutorial_vnf_explanation>`, the notable differences here are the missing **router** option (which is always enabled for VR) and new option **Number of VM instances** which specifies number nodes in HA mode.
 
-We wait until the VR machines are running and we can login to each of them via VNC in Sunstone to verify if everything was configured as expected. Although we did not attached any network yet, all enabled VNFs are idle. Now we attach these 3 virtual networks:
+We wait until the VR machines are running and we can login to each of them via VNC in Sunstone to verify if everything was configured as expected. Although we did not attach any network yet, all enabled VNFs are idle. Now we attach these 3 virtual networks:
 
 1. ``public`` (to be on ``eth0``)
 2. ``vnet_a`` (to be on ``eth1``)
@@ -794,7 +794,7 @@ We wait until the VR machines are running and we can login to each of them via V
 Step 1 - Attach First NIC
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-First we will attach NIC from virtual network ``public``. It is an internet facing NIC through which we can reach public services like root DNS servers. In the OpenNebula Sunstone pick **Instances → Virtual Routers**, click on your Virtual Router and then **Attach NIC → public → Attach**.
+First, we will attach NIC from the virtual network ``public``. It is an Internet-facing NIC through which we can reach public services like root DNS servers. In the OpenNebula Sunstone pick **Instances → Virtual Routers**, click on your Virtual Router and then **Attach NIC → public → Attach**.
 
 If you are logged in one of the VMs of your Virtual Router, then you can tail the appliance log
 
@@ -809,7 +809,7 @@ If you are logged in one of the VMs of your Virtual Router, then you can tail th
 
     localhost:~# tail -f /var/log/one-appliance/ONE_configure.log
 
-You should see an activity there and the final lines should resemble:
+You should see the activity there and the final lines should resemble:
 
 .. code::
 
@@ -820,7 +820,7 @@ You should see an activity there and the final lines should resemble:
 Step 2 -Attach Second and Third NICs
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Now we will attach ``vnet_a`` and ``vnet_b`` with an extra (but crucial) step. Go again on **Instances → Virtual Routers**, click on your Virtual Router and then **Attach NIC**. Click on ``vnet_a``  and now you must fill in the text box **Force IPv4** with value ``192.168.101.111`` and tick the checkbox on the right with **Floating IP**. If your settings look like on screenshot below, click on **Attach**:
+Now we will attach ``vnet_a`` and ``vnet_b`` with an extra (but crucial) step. Go again on **Instances → Virtual Routers**, click on your Virtual Router, and then **Attach NIC**. Click on ``vnet_a``  and now you must fill in the text box **Force IPv4** with value ``192.168.101.111`` and tick the checkbox on the right with **Floating IP**. If your settings look like on the screenshot below, click on **Attach**:
 
 |image-vnf-demo-vrouter3|
 
@@ -863,10 +863,10 @@ And, for the second instance:
 
     Advanced users can inspect the real configuration files of the VNF services to understand how they are configured to work, e.g.:
 
-    * VNF **DHCP4**: ``/etc/kea/kea-dhcp4.conf``
-    * VNF **DNS**: ``/etc/unbound/unbound.conf``
-    * VNF **ROUTER4**: ``/etc/sysctl.d/01-one-router4.conf``
-    * VNF **NAT**: ``/etc/iptables/nat4-rules-enabled``
+    * **DHCP4** VNF: ``/etc/kea/kea-dhcp4.conf``
+    * **DNS** VNF: ``/etc/unbound/unbound.conf``
+    * **ROUTER4** VNF: ``/etc/sysctl.d/01-one-router4.conf``
+    * **NAT** VNF: ``/etc/iptables/nat4-rules-enabled``
 
 The important point is that both floating IPs (VIPs) are assigned. Log into each instance of the Virtual Router and check the state. For example:
 
@@ -898,7 +898,7 @@ On the output above we can see that the particular Virtual Router VM is the **Ma
     localhost:~# ip a | grep -e 192.168.101.111 -e 192.168.102.111
     localhost:~#
 
-This instance is running in a standby (backup) mode waiting for the time when master is down to take over the operations. Also, it doesn't have the floating IPs assigned.
+This instance is running in a standby (backup) mode and waiting for the time when the master instance is down to take over the operations. Also, it doesn't have the floating IPs assigned.
 
 Step 4 - Test Clients
 ~~~~~~~~~~~~~~~~~~~~~
@@ -908,7 +908,7 @@ We are done with Virtual Router configuration and as a final step, we are going 
 1. VM - NIC from ``vnet_a``
 2. VM - NIC from ``vnet_b``
 
-Login over the OpenNebula Sunstone VNC console into both VMs, run DHCP client and validate they received leases with expected parameters. For example, for VM 1 (with NIC in ``vnet_a``):
+Login over the OpenNebula Sunstone VNC console into both VMs, run DHCP clients, and validate they received leases with expected parameters. For example, for VM 1 (with NIC in ``vnet_a``):
 
 .. code::
 
@@ -942,7 +942,7 @@ For VM 2 (with NIC in ``vnet_b``):
     default via 192.168.102.111 dev eth0 metric 202
     192.168.102.0/24 dev eth0 proto kernel scope link src 192.168.102.101
 
-Both of these network clients (on different subnets) should be able to communicate with each other other (e.g., try to ``ping`` second VM from first VM) and should be able to resolve DNS and reach internet services.
+Both of these network clients (on different subnets) should be able to communicate with each other (e.g., try to ``ping`` second VM from first VM) and should be able to resolve DNS and reach internet services.
 
 Management Network
 ~~~~~~~~~~~~~~~~~~
