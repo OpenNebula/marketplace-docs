@@ -10,7 +10,7 @@ OpenNebula Marketplace Appliance implementing various **Virtual Network Function
 
     This appliance replaces the Virtual Routers available on the Marketplace in the past as **Vrouter Alpine** for KVM and vCenter platforms. These old versions are referenced as **legacy** from now on. Templates and contextualization parameters are compatible with new appliance, you only need to update the reference in the old imported template to the new image. It's highly recommended to migrate to the new appliance.
 
-    To meet different use-cases, the core logic is provided via 2 appliances (sharing the same image) on the Marketplace identified listed as
+    To meet different use-cases, the core logic is provided by 2 appliances (sharing the same image) and listed on the Marketplace as
 
     * `Service VNF <http://marketplace.opennebula.systems/appliance/7dba6a0d-73e8-4036-9cb8-73da669ee494>`__ - exposing all features as regular VM
     * `Service Virtual Router <http://marketplace.opennebula.systems/appliance/cc96d537-f6c7-499f-83f1-15ac4058750e>`__ - integration with OpenNebula Virtual Router interface
