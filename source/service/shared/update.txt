@@ -1,7 +1,7 @@
 Update VM template
 ------------------
 
-Initial template for the VM has minimal memory and CPU sizing, also any network configuration is missing. If you plan to use the template more often, it's good to update the it for your requirements. Go through the following steps:
+Initial template for the VM has minimal memory and CPU sizing, also any network configuration is missing. If you plan to use the template more often, it's good to update it for your requirements. Go through the following steps:
 
 - open your OpenNebula Sunstone, login
 - go to **Templates → VMs** tab
