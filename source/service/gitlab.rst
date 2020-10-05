@@ -18,7 +18,7 @@ Appliance components versions:
 ============================= ==================
 Component                     Version
 ============================= ==================
-GitLab                        13.0.5 CE
+GitLab                        13.4.2 CE
 Contextualization package     5.12.0
 ============================= ==================
 
