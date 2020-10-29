@@ -201,16 +201,37 @@ For more information continue to :ref:`DNS <vnf_dns>` VNF documentation.
 Function NAT4
 ~~~~~~~~~~~~~
 
-The function implements IPv4 Network Address Translation (Masquerade) service for the connected interfaces (except management), through the specified outgoing interface.
+The function implements IPv4 Network Address Translation (Masquerade) service for the attached interfaces (except management), through the specified outgoing interface(s).
 
 ===================================== ============== ===========
 Parameter                             Default        Description
 ===================================== ============== ===========
 ``ONEAPP_VNF_NAT4_ENABLED``           ``NO``         Enable/disable NAT function (``YES``/``NO``)
-``ONEAPP_VNF_NAT4_INTERFACES_OUT``     none          **Mandatory:** Outgoing :ref:`interface <vnf_interfaces>` for NAT (``<[!]ethX> ...``)
+``ONEAPP_VNF_NAT4_INTERFACES_OUT``     none          **Mandatory:** Outgoing :ref:`interface(s) <vnf_interfaces>` for NAT (``<[!]ethX> ...``)
 ===================================== ============== ===========
 
 For more information continue to :ref:`NAT4 <vnf_nat4>` VNF documentation.
+
+.. _vnf_sdnat4_context_param:
+
+Function SDNAT4
+~~~~~~~~~~~~~~~
+
+The function implements SNAT/DNAT IPv4 service for the attached interfaces (except management), through the specified interfaces.
+
+======================================= ============== ===========
+Parameter                               Default        Description
+======================================= ============== ===========
+``ONEAPP_VNF_SDNAT4_ENABLED``           ``NO``         Enable/disable NAT function (``YES``/``NO``)
+``ONEAPP_VNF_SDNAT4_INTERFACES``        none           **Mandatory:** Allowed :ref:`interfaces <vnf_interfaces>` for SNAT/DNAT mapping (``<[!]ethX> ...``)
+``ONEAPP_VNF_SDNAT4_REFRESH_RATE``      ``30``         Refresh rate (time period) between updates to the SNAT/DNAT rules  (in seconds)
+======================================= ============== ===========
+
+.. important::
+
+   This VNF will work only if the appliance is running as a vrouter and it will also need an access to the `OneGate <https://docs.opennebula.io/stable/advanced_components/application_insight/onegate_configure.html>`_ service of the OpenNebula. If OneGate is not started or it is not accessible from the vrouter instance then the appliance will not be able to query it for updates and create any SNAT/DNAT rules.
+
+For more information continue to :ref:`SDNAT4 <vnf_sdnat4>` VNF documentation.
 
 .. _vnf_router4_context_param:
 
@@ -323,6 +344,8 @@ Each VNF has **interface** context parameter which defines on which network inte
 .. note::
 
    **NAT4 VNF**: A special case is NAT4 VNF, which uses a context parameter ``ONEAPP_VNF_NAT4_INTERFACES_OUT`` (with ``_OUT`` suffix) to emphasize the actual place where the network address translation will happen (outgoing/external interface). This parameter doesn't provide any default. If it's not specified, NAT4 won't select any outgoing interface automatically and service won't behave. For NAT4 the parameter ``ONEAPP_VNF_NAT4_INTERFACES_OUT`` is **always mandatory**.
+
+   This applies similarly to the ``ONEAPP_VNF_SDNAT4_INTERFACES`` which also defaults to none.
 
 The listed interface names must follow the naming of the interfaces in the OpenNebula (see `context parameters <http://docs.opennebula.io/stable/operation/references/template.html#context-section>`__). Always use ``eth`` interface names followed by an index starting from 0, i.e. ``eth0`` for first NIC, ``eth4`` for fifth NIC. The real interface names inside the running VR/VM might differ - have different prefixes (e.g., ``enoX``, ``ensX``, ``enpXsY``) following Consistent Network Device Naming or even different interface index(!). Appliance scripts **automatically translate OpenNebula interface names from context names into real instance names**.
 
@@ -484,6 +507,71 @@ NAT4
 See: :ref:`Contextualization Parameters <vnf_nat4_context_param>`
 
 The VNF provides **IPv4 Network Address Translation** (Masquerade) to connected interfaces over a specific outgoing interface. The outgoing interface **always must be set** in ``ONEAPP_VNF_NAT4_INTERFACES_OUT``, the default is an empty list and with an empty list the function won't run even if it's enabled. This differs from how other functions deal with interface lists (where default empty list means all interfaces).
+
+.. _vnf_sdnat4:
+
+SDNAT4
+------
+
+See: :ref:`Contextualization Parameters <vnf_sdnat4_context_param>`
+
+This VNF is similar to the :ref:`NAT4 <vnf_nat4>` function but it provides one-to-one **SNAT (Source NAT)** and **DNAT (Destination NAT)** mapping instead of masquerading all the IPv4 packets on the outgoing interface. The NATed interfaces **must be also explicitly set** in ``ONEAPP_VNF_SDNAT4_INTERFACES`` otherwise no rules will be applied. This differs from the way the other functions deal with interface lists (where default empty list means all interfaces).
+
+.. important::
+
+    As mentioned above in :ref:`context parameters <vnf_sdnat4_context_param>` - this function is applicable only when running as a vrouter and it also relies on the OneGate service. Please check that you are running OpenNebula of at least version **5.12.6+** and that OneGate is configured and accessible from the VM instance. You should also ensure thet ``onegate-server.conf`` allows the vrouter to query it for the necessary informations::
+
+        :permissions:
+
+          ### ... ###
+
+          :vrouter:
+            :show: true
+          :vnet:
+            :show_by_id: true
+
+         ### ... ###
+
+         :vnet_template_attributes:
+            - NETWORK_ADDRESS
+            - NETWORK_MASK
+            - GATEWAY
+            - GATEWAY6
+            - DNS
+            - GUEST_MTU
+            - CONTEXT_FORCE_IPV4
+            - SEARCH_DOMAIN
+
+Once interface list is provided the SDNAT4 VNF will start to monitor OneGate service for changes to the **external aliases** assigned to any VM on any of the connected virtual network of the vrouter appliance. The destination portion of SNAT/DNAT is the IP address of the external alias and the source portion is the actually assigned IP address of the NATed VM.
+
+To assign an external alias we must first create a template file (e.g.: ``external-nic-alias.tmpl``) with a similar content to this one below (network name, ID and NIC must be adjusted to your situation):
+
+.. code::
+
+   NIC_ALIAS = [
+                NETWORK    = public,
+                NETWORK_ID = 0,
+                PARENT     = NIC0,
+                EXTERNAL   = YES
+               ]
+
+This template then can be applied via command line like this:
+
+.. code::
+
+   oneadmin@opennebula-server:~# onevm nic-attach 10 --network public --file external-nic-alias.tmpl
+
+Let's demonstrate a simple scenario where ``ONEAPP_VNF_SDNAT4_INTERFACES`` is set to ``eth0 eth1``. The vrouter is connected to the **public** network (``10.0.0.0/8``) with IP ``10.0.0.1`` on the ``eth0`` interface and to the **private** network (``192.168.0.0/24``) with IP ``192.168.0.1`` on the ``eth1``. We also have a **VM1** on the public network with the address ``10.0.0.100`` and **VM2** (``ID=10``) with one interface ``eth0`` attached to the **private** virtual network with the IP ``192.168.0.2``. On to this interface we will attach one external alias created by the command above which gives us the address: ``10.0.0.101``.
+
+The VM2 is now transparently accessible via its external alias IP which is translated in both directions to its real private address. Any other VM in the public network will be able to connect to it via the external alias.
+
+The described situation can be seen in the following picture:
+
+|image-vnf-sdnat4-diagram|
+
+.. note::
+
+   The mapping rules are updated in periodic intervals determined by the context variable ``ONEAPP_VNF_SDNAT4_REFRESH_RATE`` which defaults to 30 seconds.
 
 .. _vnf_router4:
 
@@ -966,3 +1054,4 @@ Wait for all the Virtual Router instances to be reconfigured and one of them wil
 .. |image-vnf-demo-vrouter3| image:: /images/vnf/vnf-demo-vrouter3.png
 .. |image-vnf-demo-vrouter4| image:: /images/vnf/vnf-demo-vrouter4.png
 .. |image-vnf-demo-vrouter5| image:: /images/vnf/vnf-demo-vrouter5.png
+.. |image-vnf-sdnat4-diagram| image:: /images/vnf/vnf-sdnat4-diagram.png
