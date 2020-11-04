@@ -7,12 +7,12 @@
    - `OneGate <https://docs.opennebula.io/stable/advanced_components/application_insight/onegate_configure.html>`_ service
 
      - properly **configured** (see below) and **running** on front-end server,
-     - **enabled** usage of OneGate in the VR template,
-     - **reachable from the VR** instance over attached networks.
+     - **enabled** `usage of OneGate <http://docs.opennebula.io/stable/advanced_components/application_insight/onegate_usage.html#setup-the-vm-template>`_ in the VR template,
+     - **reachable from the VR** instance over the attached NICs.
 
-   All requirements mut be fulfilled, otherwise the VNF won't be able to query the state and create/update the IPv4 address mapping rules.
+   *All requirements must be fulfilled, otherwise, the VNF won't be able to query the state and create/update the Virtual Networks Mapping rules.*
 
-   **Only in OpenNebula 5.12:** As the functionality depends on new OneGate features available since OpenNebula 5.12.6, they might not be enabled on your server within the rest of 5.12.x release cycle. Please ensure your OneGate server configuration file ``/etc/one/onegate-server.conf`` has following relevant parts and restart the service after update (by running ``systemctl restart opennebula-gate``):
+   **Only in OpenNebula 5.12:** As the functionality depends on new OneGate features available since OpenNebula 5.12.6, they might not be enabled yet in your OneGate server configuration if it's still running 5.12.x version. Please ensure your OneGate server configuration file ``/etc/one/onegate-server.conf`` has the following relevant parts, add and restart the service after update (by running ``systemctl restart opennebula-gate``):
 
     .. code::
 

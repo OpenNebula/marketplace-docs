@@ -218,13 +218,13 @@ For more information continue to :ref:`NAT4 <vnf_nat4>` VNF documentation.
 Function SDNAT4 (Virtual Networks Mapping)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The function implements mapping of IPv4 addresses among different virtual networks for the attached interfaces (except management) via SNAT and DNAT mechanism.
+The function implements mapping of IPv4 addresses among virtual networks available through the attached interfaces (except management) via SNAT and DNAT mechanism.
 
 ======================================= ============== ===========
 Parameter                               Default        Description
 ======================================= ============== ===========
 ``ONEAPP_VNF_SDNAT4_ENABLED``           ``NO``         Enable/disable SNAT/DNAT function (``YES``/``NO``)
-``ONEAPP_VNF_SDNAT4_INTERFACES``        none           **Mandatory:** Allowed :ref:`interfaces <vnf_interfaces>` for mapping (``<[!]ethX> ...``)
+``ONEAPP_VNF_SDNAT4_INTERFACES``        none           **Mandatory:** List of :ref:`interfaces <vnf_interfaces>` among which to detect mappings (``<[!]ethX> ...``)
 ``ONEAPP_VNF_SDNAT4_REFRESH_RATE``      ``30``         Refresh rate between updates of the mapping rules (in seconds)
 ======================================= ============== ===========
 
@@ -514,29 +514,47 @@ SDNAT4 (Virtual Networks Mapping)
 
 See: :ref:`Contextualization Parameters <vnf_sdnat4_context_param>`
 
-This VNF provides **Virtual Networks Mapping** feature, which allows to transparently deliver traffic targetting an IP address (e.g., public) from one network to a device in different network (e.g., private) without any need to directly expose the device to the first network. This eventually results in a **mapping** between those 2 IP addresses from different networks. Such mapping is established on the Virtual Router where all related networks need to be connected, and by attaching the foreign mapped IP address to the VM as **external NIC alias**.
+This VNF provides the **Virtual Networks Mapping** feature, which allows to transparently deliver traffic targetting an IP address (e.g., public) from one network to a device in a different network (e.g., private) without any need to directly expose the device to the first network. This eventually results in **mapping** between those 2 IP addresses from different networks. Such mapping is established on the Virtual Router where all related networks need to be connected, and by attaching the foreign mapped IP address to the VM as **external NIC alias**.
 
 .. note::
 
-    This VNF is is similar to the :ref:`NAT4 <vnf_nat4>` function as it's implemented by two-way NAT - **SNAT (Source NAT)** and **DNAT (Destination NAT)**. The short function name ``SDNAT4`` is a composition of these mechanisms used underneath.
+    This VNF is similar to the :ref:`NAT4 <vnf_nat4>` function as it's implemented by two-way NAT - **SNAT (Source NAT)** and **DNAT (Destination NAT)**. The short function name ``SDNAT4`` is a composition of these mechanisms used underneath.
 
-The interfaces on Virtual Router among which the mapping can be established **must be always specified** via context parameter ``ONEAPP_VNF_SDNAT4_INTERFACES``, otherwise no rules will be applied (note: this differs from how other functions deal with interface lists, where default empty list means all interfaces).
+The interfaces on Virtual Router among which the mapping can be established **must be always specified** via context parameter ``ONEAPP_VNF_SDNAT4_INTERFACES``, otherwise, no rules will be applied (this differs from how other functions deal with interface lists, where default empty list means all interfaces).
 
 .. include:: shared/vnf_sdnat4_req.txt
 
-Once interface list is provided to the VNF, the service deployed inside the Virtual Router starts to monitor OpenNebula via OneGate for changes to the IP address allocations. Esp., to the **external NIC aliases assigned** to any VM on any of virtual networks connected to the Virtual Router instance. Based on the aggregated data, it builds a list of pairs for SNAT/DNAT where destination part is the IP address of the externail NIC alias and the source part is the real IP address assigned to the VM we try to reach.
+Once the interface list is provided to the VNF, the service deployed inside the Virtual Router starts to monitor OpenNebula via OneGate for changes to the IP address allocations. Esp., to the **external NIC aliases assigned** to any VM on any of virtual networks connected to the Virtual Router instance. Based on the aggregated data, it builds a list of pairs for SNAT/DNAT where the destination part is the IP address of the external NIC alias and the source part is the real IP address assigned to the VM we try to reach.
 
 .. note::
 
     OpenNebula supports 2 types of NIC aliases.
 
-    - **internal** - the IP addresses directly configured in the VM as additional IP addresses on the interfaces. Virtual machine is directly reachable over the internal NIC alias address. Internal NIC aliases are natively supported and documented in the `CLI and GUI Sunstone <http://docs.opennebula.io/stable/operation/vm_management/vm_templates.html#network-interfaces-alias>`_.
+    - **internal** - the IP addresses directly configured inside the VM as additional IP addresses on the network interfaces. The virtual machine is directly reachable over the internal NIC alias address. Internal NIC aliases are natively supported and documented in the `CLI and GUI Sunstone <http://docs.opennebula.io/stable/operation/vm_management/vm_templates.html#network-interfaces-alias>`_.
 
-    - **external** - the IP addresses are not configured inside the VM, but "some" (external) logic outside the VM ensures that the traffic designated for such IP address is routed to the actual VM. This requires the "external" mechanism to implement them, are specific for some deployment types (e.g., when running on 3rd party's managed infrastructures) and therefore are not oficially documented.
+    Example of VM with several internal NIC aliases configured on ``eth0`` NIC:
 
-    Virtual Networks Mapping relies on **external NIC aliases**!
+    .. code::
 
-To hot-attach an **external NIC alias** to the existing VM, we must use CLI tools and pass a template file (e.g.: ``external-nic-alias.tmpl``) with a content similar to the one below (network name, ID and NIC must be adapted to your use-case):
+        # ip address show dev eth0
+        2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP group default qlen 1000
+            link/ether 02:00:c0:a8:02:0e brd ff:ff:ff:ff:ff:ff
+            inet 192.168.2.14/24 brd 192.168.2.255 scope global eth0
+               valid_lft forever preferred_lft forever
+            inet 192.168.2.15/24 brd 192.168.2.255 scope global secondary eth0
+               valid_lft forever preferred_lft forever
+            inet 192.168.2.16/24 brd 192.168.2.255 scope global secondary eth0
+               valid_lft forever preferred_lft forever
+            inet 192.168.2.17/24 brd 192.168.2.255 scope global secondary eth0
+               valid_lft forever preferred_lft forever
+            inet6 fe80::c0ff:fea8:20e/64 scope link
+               valid_lft forever preferred_lft forever
+
+    - **external** - the additional IP addresses **are not configured inside the VM**, but "some" external logic outside the VM ensures that the traffic designated for such IP address is routed to the primary IP address of VM. This requires the external mechanism to implement them, they are specific for some deployment types (e.g., when running on 3rd party's managed infrastructures), and therefore are not well documented and proposed. Virtual Networks Mapping function in the Virtual Router is the first example of general-purpose external logic, which supports the external NIC aliases. You can find examples of usage below.
+
+    Virtual Networks Mapping relies on using **external NIC aliases**, the second case!
+
+To hot-attach an **external NIC alias** to the existing VM, we must use CLI tools and pass a template file (e.g.: ``external-nic-alias.tmpl``) with content similar to the one below (network name, ID and NIC must be adapted to your use-case):
 
 .. code::
 
@@ -548,7 +566,7 @@ To hot-attach an **external NIC alias** to the existing VM, we must use CLI tool
 
 .. important::
 
-    The template parameter ``EXTERNAL=YES`` must be set, otherwise the alias will be configured as **internal** and additional IP address will appear in the VM. The parameter ``EXTERNAL=yes`` can be configured globally in the template of your virtual network to apply always and for all addresses.
+    The template parameter ``EXTERNAL=YES`` must be set, otherwise, the alias will be configured as **internal** and an additional IP address will appear in the VM. The usage of external NIC aliases can be also enforced for all IP addresses of the specific virtual network if the parameter ``EXTERNAL=YES`` is set directly in your `virtual network <http://docs.opennebula.io/stable/operation/network_management/>`__ template.
 
 Such alias can be attached to the VM (e.g., with ID 10) via command line following way:
 
@@ -556,22 +574,22 @@ Such alias can be attached to the VM (e.g., with ID 10) via command line followi
 
    $ onevm nic-attach 10 --file external-nic-alias.tmpl
 
-Example
-~~~~~~~~
+Example Use-Case
+~~~~~~~~~~~~~~~~
 
-Our demonstration deployment has a Virtual Router instance with following NICs attached:
+Our demonstration deployment has a Virtual Router instance with the following NICs attached:
 
 - ``eth0`` with **public** network (``10.0.0.0/8``) and assigned IP ``10.0.0.1``
 - ``eth1`` with **private** network (``192.168.0.0/24``) and assigned IP ``192.168.0.1``
 
-The contextualization parameter ``ONEAPP_VNF_SDNAT4_INTERFACES`` is set to ``eth0 eth1`` and VNF will continuously create and update mappings between **public** and **private** networks. We also have following virtual machines:
+The contextualization parameter ``ONEAPP_VNF_SDNAT4_INTERFACES`` is set to ``eth0 eth1`` and VNF will continuously create and update mappings between **public** and **private** networks. We also have the following virtual machines:
 
 - public **VM1** in the public network with IP ``10.0.0.100``
 - private **VM2** in the private network with IP ``192.168.0.2``
 
-We now attach **external NIC alias** to the private **VM2** from public network with the command above and OpenNebula allocates the appropriate IP address, e.g. ``10.0.0.101``. This IP address is not configured inside the virtual machine. Virtual Routers detects the change in IP addresses allocation in both networks and creates a mapping rules which ensures the traffic over the ``10.0.0.101`` get to/from **VM2**.
+We now attach **external NIC alias** to the private **VM2** from the public network with the command above and OpenNebula allocates the appropriate IP address, e.g. ``10.0.0.101``. This IP address is not configured inside the virtual machine, but Virtual Routers detects the change in IP addresses allocation in both networks and creates mapping rules which ensure the traffic over the ``10.0.0.101`` gets to/from **VM2**.
 
-The VM2 is now transparently accessible via its external alias IP which is translated in both directions to its real private address. Any other VM in the public network will be able to connect to it via the external alias.
+The **VM2** is now transparently accessible via its external alias IP which is translated in both directions to its real and the only private address. Any other VMs in the public network will be able to connect to it via the external alias.
 
 The demonstration deployment can be seen in the following schema:
 
