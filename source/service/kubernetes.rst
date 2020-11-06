@@ -4,7 +4,7 @@
 Service Kubernetes
 ==================
 
-OpenNebula `Marketplace Appliance <https://marketplace.opennebula.systems/appliance/edc648b6-5958-4370-9b66-555fd5846182>`_  with preinstalled `Kubernetes <https://kubernetes.io/>`_ service.
+OpenNebula `Marketplace Appliance <https://marketplace.opennebula.systems/appliance/547ecdff-f392-43b9-abc9-5f10a9fa7aff>`_  with preinstalled `Kubernetes <https://kubernetes.io/>`_ service.
 
 Without any parameters provided, the appliance deploys as a single Kubernetes master node. Appliance can be customized with :ref:`contextualization <k8s_context_param>` parameters to support manually managed multi-node deployments, or automatically managed multi-node cluster as OpenNebula `OneFlow service <http://docs.opennebula.org/stable/advanced_components/application_flow_and_auto-scaling/appflow_use_cli.html>`_.
 
@@ -21,10 +21,10 @@ Appliance components versions:
 ============================= ==================
 Component                     Version
 ============================= ==================
-Kubernetes                    1.18.3
+Kubernetes                    1.18.10
 Docker                        19.03 CE
 Calico                        3.13
-Contextualization package     5.12.0
+Contextualization package     5.12.0.2
 ============================= ==================
 
 Requirements:
