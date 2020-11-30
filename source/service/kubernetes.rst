@@ -18,14 +18,20 @@ Platform Notes
 
 Appliance components versions:
 
-============================= ==================
-Component                     Version
-============================= ==================
-Kubernetes                    1.18.10
-Docker                        19.03 CE
-Calico                        3.13
-Contextualization package     5.12.0.2
-============================= ==================
+.. table::
+    :widths: 100 50 40
+
+    +-----------------------------+------------------------------------------------+
+    | Component                   | Version                                        |
+    +=============================+==============+=================================+
+    | Kubernetes                  | 1.18.10      |                                 |
+    +-----------------------------+--------------+                                 |
+    | Docker                      | 19.03 CE     |                                 |
+    +-----------------------------+--------------+ |image-k8s-certified-logo-1.18| |
+    | Calico                      | 3.13         |                                 |
+    +-----------------------------+--------------+                                 |
+    | Contextualization package   | 5.12.0.2     |                                 |
+    +-----------------------------+--------------+---------------------------------+
 
 Requirements:
 
@@ -535,5 +541,10 @@ Destroy the example application at the end, e.g.:
 .. |image-oneflow-part4| image:: /images/kubernetes/kubernetes-oneflow-part4.png
 .. |image-oneflow-part5| image:: /images/kubernetes/kubernetes-oneflow-part5.png
 .. |image-oneflow-part6| image:: /images/kubernetes/kubernetes-oneflow-part6.png
+.. |image-k8s-certified-logo-1.18| image:: /images/kubernetes/certified-kubernetes-1.18-pantone.png
+   :height: 120
+   :align: middle
+   :alt: CNCF Certified Logo of Kubernetes 1.18
+   :target: https://landscape.cncf.io/selected=open-nebula-kubernetes-appliance
 .. |image-ssh-context| image:: /images/appliance-ssh-context.png
 .. |image-custom-vars-password| image:: /images/appliance-custom-vars-password.png
