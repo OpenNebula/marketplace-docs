@@ -18,8 +18,8 @@ Appliance components versions:
 ============================= ==================
 Component                     Version
 ============================= ==================
-GitLab                        13.4.2 CE
-Contextualization package     5.12.0
+GitLab                        13.6.2 CE
+Contextualization package     5.12.0.2
 ============================= ==================
 
 Quick Start
