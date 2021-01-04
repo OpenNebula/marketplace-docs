@@ -35,7 +35,7 @@ Component                     Version
 ============================= ==================
 ISC Kea                       1.6.1
 ISC Kea MAC to IPv4 hook      1.1.0
-Contextualization package     5.12.0.1
+Contextualization package     5.12.0.2
 ============================= ==================
 
 .. _service_vnf_quick_start:
