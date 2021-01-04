@@ -22,6 +22,7 @@ OpenNebula Marketplace Appliance implementing various **Virtual Network Function
   * :ref:`DHCPv4 <vnf_dhcp4_context_param>`
   * :ref:`DNS recursor <vnf_dns_context_param>`
   * :ref:`IPv4 Network Address Translation <vnf_nat4_context_param>`
+  * :ref:`Virtual Networks Mapping via SNAT/DNAT <vnf_sdnat4_context_param>`
   * Virtual Router (:ref:`VR <vnf_vrouter_context_param>`, :ref:`VM <vnf_router4_context_param>`)
 
 Platform Notes
@@ -34,7 +35,7 @@ Component                     Version
 ============================= ==================
 ISC Kea                       1.6.1
 ISC Kea MAC to IPv4 hook      1.1.0
-Contextualization package     5.12.0
+Contextualization package     5.12.0.2
 ============================= ==================
 
 .. _service_vnf_quick_start:
@@ -201,16 +202,35 @@ For more information continue to :ref:`DNS <vnf_dns>` VNF documentation.
 Function NAT4
 ~~~~~~~~~~~~~
 
-The function implements IPv4 Network Address Translation (Masquerade) service for the connected interfaces (except management), through the specified outgoing interface.
+The function implements IPv4 Network Address Translation (Masquerade) service for the attached interfaces (except management), through the specified outgoing interface(s).
 
 ===================================== ============== ===========
 Parameter                             Default        Description
 ===================================== ============== ===========
 ``ONEAPP_VNF_NAT4_ENABLED``           ``NO``         Enable/disable NAT function (``YES``/``NO``)
-``ONEAPP_VNF_NAT4_INTERFACES_OUT``     none          **Mandatory:** Outgoing :ref:`interface <vnf_interfaces>` for NAT (``<[!]ethX> ...``)
+``ONEAPP_VNF_NAT4_INTERFACES_OUT``     none          **Mandatory:** Outgoing :ref:`interface(s) <vnf_interfaces>` for NAT (``<[!]ethX> ...``)
 ===================================== ============== ===========
 
 For more information continue to :ref:`NAT4 <vnf_nat4>` VNF documentation.
+
+.. _vnf_sdnat4_context_param:
+
+Function SDNAT4 (Virtual Networks Mapping)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The function implements mapping of IPv4 addresses among virtual networks available through the attached interfaces (except management) via SNAT and DNAT mechanism.
+
+======================================= ============== ===========
+Parameter                               Default        Description
+======================================= ============== ===========
+``ONEAPP_VNF_SDNAT4_ENABLED``           ``NO``         Enable/disable SNAT/DNAT function (``YES``/``NO``)
+``ONEAPP_VNF_SDNAT4_INTERFACES``        none           **Mandatory:** List of :ref:`interfaces <vnf_interfaces>` among which to detect mappings (``<[!]ethX> ...``)
+``ONEAPP_VNF_SDNAT4_REFRESH_RATE``      ``30``         Refresh rate between updates of the mapping rules (in seconds)
+======================================= ============== ===========
+
+.. include:: shared/vnf_sdnat4_req.txt
+
+For more information continue to :ref:`SDNAT4 <vnf_sdnat4>` VNF documentation.
 
 .. _vnf_router4_context_param:
 
@@ -323,6 +343,8 @@ Each VNF has **interface** context parameter which defines on which network inte
 .. note::
 
    **NAT4 VNF**: A special case is NAT4 VNF, which uses a context parameter ``ONEAPP_VNF_NAT4_INTERFACES_OUT`` (with ``_OUT`` suffix) to emphasize the actual place where the network address translation will happen (outgoing/external interface). This parameter doesn't provide any default. If it's not specified, NAT4 won't select any outgoing interface automatically and service won't behave. For NAT4 the parameter ``ONEAPP_VNF_NAT4_INTERFACES_OUT`` is **always mandatory**.
+
+   This applies similarly to the ``ONEAPP_VNF_SDNAT4_INTERFACES`` which also defaults to none.
 
 The listed interface names must follow the naming of the interfaces in the OpenNebula (see `context parameters <http://docs.opennebula.io/stable/operation/references/template.html#context-section>`__). Always use ``eth`` interface names followed by an index starting from 0, i.e. ``eth0`` for first NIC, ``eth4`` for fifth NIC. The real interface names inside the running VR/VM might differ - have different prefixes (e.g., ``enoX``, ``ensX``, ``enpXsY``) following Consistent Network Device Naming or even different interface index(!). Appliance scripts **automatically translate OpenNebula interface names from context names into real instance names**.
 
@@ -484,6 +506,98 @@ NAT4
 See: :ref:`Contextualization Parameters <vnf_nat4_context_param>`
 
 The VNF provides **IPv4 Network Address Translation** (Masquerade) to connected interfaces over a specific outgoing interface. The outgoing interface **always must be set** in ``ONEAPP_VNF_NAT4_INTERFACES_OUT``, the default is an empty list and with an empty list the function won't run even if it's enabled. This differs from how other functions deal with interface lists (where default empty list means all interfaces).
+
+.. _vnf_sdnat4:
+
+SDNAT4 (Virtual Networks Mapping)
+---------------------------------
+
+See: :ref:`Contextualization Parameters <vnf_sdnat4_context_param>`
+
+This VNF provides the **Virtual Networks Mapping** feature, which allows to transparently deliver traffic targetting an IP address (e.g., public) from one network to a device in a different network (e.g., private) without any need to directly expose the device to the first network. This eventually results in **mapping** between those 2 IP addresses from different networks. Such mapping is established on the Virtual Router where all related networks need to be connected, and by attaching the foreign mapped IP address to the VM as **external NIC alias**.
+
+.. note::
+
+    This VNF is similar to the :ref:`NAT4 <vnf_nat4>` function as it's implemented by two-way NAT - **SNAT (Source NAT)** and **DNAT (Destination NAT)**. The short function name ``SDNAT4`` is a composition of these mechanisms used underneath.
+
+The interfaces on Virtual Router among which the mapping can be established **must be always specified** via context parameter ``ONEAPP_VNF_SDNAT4_INTERFACES``, otherwise, no rules will be applied (this differs from how other functions deal with interface lists, where default empty list means all interfaces).
+
+.. include:: shared/vnf_sdnat4_req.txt
+
+Once the interface list is provided to the VNF, the service deployed inside the Virtual Router starts to monitor OpenNebula via OneGate for changes to the IP address allocations. Esp., to the **external NIC aliases assigned** to any VM on any of virtual networks connected to the Virtual Router instance. Based on the aggregated data, it builds a list of pairs for SNAT/DNAT where the destination part is the IP address of the external NIC alias and the source part is the real IP address assigned to the VM we try to reach.
+
+.. note::
+
+    OpenNebula supports 2 types of NIC aliases.
+
+    - **internal** - the IP addresses directly configured inside the VM as additional IP addresses on the network interfaces. The virtual machine is directly reachable over the internal NIC alias address. Internal NIC aliases are natively supported and documented in the `CLI and GUI Sunstone <http://docs.opennebula.io/stable/operation/vm_management/vm_templates.html#network-interfaces-alias>`_.
+
+    Example of VM with several internal NIC aliases configured on ``eth0`` NIC:
+
+    .. code::
+
+        # ip address show dev eth0
+        2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP group default qlen 1000
+            link/ether 02:00:c0:a8:02:0e brd ff:ff:ff:ff:ff:ff
+            inet 192.168.2.14/24 brd 192.168.2.255 scope global eth0
+               valid_lft forever preferred_lft forever
+            inet 192.168.2.15/24 brd 192.168.2.255 scope global secondary eth0
+               valid_lft forever preferred_lft forever
+            inet 192.168.2.16/24 brd 192.168.2.255 scope global secondary eth0
+               valid_lft forever preferred_lft forever
+            inet 192.168.2.17/24 brd 192.168.2.255 scope global secondary eth0
+               valid_lft forever preferred_lft forever
+            inet6 fe80::c0ff:fea8:20e/64 scope link
+               valid_lft forever preferred_lft forever
+
+    - **external** - the additional IP addresses **are not configured inside the VM**, but "some" external logic outside the VM ensures that the traffic designated for such IP address is routed to the primary IP address of VM. This requires the external mechanism to implement them, they are specific for some deployment types (e.g., when running on 3rd party's managed infrastructures), and therefore are not well documented and proposed. Virtual Networks Mapping function in the Virtual Router is the first example of general-purpose external logic, which supports the external NIC aliases. You can find examples of usage below.
+
+    Virtual Networks Mapping relies on using **external NIC aliases**, the second case!
+
+To hot-attach an **external NIC alias** to the existing VM, we must use CLI tools and pass a template file (e.g.: ``external-nic-alias.tmpl``) with content similar to the one below (network name, ID and NIC must be adapted to your use-case):
+
+.. code::
+
+   NIC_ALIAS = [
+       NETWORK_ID = 0,
+       PARENT     = NIC0,
+       EXTERNAL   = YES
+   ]
+
+.. important::
+
+    The template parameter ``EXTERNAL=YES`` must be set, otherwise, the alias will be configured as **internal** and an additional IP address will appear in the VM. The usage of external NIC aliases can be also enforced for all IP addresses of the specific virtual network if the parameter ``EXTERNAL=YES`` is set directly in your `virtual network <http://docs.opennebula.io/stable/operation/network_management/>`__ template.
+
+Such alias can be attached to the VM (e.g., with ID 10) via command line following way:
+
+.. prompt:: bash $ auto
+
+   $ onevm nic-attach 10 --file external-nic-alias.tmpl
+
+Example Use-Case
+~~~~~~~~~~~~~~~~
+
+Our demonstration deployment has a Virtual Router instance with the following NICs attached:
+
+- ``eth0`` with **public** network (``10.0.0.0/8``) and assigned IP ``10.0.0.1``
+- ``eth1`` with **private** network (``192.168.0.0/24``) and assigned IP ``192.168.0.1``
+
+The contextualization parameter ``ONEAPP_VNF_SDNAT4_INTERFACES`` is set to ``eth0 eth1`` and VNF will continuously create and update mappings between **public** and **private** networks. We also have the following virtual machines:
+
+- public **VM1** in the public network with IP ``10.0.0.100``
+- private **VM2** in the private network with IP ``192.168.0.2``
+
+We now attach **external NIC alias** to the private **VM2** from the public network with the command above and OpenNebula allocates the appropriate IP address, e.g. ``10.0.0.101``. This IP address is not configured inside the virtual machine, but Virtual Routers detects the change in IP addresses allocation in both networks and creates mapping rules which ensure the traffic over the ``10.0.0.101`` gets to/from **VM2**.
+
+The **VM2** is now transparently accessible via its external alias IP which is translated in both directions to its real and the only private address. Any other VMs in the public network will be able to connect to it via the external alias.
+
+The demonstration deployment can be seen in the following schema:
+
+|image-vnf-sdnat4-diagram|
+
+.. note::
+
+   The mapping rules are updated in intervals set via the context parameter ``ONEAPP_VNF_SDNAT4_REFRESH_RATE`` and defaults to 30 seconds.
 
 .. _vnf_router4:
 
@@ -966,3 +1080,5 @@ Wait for all the Virtual Router instances to be reconfigured and one of them wil
 .. |image-vnf-demo-vrouter3| image:: /images/vnf/vnf-demo-vrouter3.png
 .. |image-vnf-demo-vrouter4| image:: /images/vnf/vnf-demo-vrouter4.png
 .. |image-vnf-demo-vrouter5| image:: /images/vnf/vnf-demo-vrouter5.png
+.. |image-vnf-sdnat4-diagram| image:: /images/vnf/vnf-sdnat4-diagram.png
+                              :scale: 70%
