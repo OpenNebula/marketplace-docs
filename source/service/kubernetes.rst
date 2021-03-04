@@ -209,6 +209,10 @@ The Kubernetes appliance (optionally) integrates with the OpenNebula `OneFlow se
 Create OneFlow Service Template (Wizard)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+.. note::
+
+    There is already a prepared service template `Service Kubernetes 1.18 for OneFlow - KVM <https://marketplace.opennebula.io/appliance/07520eee-6552-11eb-85e7-98fa9bde1a93>`_ in the marketplace which will achieve the same configuration as is described below.
+
 Step 1 - General
 ^^^^^^^^^^^^^^^^
 
@@ -226,7 +230,6 @@ Step 2 - Role Master
 
 - Fill the role name as ``master`` (**nothing else!**)
 - Pick the ``Service Kubernetes - KVM`` (VM template)
-- In **Advanced role parameters**, set **VM template content** to: ``ONEGATE_ENABLE="YES"``
 
 The current status should resemble this picture with important parts highlighted:
 
@@ -242,7 +245,6 @@ As the next step, we setup a worker role:
 - Optional: Set the **Number of VMs** run initially
 - Pick the ``Service Kubernetes - KVM`` (VM template)
 - In **Parent roles**, set **master** as a parent role
-- In **Advanced role parameters**, set **VM template content** to: ``ONEGATE_ENABLE="YES"``
 
 The next status should resemble this picture with important parts highlighted:
 
@@ -316,6 +318,7 @@ To run the multi-node service:
 - Go to **Templates → Services** tab
 - Select the Kubernetes service template
 - Click on the green **+** button at the top and **Instantiate**
+- For each role choose ``YES`` under the **Enable OneGate reporting? (req. for multi-node)**
 - Click on **Instantiate**
 
 .. important::
