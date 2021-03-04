@@ -211,7 +211,7 @@ Create OneFlow Service Template (Wizard)
 
 .. note::
 
-    There is already a prepared service template `Service Kubernetes 1.18 for OneFlow - KVM <https://marketplace.opennebula.io/appliance/07520eee-6552-11eb-85e7-98fa9bde1a93>`_ in the marketplace which will achieve the same configuration as is described below.
+    On **OpenNebula 6.0 and newer** you can use dedicated appliance `Service Kubernetes 1.18 for OneFlow - KVM <https://marketplace.opennebula.io/appliance/07520eee-6552-11eb-85e7-98fa9bde1a93>`__ to run a Kubernetes cluster managed by OneFlow in a simple way. The result is very same as with the manual configuration described below.
 
 Step 1 - General
 ^^^^^^^^^^^^^^^^
