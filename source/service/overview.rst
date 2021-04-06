@@ -9,7 +9,7 @@ Overview
 Service appliance
 -----------------
 
-The service appliances extend the OpenNebula `Marketplace <https://marketplace.opennebula.systems/>`_ with easy-to-use deployable services. These are the images with all necessary packages installed for the service run, but they go through the final configuration on the very first run on the users' side. It allows to customize the final service state by the cloud user via special contextualization parameters.
+The service appliances extend the OpenNebula `Marketplace <https://marketplace.opennebula.io/>`_ with easy-to-use deployable services. These are the images with all necessary packages installed for the service run, but they go through the final configuration on the very first run on the users' side. It allows to customize the final service state by the cloud user via special contextualization parameters.
 
 Thanks to the dynamic nature of the service appliances, no security credentials are persisted in the distributed appliances. Initial passwords are provided via the contextualization parameters or are dynamically generated for each new virtual machine. No two virtual machines with default contextualization parameters share the same passwords or database credentials.
 

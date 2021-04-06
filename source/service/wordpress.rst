@@ -10,6 +10,18 @@ Without any parameters provided, the appliance boots into the web setup wizard a
 
 .. include:: shared/features.txt
 
+Platform Notes
+==============
+
+Appliance components versions:
+
+============================= ==================
+Component                     Version
+============================= ==================
+WordPress                     5.1.3
+Contextualization package     6.0.0
+============================= ==================
+
 Quick Start
 ===========
 
@@ -61,7 +73,7 @@ After you are done, click on the button **Instantiate**. Virtual machine with ru
 Contextualization
 =================
 
-Contextualization parameters provided in the Virtual Machine template controls the initial VM configuration. Except for the `common set <http://docs.opennebula.org/stable/operation/references/template.html#context-section>`_ of parameters supported by every appliance on the OpenNebula Marketplace, there are few specific to the particular service appliance. The parameters should be provided in the ``CONTEXT`` section of the Virtual Machine template, read the OpenNebula `Operation Guide <http://docs.opennebula.org/stable/operation/vm_setup/kvm.html#set-up-the-virtual-machine-template>`__ for more details.
+Contextualization parameters provided in the Virtual Machine template controls the initial VM configuration. Except for the `common set <http://docs.opennebula.io/stable/management_and_operations/references/template.html#context-section>`_ of parameters supported by every appliance on the OpenNebula Marketplace, there are few specific to the particular service appliance. The parameters should be provided in the ``CONTEXT`` section of the Virtual Machine template, read the OpenNebula `Management and Operations Guide <http://docs.opennebula.io/stable/management_and_operations/references/kvm_contextualization.html#set-up-the-virtual-machine-template>`__ for more details.
 
 ===================================== ========= ============== ========= ===========
 Parameter                             Mandatory Default        Stage     Description
