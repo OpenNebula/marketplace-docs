@@ -4,7 +4,7 @@
 Virtual Network Functions (VNF) and Virtual Router
 ==================================================
 
-OpenNebula Marketplace Appliance implementing various **Virtual Network Functions** (VNFs) and `Virtual Router <http://docs.opennebula.org/stable/operation/network_management/vrouter.html>`_.
+OpenNebula Marketplace Appliance implementing various **Virtual Network Functions** (VNFs) and `Virtual Router <http://docs.opennebula.io/stable/management_and_operations/network_management/vrouter.html>`_.
 
 .. note::
 
@@ -12,8 +12,8 @@ OpenNebula Marketplace Appliance implementing various **Virtual Network Function
 
     To meet different use-cases, the core logic is provided by 2 appliances (sharing the same image) and listed on the Marketplace as
 
-    * `Service VNF <http://marketplace.opennebula.systems/appliance/7dba6a0d-73e8-4036-9cb8-73da669ee494>`__ - exposing all features as regular VM
-    * `Service Virtual Router <http://marketplace.opennebula.systems/appliance/cc96d537-f6c7-499f-83f1-15ac4058750e>`__ - integration with OpenNebula Virtual Router interface
+    * `Service VNF <http://marketplace.opennebula.io/appliance/7dba6a0d-73e8-4036-9cb8-73da669ee494>`__ - exposing all features as regular VM
+    * `Service Virtual Router <http://marketplace.opennebula.io/appliance/cc96d537-f6c7-499f-83f1-15ac4058750e>`__ - integration with OpenNebula Virtual Router interface
 
 .. include:: shared/features-alpine.txt
 * High-availability provided by `Keepalived <https://www.keepalived.org/>`_.
@@ -35,7 +35,7 @@ Component                     Version
 ============================= ==================
 ISC Kea                       1.6.1
 ISC Kea MAC to IPv4 hook      1.1.0
-Contextualization package     5.12.0.2
+Contextualization package     6.0.0
 ============================= ==================
 
 .. _service_vnf_quick_start:
@@ -101,7 +101,7 @@ After you are done, click on the button **Instantiate**. Virtual machine with ru
 Contextualization
 =================
 
-Contextualization parameters provided in the Virtual Machine template controls the initial VM configuration. Except for the `common set <http://docs.opennebula.org/stable/operation/references/template.html#context-section>`_ of parameters supported by every appliance on the OpenNebula Marketplace, there are few specific to the particular service appliance. The parameters should be provided in the ``CONTEXT`` section of the Virtual Machine template, read the OpenNebula `Operation Guide <http://docs.opennebula.org/stable/operation/vm_setup/kvm.html#set-up-the-virtual-machine-template>`_ for more details.
+Contextualization parameters provided in the Virtual Machine template controls the initial VM configuration. Except for the `common set <http://docs.opennebula.io/stable/management_and_operations/references/template.html#context-section>`_ of parameters supported by every appliance on the OpenNebula Marketplace, there are few specific to the particular service appliance. The parameters should be provided in the ``CONTEXT`` section of the Virtual Machine template, read the OpenNebula `Management and Operations Guide <http://docs.opennebula.io/stable/management_and_operations/references/kvm_contextualization.html#set-up-the-virtual-machine-template>`__ for more details.
 
 .. note::
 
@@ -405,7 +405,7 @@ The format of values in ``ONEAPP_VNF_DHCP4_INTERFACES`` can be
 * ``ethX`` - interface name (e.g., ``eth0``)
 * ``ethX/IP`` - interface name with IP address to pinpoint the listening address and subnet creation in case more than one IP address is assigned to the interface (e.g., ``eth0/192.168.1.1``)
 
-Service by default provides configuration to the remote DHCP clients based on IP configuration of interfaces on which it's enabled via ``ONEAPP_VNF_DHCP4_INTERFACES``. Interfaces configuration is taken from static network `contextualization parameters <http://docs.opennebula.org/stable/operation/references/template.html#context-section>`__ (e.g., ``ETH0_GATEWAY``), not from the run-time configuration of the particular interfaces on the instance. Settings can be overridden by similarly named DHCP VNF specific contextualization parameters per NIC or NIC alias, e.g.:
+Service by default provides configuration to the remote DHCP clients based on IP configuration of interfaces on which it's enabled via ``ONEAPP_VNF_DHCP4_INTERFACES``. Interfaces configuration is taken from static network `contextualization parameters <http://docs.opennebula.io/stable/management_and_operations/references/template.html#context-section>`__ (e.g., ``ETH0_GATEWAY``), not from the run-time configuration of the particular interfaces on the instance. Settings can be overridden by similarly named DHCP VNF specific contextualization parameters per NIC or NIC alias, e.g.:
 
 .. code::
 
@@ -482,7 +482,7 @@ In the OpenNebula, there is a clear relation between MAC (Hardware) and IPv4 add
 - ``02:00`` (default) prefix followed by
 - hexadecimal representation of the allocated IPv4 address ``01:02:03:04`` (e.g., for ``1.2.3.4``)
 
-The leading prefix can be configured in OpenNebula via ``MAC_PREFIX`` option in `oned.conf <https://docs.opennebula.org/stable/deployment/references/oned_conf.html#virtual-networks>`_ (but then must be aligned with prefix configured for DHCP4 VNF via ``ONEAPP_VNF_DHCP4_MAC2IP_MACPREFIX``)
+The leading prefix can be configured in OpenNebula via ``MAC_PREFIX`` option in `oned.conf <http://docs.opennebula.io/stable/installation_and_configuration/opennebula_services/oned.html#virtual-networks>`_ (but then must be aligned with prefix configured for DHCP4 VNF via ``ONEAPP_VNF_DHCP4_MAC2IP_MACPREFIX``)
 
 The DHCP4 VNF comes with a **translation hook** (custom DHCP server plugin), which computes and offers suitable IPv4 addresses just based on the MAC address the same way as the OpenNebula does. It ensures that VM gets same IPv4 addresses via dynamic configuration (DHCP) as it would get through static contextualization (i.e., parameters on contextualization CD-ROM/service). This allows networking to unmodified VMs, which are not aware of the OpenNebula static contextualization.
 
@@ -654,7 +654,7 @@ To have full control over DNS VNF, you can provide the complete Unbound configur
 Tutorials
 =========
 
-In this section, we will demonstrate how this appliance can be used - but there is a need for a few prerequisites. VNF appliance is useful only when there are networks involved so we will create a couple of virtual networks in OpenNebula - if you do not know how to create them then peek into the `Virtual Network Management <https://docs.opennebula.org/stable/operation/network_management/manage_vnets.html>`_ documentation in OpenNebula.
+In this section, we will demonstrate how this appliance can be used - but there is a need for a few prerequisites. VNF appliance is useful only when there are networks involved so we will create a couple of virtual networks in OpenNebula - if you do not know how to create them then peek into the `Virtual Network Management <https://docs.opennebula.io/stable/management_and_operations/network_management/index.html>`_ documentation in OpenNebula.
 
 ================ ==================== ========================================= =================== ===============
 Network Name     Subnet               Range                                     Gateway             DNS
@@ -839,7 +839,7 @@ Step 6 - Test Clients
 
 We are done with configuring VNF and we'll run a few client VMs, for which the VNF will provide services (DNS, DHCP, routing with NAT).
 
-You can export any image with your favorite operating system from `OpenNebula Marketplace <http://docs.opennebula.io/stable/advanced_components/marketplace/market_one.html>`_ for the following tests, but the examples below are running on the `Alpine Linux image <http://marketplace.opennebula.org/appliance/193631c3-7082-4528-bfdb-31b2ecb3d9f5>`__. Instantiate 2 VMs with no special configuration, only attach one NIC to each client VM from different network
+You can export any image with your favorite operating system from `Marketplaces <https://docs.opennebula.io/stable/management_and_operations/storage_management/marketplaces.html>`_ for the following tests, but the examples below are running on the `Alpine Linux image <http://marketplace.opennebula.io/appliance/193631c3-7082-4528-bfdb-31b2ecb3d9f5>`__. Instantiate 2 VMs with no special configuration, only attach one NIC to each client VM from different network
 
 1. VM - NIC from ``vnet_a``
 2. VM - NIC from ``vnet_b``
@@ -885,7 +885,7 @@ Both of these client VMs connected to different networks should be able to talk 
 VNF as Virtual Router
 ---------------------
 
-In this part of the tutorial, we'll instantiate the appliance as a Virtual Router. The functionality will be the same as in previous VNF as Virtual Machine, but in addition, it'll be deployed in HA mode with Keepalived service running with no extra work. In the OpenNebula Sunstone, go to the **Templates → Virtual Routers** and instantiate ``Service Virtual Router`` (also you continue to the `Virtual Routers documentation <https://docs.opennebula.org/stable/operation/network_management/vrouter.html>`_ to learn more about VRs).
+In this part of the tutorial, we'll instantiate the appliance as a Virtual Router. The functionality will be the same as in previous VNF as Virtual Machine, but in addition, it'll be deployed in HA mode with Keepalived service running with no extra work. In the OpenNebula Sunstone, go to the **Templates → Virtual Routers** and instantiate ``Service Virtual Router`` (also you continue to the `Virtual Routers documentation <http://docs.opennebula.io/stable/management_and_operations/network_management/vrouter.html>`_ to learn more about VRs).
 
 Ensure your contextualization is as follows, we'll start 2 instances:
 
@@ -1017,7 +1017,7 @@ This instance is running in a standby (backup) mode and waiting for the time whe
 Step 4 - Test Clients
 ~~~~~~~~~~~~~~~~~~~~~
 
-We are done with Virtual Router configuration and as a final step, we are going to instantiate two client VMs. For example, you can take `Alpine Linux image <http://marketplace.opennebula.org/appliance/193631c3-7082-4528-bfdb-31b2ecb3d9f5>`__ from OpenNebula Marketplace. We don't need any special configuration, only attach one NIC to each client VM from different network
+We are done with Virtual Router configuration and as a final step, we are going to instantiate two client VMs. For example, you can take `Alpine Linux image <http://marketplace.opennebula.io/appliance/193631c3-7082-4528-bfdb-31b2ecb3d9f5>`__ from OpenNebula Marketplace. We don't need any special configuration, only attach one NIC to each client VM from different network
 
 1. VM - NIC from ``vnet_a``
 2. VM - NIC from ``vnet_b``

@@ -9,7 +9,7 @@ OpenNebula `Marketplace Appliance <https://marketplace.opennebula.io/appliance/a
 This Docker Appliance brings the Docker Engine pre-installed and the contextualization packages configured to create Docker Hosts in a single click. Alternatively you can prepare your own image, using your favourite distribution, as long as it’s supported by Docker Machine and it has the latest OpenNebula Contextualization packages.
 
 * Based on the Ubuntu 16.04 x86-64 Linux distribution.
-* No default login (local or SSH) password - must be provided via `contextualization <http://docs.opennebula.org/stable/operation/vm_setup/kvm.html#user-credentials>`_.
+* No default login (local or SSH) password - must be provided via `contextualization <http://docs.opennebula.io/stable/management_and_operations/references/kvm_contextualization.html#user-credentials>`_.
 
 Platform Notes
 ==============
@@ -19,8 +19,8 @@ Appliance components versions:
 ============================= ==================
 Component                     Version
 ============================= ==================
-Docker                        19.03 CE
-Contextualization package     5.10.0-1
+Docker                        20.10.5 CE
+Contextualization package     6.0.0
 ============================= ==================
 
 .. important::

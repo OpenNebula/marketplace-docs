@@ -12,7 +12,7 @@ If no parameters are provided, the appliance boots without any Greengrass servic
 
 .. include:: shared/features.txt
 * Running on CentOS 7 ELRepo LTS kernel.
-* Appliance can report IoT *thing* names of Core and IoT devices via OpenNebula `OneGate service <http://docs.opennebula.org/stable/advanced_components/application_insight/>`_ (if applicable).
+* Appliance can report IoT *thing* names of Core and IoT devices via OpenNebula `OneGate service <http://docs.opennebula.io/stable/management_and_operations/multivm_service_management/onegate_usage.html>`_ (if applicable).
 * Instance Greengrass roles: Core, IoT device, a combination of both
 * Provision modes of Greengrass entities: **manual** and **automatic**
 
@@ -44,18 +44,18 @@ Appliance components versions:
 Component                     Version
 ============================= ==================
 AWS Greengrass Core           1.10.2
-AWS CLI                       1.18.84
+AWS CLI                       1.19.40
 AWS Lambda Runtimes           Python 2.7
-Python 2 - greengrasssdk      1.5.0
-Python 2 - AWSIoTPythonSDK    1.4.8
-Python 2 - boto3              1.14.7
-Contextualization package     5.12.0
+Python 2 - greengrasssdk      1.6.0
+Python 2 - AWSIoTPythonSDK    1.4.9
+Python 2 - boto3              1.17.40
+Contextualization package     6.0.0
 ============================= ==================
 
 Requirements:
 
-* OpenNebula 4.14 - 5.12
-* `OneGate <http://docs.opennebula.org/stable/advanced_components/application_insight/index.html>`_ for optional reporting back from the VM
+* OpenNebula 4.14 - 6.0
+* `OneGate <http://docs.opennebula.io/stable/management_and_operations/multivm_service_management/onegate_usage.html>`_ for optional reporting back from the VM
 * Min. Memory: 2 GB
 * Min. Cores (VCPU): 1
 
@@ -108,7 +108,7 @@ After you are done, click on the button **Instantiate**. A virtual machine with 
 Contextualization
 =================
 
-Contextualization parameters provided in the Virtual Machine template controls the initial VM configuration. Except for the `common set <http://docs.opennebula.org/stable/operation/references/template.html#context-section>`_ of parameters supported by every appliance on the OpenNebula Marketplace, there are few specific to the particular service appliance. The parameters should be provided in the ``CONTEXT`` section of the Virtual Machine template, read the OpenNebula `Operation Guide <http://docs.opennebula.org/stable/operation/vm_setup/kvm.html#set-up-the-virtual-machine-template>`__ for more details.
+Contextualization parameters provided in the Virtual Machine template controls the initial VM configuration. Except for the `common set <http://docs.opennebula.io/stable/management_and_operations/references/template.html#context-section>`_ of parameters supported by every appliance on the OpenNebula Marketplace, there are few specific to the particular service appliance. The parameters should be provided in the ``CONTEXT`` section of the Virtual Machine template, read the OpenNebula `Management and Operations Guide <http://docs.opennebula.io/stable/management_and_operations/references/kvm_contextualization.html#set-up-the-virtual-machine-template>`__ for more details.
 
 ==================================== ============== ========= ============== =========== ===========
 Parameter                            Default        Stage     Roles          Modes       Description
