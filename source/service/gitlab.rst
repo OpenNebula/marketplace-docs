@@ -4,7 +4,7 @@
 Service GitLab
 ==============
 
-OpenNebula `Marketplace Appliance <https://marketplace.opennebula.systems/appliance/6b54a412-03a5-11e9-8652-f0def1753696>`_  with preinstalled `GitLab <https://about.gitlab.com/>`_ service.
+OpenNebula `Marketplace Appliance <https://marketplace.opennebula.io/appliance/6b54a412-03a5-11e9-8652-f0def1753696>`_  with preinstalled `GitLab <https://about.gitlab.com/>`_ service.
 
 Without any parameters provided, the appliance boots into the web setup wizard and user has to finish the GitLab initial configuration manually in the browser. This part can be automated (as part of the bootstrap process) with :ref:`contextualization <gitlab_context_param>` parameters.
 
@@ -62,7 +62,7 @@ After you are done, click on the button **Instantiate**. Virtual machine with ru
 Contextualization
 =================
 
-Contextualization parameters provided in the Virtual Machine template controls the initial VM configuration. Except for the `common set <http://docs.opennebula.io/stable/management_and_operations/references/template.html#context-section>`_ of parameters supported by every appliance on the OpenNebula Marketplace, there are few specific to the particular service appliance. The parameters should be provided in the ``CONTEXT`` section of the Virtual Machine template, read the OpenNebula `Management and Operations Guide <http://docs.opennebula.io/stable/management_and_operations/references/kvm_contextualization.html#set-up-the-virtual-machine-template>`__ for more details.
+Contextualization parameters provided in the Virtual Machine template controls the initial VM configuration. Except for the `common set <https://docs.opennebula.io/stable/management_and_operations/references/template.html#context-section>`_ of parameters supported by every appliance on the OpenNebula Marketplace, there are few specific to the particular service appliance. The parameters should be provided in the ``CONTEXT`` section of the Virtual Machine template, read the OpenNebula `Management and Operations Guide <https://docs.opennebula.io/stable/management_and_operations/references/kvm_contextualization.html#set-up-the-virtual-machine-template>`__ for more details.
 
 ===================================== ========= ============== ========= ===========
 Parameter                             Mandatory Default        Stage     Description

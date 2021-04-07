@@ -4,10 +4,10 @@
 
    - appliance to be running over :ref:`Virtual Router <vnf_tutorial_vrouter>` (VR) interface,
    - **OpenNebula 5.12.6** or newer,
-   - `OneGate <https://docs.opennebula.io/stable/advanced_components/application_insight/onegate_configure.html>`_ service
+   - `OneGate <https://docs.opennebula.io/stable/management_and_operations/multivm_service_management/onegate_usage.html>`_ service
 
      - properly **configured** (see below) and **running** on front-end server,
-     - **enabled** `usage of OneGate <http://docs.opennebula.io/stable/advanced_components/application_insight/onegate_usage.html#setup-the-vm-template>`_ in the VR template,
+     - **enabled** `usage of OneGate <https://docs.opennebula.io/stable/management_and_operations/multivm_service_management/onegate_usage.html#setup-the-vm-template>`_ in the VR template,
      - **reachable from the VR** instance over the attached NICs.
 
    *All requirements must be fulfilled, otherwise, the VNF won't be able to query the state and create/update the Virtual Networks Mapping rules.*

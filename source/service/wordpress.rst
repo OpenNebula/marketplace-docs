@@ -4,7 +4,7 @@
 Service WordPress
 =================
 
-OpenNebula `Marketplace Appliance <http://marketplace.opennebula.systems/appliance/84bd27fe-5d14-4e70-a79a-eb3fdd0072ae>`_ with preinstalled `WordPress <https://wordpress.org/>`_ service.
+OpenNebula `Marketplace Appliance <https://marketplace.opennebula.io/appliance/84bd27fe-5d14-4e70-a79a-eb3fdd0072ae>`_ with preinstalled `WordPress <https://wordpress.org/>`_ service.
 
 Without any parameters provided, the appliance boots into the web setup wizard and user has to finish the WordPress initial configuration manually in the browser. This part can be automated (as part of the bootstrap process) with :ref:`contextualization <wordpress_context_param>` parameters.
 
@@ -73,7 +73,7 @@ After you are done, click on the button **Instantiate**. Virtual machine with ru
 Contextualization
 =================
 
-Contextualization parameters provided in the Virtual Machine template controls the initial VM configuration. Except for the `common set <http://docs.opennebula.io/stable/management_and_operations/references/template.html#context-section>`_ of parameters supported by every appliance on the OpenNebula Marketplace, there are few specific to the particular service appliance. The parameters should be provided in the ``CONTEXT`` section of the Virtual Machine template, read the OpenNebula `Management and Operations Guide <http://docs.opennebula.io/stable/management_and_operations/references/kvm_contextualization.html#set-up-the-virtual-machine-template>`__ for more details.
+Contextualization parameters provided in the Virtual Machine template controls the initial VM configuration. Except for the `common set <https://docs.opennebula.io/stable/management_and_operations/references/template.html#context-section>`_ of parameters supported by every appliance on the OpenNebula Marketplace, there are few specific to the particular service appliance. The parameters should be provided in the ``CONTEXT`` section of the Virtual Machine template, read the OpenNebula `Management and Operations Guide <https://docs.opennebula.io/stable/management_and_operations/references/kvm_contextualization.html#set-up-the-virtual-machine-template>`__ for more details.
 
 ===================================== ========= ============== ========= ===========
 Parameter                             Mandatory Default        Stage     Description

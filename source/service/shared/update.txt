@@ -15,7 +15,7 @@ SSH keys
 
 To be able to remotely login the VM over SSH, you have to
 
-1. configure the SSH public key for your `OpenNebula user <http://docs.opennebula.org/stable/operation/vm_setup/kvm.html#user-credentials>`_ or
+1. configure the SSH public key for your `OpenNebula user <https://docs.opennebula.io/stable/management_and_operations/references/kvm_contextualization.html#user-credentials>`_ or
 2. put the SSH public key into the VM template in **Context** tab:
 
 |image-ssh-context|
