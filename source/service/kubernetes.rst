@@ -4,9 +4,9 @@
 Service Kubernetes
 ==================
 
-OpenNebula `Marketplace Appliance <https://marketplace.opennebula.systems/appliance/547ecdff-f392-43b9-abc9-5f10a9fa7aff>`_  with preinstalled `Kubernetes <https://kubernetes.io/>`_ service.
+OpenNebula `Marketplace Appliance <https://marketplace.opennebula.io/appliance/547ecdff-f392-43b9-abc9-5f10a9fa7aff>`_  with preinstalled `Kubernetes <https://kubernetes.io/>`_ service.
 
-Without any parameters provided, the appliance deploys as a single Kubernetes master node. Appliance can be customized with :ref:`contextualization <k8s_context_param>` parameters to support manually managed multi-node deployments, or automatically managed multi-node cluster as OpenNebula `OneFlow service <http://docs.opennebula.io/stable/management_and_operations/multivm_service_management/appflow_use_cli.html>`_.
+Without any parameters provided, the appliance deploys as a single Kubernetes master node. Appliance can be customized with :ref:`contextualization <k8s_context_param>` parameters to support manually managed multi-node deployments, or automatically managed multi-node cluster as OpenNebula `OneFlow service <https://docs.opennebula.io/stable/management_and_operations/multivm_service_management/appflow_use_cli.html>`_.
 
 .. include:: shared/features.txt
 * **Only single master clusters supported**.
@@ -36,7 +36,7 @@ Appliance components versions:
 Requirements:
 
 * OpenNebula 4.14 - 6.0
-* `OneFlow <http://docs.opennebula.io/stable/management_and_operations/multivm_service_management/overview.html>`_ and `OneGate <http://docs.opennebula.io/stable/management_and_operations/multivm_service_management/onegate_usage.html>`_ for multi-node orchestration
+* `OneFlow <https://docs.opennebula.io/stable/management_and_operations/multivm_service_management/overview.html>`_ and `OneGate <https://docs.opennebula.io/stable/management_and_operations/multivm_service_management/onegate_usage.html>`_ for multi-node orchestration
 * Min. Memory: 3 GB (master), 1 GB (worker)
 * Min. Cores (VCPU): 2 (master), 1 (worker)
 
@@ -85,7 +85,7 @@ After you are done, click on the button **Instantiate**. A virtual machine with 
 Contextualization
 =================
 
-Contextualization parameters provided in the Virtual Machine template controls the initial VM configuration. Except for the `common set <http://docs.opennebula.io/stable/management_and_operations/references/template.html#context-section>`_ of parameters supported by every appliance on the OpenNebula Marketplace, there are few specific to the particular service appliance. The parameters should be provided in the ``CONTEXT`` section of the Virtual Machine template, read the OpenNebula `Management and Operations Guide <http://docs.opennebula.io/stable/management_and_operations/references/kvm_contextualization.html#set-up-the-virtual-machine-template>`__ for more details.
+Contextualization parameters provided in the Virtual Machine template controls the initial VM configuration. Except for the `common set <https://docs.opennebula.io/stable/management_and_operations/references/template.html#context-section>`_ of parameters supported by every appliance on the OpenNebula Marketplace, there are few specific to the particular service appliance. The parameters should be provided in the ``CONTEXT`` section of the Virtual Machine template, read the OpenNebula `Management and Operations Guide <https://docs.opennebula.io/stable/management_and_operations/references/kvm_contextualization.html#set-up-the-virtual-machine-template>`__ for more details.
 
 ===================================== ========= ==================== ========= ======== ===========
 Parameter                             Mandatory Default              Stage     Role     Description
@@ -195,7 +195,7 @@ Example:
 OneFlow Integration
 -------------------
 
-The Kubernetes appliance (optionally) integrates with the OpenNebula `OneFlow service <http://docs.opennebula.io/stable/management_and_operations/multivm_service_management/appflow_use_cli.html>`_ to enable one-click multi-node cluster deployment. A template for OneFlow is not part of the imported Marketplace appliance, it must be created in each OpenNebula manually. The template can be created over the Sunstone wizard, or by providing a JSON specification.
+The Kubernetes appliance (optionally) integrates with the OpenNebula `OneFlow service <https://docs.opennebula.io/stable/management_and_operations/multivm_service_management/appflow_use_cli.html>`_ to enable one-click multi-node cluster deployment. A template for OneFlow is not part of the imported Marketplace appliance, it must be created in each OpenNebula manually. The template can be created over the Sunstone wizard, or by providing a JSON specification.
 
 .. important::
 
@@ -308,7 +308,7 @@ Service template:
       "ready_status_gate": true
     }
 
-Or, use the `OneFlow CLI <http://docs.opennebula.io/stable/management_and_operations/multivm_service_management/appflow_use_cli.html#managing-services>`_.
+Or, use the `OneFlow CLI <https://docs.opennebula.io/stable/management_and_operations/multivm_service_management/appflow_use_cli.html#managing-services>`_.
 
 Instantiate Service
 ~~~~~~~~~~~~~~~~~~~
