@@ -11,6 +11,7 @@ Without any parameters provided, the appliance deploys as a single Kubernetes ma
 .. include:: shared/features.txt
 * **Only single master clusters supported**.
 * Preconfigured with Canal CNI networking (`Calico <https://www.projectcalico.org/>`_, `Flannel <https://github.com/coreos/flannel>`_).
+* Installed with MetalLB LoadBalancer provider (`MetalLB <https://metallb.universe.tf/>`_)
 * Optional: :ref:`Kubernetes Dashboard <k8s_dashboard>`.
 
 Platform Notes
@@ -24,11 +25,13 @@ Appliance components versions:
     +-----------------------------+------------------------------------------------+
     | Component                   | Version                                        |
     +=============================+==============+=================================+
-    | Kubernetes                  | 1.18.17      |                                 |
+    | Kubernetes                  | 1.18.18      |                                 |
     +-----------------------------+--------------+                                 |
-    | Docker                      | 19.03 CE     |                                 |
+    | Docker                      | 19.03.15 CE  |                                 |
     +-----------------------------+--------------+ |image-k8s-certified-logo-1.18| |
     | Calico                      | 3.13         |                                 |
+    +-----------------------------+--------------+                                 |
+    | MetalLB                     | 0.9.6        |                                 |
     +-----------------------------+--------------+                                 |
     | Contextualization package   | 6.0.0        |                                 |
     +-----------------------------+--------------+---------------------------------+
@@ -87,17 +90,20 @@ Contextualization
 
 Contextualization parameters provided in the Virtual Machine template controls the initial VM configuration. Except for the `common set <https://docs.opennebula.io/stable/management_and_operations/references/template.html#context-section>`_ of parameters supported by every appliance on the OpenNebula Marketplace, there are few specific to the particular service appliance. The parameters should be provided in the ``CONTEXT`` section of the Virtual Machine template, read the OpenNebula `Management and Operations Guide <https://docs.opennebula.io/stable/management_and_operations/references/kvm_contextualization.html#set-up-the-virtual-machine-template>`__ for more details.
 
-===================================== ========= ==================== ========= ======== ===========
-Parameter                             Mandatory Default              Stage     Role     Description
-===================================== ========= ==================== ========= ======== ===========
-``ONEAPP_K8S_ADDRESS``                          routable IP          configure all      K8s master node address or network (in CIDR format)
-``ONEAPP_K8S_TOKEN``                                                 configure worker   K8s token - to join worker node to the cluster
-``ONEAPP_K8S_HASH``                                                  configure worker   K8s hash - to join worker node to the cluster
-``ONEAPP_K8S_NODENAME``                         hostname             configure master   K8s Master Node Name
-``ONEAPP_K8S_PORT``                             ``6443``             configure master   K8s API port on which nodes communicate
-``ONEAPP_K8S_PODS_NETWORK``                     ``10.244.0.0/16``    configure master   K8s pods network - pods will have IP from this range
-``ONEAPP_K8S_ADMIN_USERNAME``                   ``admin-user``       configure master   UI dashboard admin account - K8s secret's token is prefixed with this name
-===================================== ========= ==================== ========= ======== ===========
+====================================== ========= ==================== ========= ======== ===========
+Parameter                              Mandatory Default              Stage     Role     Description
+====================================== ========= ==================== ========= ======== ===========
+``ONEAPP_K8S_ADDRESS``                           routable IP          configure all      Master node address or network (in CIDR format)
+``ONEAPP_K8S_TOKEN``                                                  configure worker   Secret token - to join worker node to the cluster
+``ONEAPP_K8S_HASH``                                                   configure worker   Secret hash - to join worker node to the cluster
+``ONEAPP_K8S_NODENAME``                          hostname             configure master   Master Node Name
+``ONEAPP_K8S_PORT``                              ``6443``             configure master   Kubernetes API port on which nodes communicate
+``ONEAPP_K8S_TAINTED_MASTER``                    ``no``               configure master   Master node acts as control-plane only (**you will need to add worker nodes**)
+``ONEAPP_K8S_PODS_NETWORK``                      ``10.244.0.0/16``    configure master   Kubernetes pod network - pods will have IP from this range
+``ONEAPP_K8S_ADMIN_USERNAME``                    ``admin-user``       configure master   UI dashboard admin account - K8s secret's token is prefixed with this name
+``ONEAPP_K8S_LOADBALANCER_RANGE[0-9]``                                configure master   LoadBalancer IP range (can be used mutiple times with numbered suffix)
+``ONEAPP_K8S_LOADBALANCER_CONFIG``                                    configure master   Custom LoadBalancer config (encoded in Base64)
+====================================== ========= ==================== ========= ======== ===========
 
 If no contextualization parameter is provided, the appliance will create a :ref:`single node Kubernetes cluster <k8s_master_node>`. By default, it will listen on port ``6443`` of an IP address assigned to a default interface. You can still add more nodes to this cluster later by providing contextualization parameters required by a :ref:`worker node <k8s_worker_node>`.
 
@@ -108,7 +114,7 @@ Master Node (or Single Node Deployment)
 
 In this type of deployment, you don't need to setup anything in advance. The appliance will bootstrap a fully functional single node Kubernetes cluster which can be extended by other worker nodes at any time later.
 
-For other cases when the default behavior is not sufficient, you can contextualize the appliance with a few parameters. The most important is ``ONEAPP_K8S_ADDRESS``.
+For other cases when the default behavior is not sufficient, you can contextualize the appliance with a few parameters. The most important is ``ONEAPP_K8S_ADDRESS`` and configuration of the :ref:`Kubernetes LoadBalancer <k8s_loadbalancer>`.
 
 .. important::
 
@@ -142,6 +148,14 @@ If you don't set this parameter, the master node (and worker nodes) will have as
 
    **DO NOT CHANGE** the default value of ``ONEAPP_K8S_PODS_NETWORK`` unless you know what are you doing! It can break the internal networking!
 
+``ONEAPP_K8S_LOADBALANCER_RANGE`` is the simplest way to configure the LoadBalancer type of services. The value must be a range (or multiple ranges by adding more params with numbered suffix), e.g.:
+
+.. code::
+
+    192.168.100.100-192.168.100.200
+
+More info is in the :ref:`LoadBalancer section <k8s_loadbalancer>`.
+
 ``ONEAPP_K8S_ADMIN_USERNAME`` defaults to ``admin-user``. It is the service account name under which a Kubernetes token is created to enable login into :ref:`UI dashboard <k8s_dashboard>`. The token is stored in :ref:`/etc/one-appliance/config <one_service_logs>` as ``k8s_ui_login_token`` (you can see one in the :ref:`example <report_file_example>` above).
 
 The only reason to change the default is to easily find and manage the mentioned token with a command:
@@ -153,6 +167,12 @@ The only reason to change the default is to easily find and manage the mentioned
 .. important::
 
    Handle carefully the Kubernetes cluster token (``k8s_token`` in :ref:`/etc/one-appliance/config <one_service_logs>`) as it **never** expires. To use short-living tokens, delete the existing one and create a new token as described in the `kubeadm documentation <https://kubernetes.io/docs/setup/independent/create-cluster-kubeadm/#join-nodes>`_.
+
+.. note::
+
+    There is an option to setup master node as a `control-plane <https://kubernetes.io/docs/concepts/overview/components/#control-plane-components>`_ only. In such scenario the master node will not schedule any pods on itself and it will run user pods on worker nodes only. Therefore single-node master with control-plane only does not make sense and it will always need other (worker) nodes.
+
+    If you wish to run the master node in such way then set the ``ONEAPP_K8S_TAINTED_MASTER=YES``.
 
 .. _k8s_worker_node:
 
@@ -376,6 +396,120 @@ Validate the tool is configured properly by checking the cluster nodes status:
 
     - env. variable, e.g. ``KUBECONFIG=${HOME}/admin.conf kubectl get nodes``
     - CLI argument, e.g. ``kubectl --kubeconfig=${HOME}/admin.conf get nodes``
+
+.. _k8s_loadbalancer:
+
+LoadBalancer Service
+--------------------
+
+Pods or deployments can be exposed as a service of the type `LoadBalancer <https://kubernetes.io/docs/concepts/services-networking/service/#loadbalancer>`_ which is more flexible alternative to the simple type `NodePort <https://kubernetes.io/docs/concepts/services-networking/service/#nodeport>`_.
+
+OpenNebula's Kubernetes appliance is using the baremetal loadbalancer provider called `MetalLB <https://metallb.universe.tf/>`_.
+
+It is by default configured as `ARP/Layer2 <https://metallb.universe.tf/concepts/layer2/>`_ LoadBalancer which means that the exposed LoadBalancer IP must be routed to one of the Kubernetes nodes by means outside of the scope of the appliance itself.
+
+MetalLB supports also `BGP/Layer3 <https://metallb.universe.tf/concepts/bgp/>`_ loadbalancing. If the user is capable of setting up its network for this dynamic routing protocol then the user can provide the appliance with the proper configuration via the contextualization parameter ``ONEAPP_K8S_LOADBALANCER_CONFIG`` (Base64 encoded).
+
+The configuration for the ARP loadbalancing can look similar to this:
+
+.. code::
+
+    apiVersion: v1
+    kind: ConfigMap
+    metadata:
+      namespace: metallb-system
+      name: config
+    data:
+      config: |
+        address-pools:
+        - name: default
+          protocol: layer2
+          addresses:
+          - 192.168.10.100-192.168.10.200
+          - 192.168.20.100-192.168.20.200
+          - 192.168.30.100-192.168.30.200
+
+The most straightforward way is to just set the range via ``ONEAPP_K8S_LOADBALANCER_RANGE`` parameter or multiple ranges with more parameters, e.g.:
+
+.. code::
+
+    ONEAPP_K8S_LOADBALANCER_RANGE1=192.168.10.100-192.168.10.200
+    ONEAPP_K8S_LOADBALANCER_RANGE2=192.168.20.100-192.168.20.200
+    ONEAPP_K8S_LOADBALANCER_RANGE3=192.168.30.100-192.168.30.200
+    ...
+
+.. important::
+
+    For the LoadBalancer to work the range must be routable inside and outside of the Kubernetes nodes and must be reserved to the Kubernetes!
+
+Trivial example to demonstrate how LoadBalancer can be used is below.
+
+Let's first check how is LoadBalancer configured:
+
+.. prompt:: text [master]# auto
+
+    [master]# kubectl describe configmap config -n metallb-system
+    Name:         config
+    Namespace:    metallb-system
+    Labels:       <none>
+    Annotations:
+    Data
+    ====
+    config:
+    ----
+    address-pools:
+    - name: default
+      protocol: layer2
+      addresses:
+      - 172.16.100.100-172.16.100.110
+      - 172.16.100.200-172.16.100.210
+
+    Events:  <none>
+
+As we can see we have two ranges configured (which are routable) - now we can attempt to deploy the service.
+
+.. prompt:: text [master]# auto
+
+    [master]# kubectl run nginx --image=nginx --port 80
+    pod/nginx created
+    [master]# kubectl expose pod nginx --type=LoadBalancer
+    service/nginx exposed
+    [master]# kubectl get services
+    NAME         TYPE           CLUSTER-IP     EXTERNAL-IP      PORT(S)        AGE
+    kubernetes   ClusterIP      10.96.0.1      <none>           443/TCP        39h
+    nginx        LoadBalancer   10.106.25.84   172.16.100.100   80:31980/TCP   12s
+
+Our service ``nginx`` is exposed on the next free loadbalanced IP from the provided range or ranges - in this case ``172.16.100.100`` - and can be reached outside of the Kubernetes appliance as expected:
+
+.. prompt:: text [remote]$ auto
+
+    [remote]$ curl -s 172.16.100.100 | html2text
+    # Welcome to nginx!
+
+    If you see this page, the nginx web server is successfully installed and
+    working. Further configuration is required.
+
+    For online documentation and support please refer to
+    [nginx.org](http://nginx.org/).
+    Commercial support is available at [nginx.com](http://nginx.com/).
+
+    _Thank you for using nginx._
+
+Sometimes the range cannot be known in advance and so we can configure the LoadBalancer to act on every address with this workaround:
+
+.. code::
+
+    ONEAPP_K8S_LOADBALANCER_RANGE=0.0.0.0-255.255.255.255
+
+This time we can expose the service on the predetermined address (with ``--load-balancer-ip``) which we need and we know that it is safe to use:
+
+.. prompt:: text [master]# auto
+
+    [master]# kubectl expose pod nginx --type=LoadBalancer --load-balancer-ip=172.16.100.101
+
+.. important::
+
+    Use this only when you know what you are doing and can secure that no one will abuse this and create conflicts on the network!
 
 .. _k8s_dashboard:
 
