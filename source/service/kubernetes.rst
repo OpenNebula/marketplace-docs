@@ -495,13 +495,119 @@ Our service ``nginx`` is exposed on the next free loadbalanced IP from the provi
 
     _Thank you for using nginx._
 
-Sometimes the range cannot be known in advance and so we can configure the LoadBalancer to act on every address with this workaround:
+Updating LoadBalancer Config
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+It may happen that the configuration of the LoadBalancer was omitted during instantiation or simply became outdated with the time.
+
+This can be amended by updating the **configmap** holding the LoadBalancer's configuration.
+
+Let's create a new config file and store it as ``config.yaml``, e.g.:
+
+.. code::
+
+    apiVersion: v1
+    kind: ConfigMap
+    metadata:
+      namespace: metallb-system
+      name: config
+    data:
+      config: |
+        address-pools:
+        - name: default
+          protocol: layer2
+          addresses:
+          - 192.168.100.0-192.168.255.255
+
+We can now apply it with this command:
+
+.. prompt:: text [master]# auto
+
+    [master]# kubectl apply -f config.yaml
+
+Verify that the command worked:
+
+.. prompt:: text [master]# auto
+
+    [master]# kubectl describe configmap config -n metallb-system
+    Name:         config
+    Namespace:    metallb-system
+    Labels:       <none>
+    Annotations:
+    Data
+    ====
+    config:
+    ----
+    address-pools:
+    - name: default
+      protocol: layer2
+      addresses:
+      - 192.168.100.0-192.168.255.255
+
+    Events:  <none>
+
+And check the Kubernetes' log:
+
+.. prompt:: text [master]# auto
+
+    [master]# kubectl logs --selector app=metallb -n metallb-system
+    ...
+    {"caller":"main.go:108","configmap":"metallb-system/config","event":"startUpdate","msg":"start of config update","ts":"2021-04-16T01:36:54.414716585Z"}
+    {"caller":"main.go:117","configmap":"metallb-system/config","error":"new config not compatible with assigned IPs: service \"default/nginx\" cannot own \"172.16.100.101\" under new config","msg":"applying new configuration failed","op":"setConfig","ts":"2021-04-16T01:36:54.510442388Z"}
+    {"caller":"main.go:118","configmap":"metallb-system/config","event":"endUpdate","msg":"end of config update","ts":"2021-04-16T01:36:54.510717686Z"}
+    {"caller":"k8s.go:395","configmap":"metallb-system/config","error":null,"event":"configStale","msg":"config (re)load failed, config marked stale","ts":"2021-04-16T01:36:54.510868422Z"}
+    ...
+
+.. warning::
+
+    Beware and take notice: **Our update failed!**
+
+What happened? We applied a new config which rendered the already loadbalanced and exposed External IPs incompatible!
+
+We must fix it - we forgot to add the old range into the new ``config.yaml``:
+
+.. code::
+
+    apiVersion: v1
+    kind: ConfigMap
+    metadata:
+      namespace: metallb-system
+      name: config
+    data:
+      config: |
+        address-pools:
+        - name: default
+          protocol: layer2
+          addresses:
+          - 192.168.100.0-192.168.255.255
+          - 172.16.100.100-172.16.100.200
+
+One more time:
+
+.. prompt:: text [master]# auto
+
+    [master]# kubectl apply -f config.yaml
+
+Check the logs again (do it after every change):
+
+.. prompt:: text [master]# auto
+
+    [master]# kubectl logs --selector app=metallb -n metallb-system
+
+.. important::
+
+    Always double-check that your new range(s) is actually valid!
+
+Generic IP range
+~~~~~~~~~~~~~~~~
+
+Sometimes the range cannot be known in advance and so we can configure and force the LoadBalancer to act on **every** address with this workaround:
 
 .. code::
 
     ONEAPP_K8S_LOADBALANCER_RANGE=0.0.0.0-255.255.255.255
 
-This time we can expose the service on the predetermined address (with ``--load-balancer-ip``) which we need and we know that it is safe to use:
+This time we can expose the service on a desired address (with ``--load-balancer-ip``) which we know that it is safe to use:
 
 .. prompt:: text [master]# auto
 
@@ -568,6 +674,9 @@ Deploy Application
 
 We will loosely follow the `official guide <https://kubernetes.io/docs/tasks/run-application/run-stateless-application-deployment/>`_ as a demonstration how to deploy an application to our newly created Kubernetes cluster.
 
+1. External IP without LoadBalancer
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 Start with creating a manifest file (change the ``externalIPs`` to your master node IP **!**):
 
 .. prompt:: text [master]# auto
@@ -622,6 +731,17 @@ Start with creating a manifest file (change the ``externalIPs`` to your master n
               containerPort: 80
     EOF
 
+.. important::
+
+    Do not forget to change the **External IP** to the correct address!
+
+    From above:
+
+    .. code::
+
+        externalIPs:
+        - 203.0.113.10
+
 Then just simply apply this manifest and Kubernetes will take care of the rest (it may take a while to download docker images):
 
 .. prompt:: text [master]# auto
@@ -637,7 +757,7 @@ You can check that your application is ready if you see an output like this:
    example-deployment-6f8c74c65f-6ddch   1/1     Running   0          41s
    example-deployment-6f8c74c65f-lw5sp   1/1     Running   0          41s
 
-Validate the service works from the command line, e.g.:
+Validate from the command line that the service works, e.g.:
 
 .. prompt:: text $ auto
 
@@ -654,6 +774,137 @@ Or, in the web browser, e.g.:
 
 |image-kubetest|
 
+2. External IP with LoadBalancer
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+If we configured the :ref:`LoadBalancer <k8s_loadbalancer>` then we can improve on the previous example.
+
+We expect that the intended **External IP** stayed the same (``203.0.113.10`` - **change to your setup!**) and that we correctly setup the LoadBalancer config, e.g.:
+
+.. prompt:: text [master]# auto
+
+    [master]# kubectl describe configmap config -n metallb-system
+    Name:         config
+    Namespace:    metallb-system
+    Labels:       <none>
+    Annotations:
+    Data
+    ====
+    config:
+    ----
+    address-pools:
+    - name: default
+      protocol: layer2
+      addresses:
+      - 203.0.113.10-203.0.113.10
+
+    Events:  <none>
+
+.. note::
+
+   In this example we have a one range with only one loadbalanced IP address.
+
+.. important::
+
+    This time the Kubernetes Appliance is using private virtual network and the public IP can be attached as an **External Alias** - as long as IP packets with this address arrive to the Appliance (i.e. the address is routed correctly).
+
+    In any case this IP cannot be actually assigned otherwise LoadBalancer will fail to work.
+
+Create the following manifest (it is the same from before but now is shorter by leaving the service definition):
+
+.. prompt:: text [master]# auto
+
+    [master]# cat - >~/example.yaml <<EOF
+    apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      name: example-deployment
+    spec:
+      selector:
+        matchLabels:
+          app: nginx
+      replicas: 2
+      template:
+        metadata:
+          labels:
+            app: nginx
+        spec:
+          containers:
+          - name: nginx
+            image: nginx:1.15.9-alpine
+            command:
+            - /bin/sh
+            - "-c"
+            - |
+              cat > /usr/share/nginx/html/index.html <<EOF
+              <html>
+               <head><title>Example Kubernetes Service</title></head>
+               <body>
+                <h1>Welcome to Example Kubernetes Service!</h1>
+                <p>If you see this page, your Kubernetes cluster is up and running.</p>
+               </body>
+              </html>
+              EOF
+              exec nginx -g 'daemon off;'
+            ports:
+            - name: http
+              containerPort: 80
+    EOF
+
+Next step is the same - apply the manifest (it may take a while for the Kubernetes to download docker images):
+
+.. prompt:: text [master]# auto
+
+    [master]# kubectl apply -f ~/example.yaml
+
+You can check that your application is ready if you see an output like this:
+
+.. prompt:: text [master]# auto
+
+   [master]# kubectl get pods
+   NAME                                  READY   STATUS    RESTARTS   AGE
+   example-deployment-6f8c74c65f-6ddch   1/1     Running   0          41s
+   example-deployment-6f8c74c65f-lw5sp   1/1     Running   0          41s
+
+This time we expose our application as `Service Type LoadBalancer <https://kubernetes.io/docs/concepts/services-networking/service/#loadbalancer>`_:
+
+.. prompt:: text [master]# auto
+
+    [master]# kubectl expose deployment example-deployment --type=LoadBalancer --name=example-service --load-balancer-ip=203.0.113.10
+
+Check the service status:
+
+.. prompt:: text [master]# auto
+
+    [master]# kubectl get services example-service
+    NAME              TYPE           CLUSTER-IP      EXTERNAL-IP      PORT(S)        AGE
+    example-service   LoadBalancer   10.97.166.250   203.0.113.10     80:31583/TCP   9s
+
+Validate from the command line that the service works, e.g.:
+
+.. prompt:: text $ auto
+
+    $ curl 203.0.113.10
+    <html>
+     <head><title>Example Kubernetes Service</title></head>
+     <body>
+      <h1>Welcome to Example Kubernetes Service!</h1>
+      <p>If you see this page, your Kubernetes cluster is up and running.</p>
+     </body>
+    </html>
+
+Or, in the web browser, e.g.:
+
+|image-kubetest|
+
+.. important::
+
+    This simple example deployment could not properly demonstrate the advantages of the LoadBalancer type of service.
+
+    It's benefits are leveraged when there is more than one Kubernetes nodes. If the **External IP** is used without LoadBalancer then this IP will be bound to exactly one node and if this node becomes unavailable so does the service.
+
+    Such problem does not occur with the LoadBalancer because it will **failover** the **External IP** onto another healthy node.
+
 Shutdown Application
 --------------------
 
@@ -666,9 +917,14 @@ Destroy the example application at the end, e.g.:
     [master]# kubectl delete deployment example-deployment
     deployment.extensions "example-deployment" deleted
 
+.. note::
+
+    More examples can be found in the `Kubernetes Quick Start Section <https://docs.opennebula.io/stable/quick_start/usage_basics/running_kubernetes_clusters.html>`_ of the OpenNebula documentation.
+
 .. |image-download| image:: /images/kubernetes/kubernetes-download.png
 .. |image-worker-values| image:: /images/kubernetes/kubernetes-worker-values.png
 .. |image-context-vars| image:: /images/kubernetes/kubernetes-context-vars.png
+   :scale: 60%
 .. |image-ui-login| image:: /images/kubernetes/kubernetes-ui-login.png
 .. |image-ui-create| image:: /images/kubernetes/kubernetes-ui-create.png
 .. |image-kubetest| image:: /images/kubernetes/kubernetes-kubetest.png
