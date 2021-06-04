@@ -4,7 +4,7 @@
 Service Kubernetes
 ==================
 
-OpenNebula `Marketplace Appliance <https://marketplace.opennebula.io/appliance/547ecdff-f392-43b9-abc9-5f10a9fa7aff>`_  with preinstalled `Kubernetes <https://kubernetes.io/>`_ service.
+OpenNebula `Marketplace Appliance <https://marketplace.opennebula.io/appliance/1318e7ca-bd6d-11eb-9ae8-98fa9bde1a93>`_  with preinstalled `Kubernetes <https://kubernetes.io/>`_ service.
 
 Without any parameters provided, the appliance deploys as a single Kubernetes master node. Appliance can be customized with :ref:`contextualization <k8s_context_param>` parameters to support manually managed multi-node deployments, or automatically managed multi-node cluster as OpenNebula `OneFlow service <https://docs.opennebula.io/stable/management_and_operations/multivm_service_management/appflow_use_cli.html>`_.
 
@@ -17,26 +17,42 @@ Without any parameters provided, the appliance deploys as a single Kubernetes ma
 Platform Notes
 ==============
 
-Appliance components versions:
+Component versions
+------------------
 
 .. table::
     :widths: 100 50 40
 
-    +-----------------------------+------------------------------------------------+
-    | Component                   | Version                                        |
-    +=============================+==============+=================================+
-    | Kubernetes                  | 1.18.18      |                                 |
-    +-----------------------------+--------------+                                 |
-    | Docker                      | 19.03.15 CE  |                                 |
-    +-----------------------------+--------------+ |image-k8s-certified-logo-1.18| |
-    | Calico                      | 3.13         |                                 |
-    +-----------------------------+--------------+                                 |
-    | MetalLB                     | 0.9.6        |                                 |
-    +-----------------------------+--------------+                                 |
-    | Contextualization package   | 6.0.0        |                                 |
-    +-----------------------------+--------------+---------------------------------+
+    +-----------------------------+------------------------------------------------------------------------------------------------------------------+
+    | Component                   | Version                                                                                                          |
+    +=============================+=====================================================================================+============================+
+    | `Kubernetes Appliance 1.21 <https://marketplace.opennebula.io/appliance/1318e7ca-bd6d-11eb-9ae8-98fa9bde1a93>`_   |                            |
+    +-----------------------------+-------------------------------------------------------------------------------------+                            |
+    | Kubernetes                  | 1.21.1                                                                              |                            |
+    +-----------------------------+-------------------------------------------------------------------------------------+                            |
+    | Docker                      | 20.10.6 CE                                                                          |                            |
+    +-----------------------------+-------------------------------------------------------------------------------------+ |image-k8s-certified-logo| |
+    | Calico                      | 3.19.1                                                                              |                            |
+    +-----------------------------+-------------------------------------------------------------------------------------+                            |
+    | MetalLB                     | 0.9.6                                                                               |                            |
+    +-----------------------------+-------------------------------------------------------------------------------------+                            |
+    | Contextualization package   | 6.0.0-1                                                                             |                            |
+    +-----------------------------+-------------------------------------------------------------------------------------+                            |
+    | `Kubernetes Appliance 1.18 <https://marketplace.opennebula.io/appliance/547ecdff-f392-43b9-abc9-5f10a9fa7aff>`_   |                            |
+    +-----------------------------+-------------------------------------------------------------------------------------+                            |
+    | Kubernetes                  | 1.18.18                                                                             |                            |
+    +-----------------------------+-------------------------------------------------------------------------------------+                            |
+    | Docker                      | 19.03.15 CE                                                                         |                            |
+    +-----------------------------+-------------------------------------------------------------------------------------+                            |
+    | Calico                      | 3.13                                                                                |                            |
+    +-----------------------------+-------------------------------------------------------------------------------------+                            |
+    | MetalLB                     | 0.9.6                                                                               |                            |
+    +-----------------------------+-------------------------------------------------------------------------------------+                            |
+    | Contextualization package   | 6.0.0                                                                               |                            |
+    +-----------------------------+-------------------------------------------------------------------------------------+----------------------------+
 
-Requirements:
+Requirements
+------------
 
 * OpenNebula 4.14 - 6.0
 * `OneFlow <https://docs.opennebula.io/stable/management_and_operations/multivm_service_management/overview.html>`_ and `OneGate <https://docs.opennebula.io/stable/management_and_operations/multivm_service_management/onegate_usage.html>`_ for multi-node orchestration
@@ -231,7 +247,7 @@ Create OneFlow Service Template (Wizard)
 
 .. note::
 
-    On **OpenNebula 6.0 and newer** you can use dedicated appliance `Service Kubernetes 1.18 for OneFlow - KVM <https://marketplace.opennebula.io/appliance/07520eee-6552-11eb-85e7-98fa9bde1a93>`__ to run a Kubernetes cluster managed by OneFlow in a simple way. The result is very same as with the manual configuration described below.
+    On **OpenNebula 6.0 and newer** you can use dedicated appliance `Service Kubernetes 1.21 - KVM <https://marketplace.opennebula.io/appliance/dd6ed430-bd6d-11eb-9e90-98fa9bde1a93>`__ to run a Kubernetes cluster managed by OneFlow in a simple way. The result is very same as with the manual configuration described below.
 
 Step 1 - General
 ^^^^^^^^^^^^^^^^
@@ -249,7 +265,7 @@ Step 2 - Role Master
 ^^^^^^^^^^^^^^^^^^^^
 
 - Fill the role name as ``master`` (**nothing else!**)
-- Pick the ``Service Kubernetes - KVM`` (VM template)
+- Pick the ``Kubernetes 1.21 - KVM`` (VM template)
 
 The current status should resemble this picture with important parts highlighted:
 
@@ -263,7 +279,7 @@ As the next step, we setup a worker role:
 - Click on the blue button **+** next to **Roles**
 - Fill the role name as ``worker`` (**nothing else!**)
 - Optional: Set the **Number of VMs** run initially
-- Pick the ``Service Kubernetes - KVM`` (VM template)
+- Pick the ``Kubernetes 1.21 - KVM`` (VM template)
 - In **Parent roles**, set **master** as a parent role
 
 The next status should resemble this picture with important parts highlighted:
@@ -934,10 +950,10 @@ Destroy the example application at the end, e.g.:
 .. |image-oneflow-part4| image:: /images/kubernetes/kubernetes-oneflow-part4.png
 .. |image-oneflow-part5| image:: /images/kubernetes/kubernetes-oneflow-part5.png
 .. |image-oneflow-part6| image:: /images/kubernetes/kubernetes-oneflow-part6.png
-.. |image-k8s-certified-logo-1.18| image:: /images/kubernetes/certified-kubernetes-1.18-pantone.png
+.. |image-k8s-certified-logo| image:: /images/kubernetes/certified-kubernetes-logo.svg
    :height: 120
    :align: middle
-   :alt: CNCF Certified Logo of Kubernetes 1.18
+   :alt: CNCF Certified Logo of Kubernetes
    :target: https://landscape.cncf.io/selected=open-nebula-kubernetes-appliance
 .. |image-ssh-context| image:: /images/appliance-ssh-context.png
 .. |image-custom-vars-password| image:: /images/appliance-custom-vars-password.png
