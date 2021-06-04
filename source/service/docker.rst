@@ -14,7 +14,8 @@ This Docker Appliance brings the Docker Engine pre-installed and the contextuali
 Platform Notes
 ==============
 
-Appliance components versions:
+Component versions
+------------------
 
 ============================= ==================
 Component                     Version

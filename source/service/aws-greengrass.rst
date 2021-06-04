@@ -38,7 +38,8 @@ If you are new to the AWS IoT Greengrass, check the official documentation and t
 Platform Notes
 ==============
 
-Appliance components versions:
+Component versions
+------------------
 
 ============================= ==================
 Component                     Version
@@ -52,7 +53,8 @@ Python 2 - boto3              1.17.40
 Contextualization package     6.0.0
 ============================= ==================
 
-Requirements:
+Requirements
+------------
 
 * OpenNebula 4.14 - 6.0
 * `OneGate <https://docs.opennebula.io/stable/management_and_operations/multivm_service_management/onegate_usage.html>`_ for optional reporting back from the VM

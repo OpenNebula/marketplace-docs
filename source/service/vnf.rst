@@ -28,7 +28,8 @@ OpenNebula Marketplace Appliance implementing various **Virtual Network Function
 Platform Notes
 ==============
 
-Appliance components versions:
+Component versions
+------------------
 
 ============================= ==================
 Component                     Version

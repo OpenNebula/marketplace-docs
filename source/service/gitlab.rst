@@ -13,7 +13,8 @@ Without any parameters provided, the appliance boots into the web setup wizard a
 Platform Notes
 ==============
 
-Appliance components versions:
+Component versions
+------------------
 
 ============================= ==================
 Component                     Version
