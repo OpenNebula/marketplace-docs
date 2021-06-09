@@ -273,21 +273,17 @@ Parameter                             Default        Description
 
 .. _vnf_new_vrouter_context_param:
 
-..
-    TODO: I don't know how to fit this new VIP parameters into the documentation.
-    Using ONEAPP_VROUTER prefix doesn't fit into ONEAPP_VNF_* convention above.
+**Additional parameters** (not automatically set by OpenNebula):
 
-    **Additional parameters** (not automatically set by OpenNebula):
+===================================== ============== ===========
+Parameter                             Default        Description
+===================================== ============== ===========
+``ONEAPP_VROUTER_ETHx_VIP<0-9>``      (empty)        Extra floating IPv4 (VIPs) for ethX
+===================================== ============== ===========
 
-    ===================================== ============== ===========
-    Parameter                             Default        Description
-    ===================================== ============== ===========
-    ``ONEAPP_VROUTER_ETHx_VIP<0-9>``      (empty)        Extra floating IPv4 (VIPs) for ethX
-    ===================================== ============== ===========
+.. note::
 
-    .. note::
-
-       ``ONEAPP_VROUTER_ETHx_VIP<0-9>`` **must always have index** in suffix, e.g. ``ONEAPP_VROUTER_ETH0_VIP0`` or ``ONEAPP_VROUTER_ETH0_VIP1``.
+    ``ONEAPP_VROUTER_ETHx_VIP<0-9>`` **must always have index** in suffix, e.g. ``ONEAPP_VROUTER_ETH0_VIP0`` or ``ONEAPP_VROUTER_ETH0_VIP1``.
 
 .. _vnf_keepalived_context_param:
 
