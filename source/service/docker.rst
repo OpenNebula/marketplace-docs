@@ -1,8 +1,8 @@
 .. _docker_appliance:
 
-==============
-Service Docker
-==============
+======
+Docker
+======
 
 OpenNebula `Marketplace Appliance <https://marketplace.opennebula.io/appliance/a8330cf6-111a-11ea-9183-f0def1753696>`_  with preinstalled `Docker <https://docker.com>`_ service.
 

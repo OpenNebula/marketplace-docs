@@ -1,8 +1,8 @@
 .. _service_gl:
 
-==============
-Service GitLab
-==============
+======
+GitLab
+======
 
 OpenNebula `Marketplace Appliance <https://marketplace.opennebula.io/appliance/6b54a412-03a5-11e9-8652-f0def1753696>`_  with preinstalled `GitLab <https://about.gitlab.com/>`_ service.
 
@@ -19,7 +19,7 @@ Component versions
 ============================= ==================
 Component                     Version
 ============================= ==================
-GitLab                        13.10.0 CE
+GitLab                        13.12.3 CE
 Contextualization package     6.0.0
 ============================= ==================
 

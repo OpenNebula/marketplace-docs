@@ -1,8 +1,8 @@
 .. _service_awsgg:
 
-==========================
-Service AWS IoT Greengrass
-==========================
+==================
+AWS IoT Greengrass
+==================
 
 OpenNebula `Marketplace Appliance <https://marketplace.opennebula.io/appliance/13449c22-17c3-46cd-b1bf-7cbec55b504b>`_  with preinstalled `AWS IoT Greengrass <https://aws.amazon.com/greengrass/>`_ SDK and services to run IoT Core, device, or both.
 

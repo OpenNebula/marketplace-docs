@@ -11,7 +11,7 @@ Follow the OpenNebula `documentation <https://docs.opennebula.io/stable/manageme
 .. toctree::
    :maxdepth: 3
 
-   Service Appliances <service/index>
+   Appliances <service/index>
 
 .. raw:: html
    :file: toc.html
