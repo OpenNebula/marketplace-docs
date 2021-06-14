@@ -1,8 +1,8 @@
 .. _service_wp:
 
-=================
-Service WordPress
-=================
+=========
+WordPress
+=========
 
 OpenNebula `Marketplace Appliance <https://marketplace.opennebula.io/appliance/84bd27fe-5d14-4e70-a79a-eb3fdd0072ae>`_ with preinstalled `WordPress <https://wordpress.org/>`_ service.
 
