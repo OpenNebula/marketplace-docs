@@ -63,6 +63,11 @@ Quick Start
 ===========
 
 .. include:: shared/import.txt
+
+.. important::
+
+   In order to use a vCenter app it is necessary to attach the image to a vCenter VM Template which was previously imported. An existing VM Template can be cloned and its disks replaced with the image from the marketplace. Once the VM Template is ready, the appliance can be instantiated.
+
 .. include:: shared/update.txt
 .. include:: shared/run.txt
 
