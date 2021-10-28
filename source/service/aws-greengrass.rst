@@ -45,18 +45,18 @@ Component versions
 Component                     Version
 ============================= ==================
 AWS Greengrass Core           1.10.2
-AWS CLI                       1.19.40
+AWS CLI                       1.19.112
 AWS Lambda Runtimes           Python 2.7
 Python 2 - greengrasssdk      1.6.0
 Python 2 - AWSIoTPythonSDK    1.4.9
-Python 2 - boto3              1.17.40
-Contextualization package     6.0.0
+Python 2 - boto3              1.19.1
+Contextualization package     6.2.0
 ============================= ==================
 
 Requirements
 ------------
 
-* OpenNebula 4.14 - 6.0
+* OpenNebula 4.14 - 6.2
 * `OneGate <https://docs.opennebula.io/stable/management_and_operations/multivm_service_management/onegate_usage.html>`_ for optional reporting back from the VM
 * Min. Memory: 2 GB
 * Min. Cores (VCPU): 1

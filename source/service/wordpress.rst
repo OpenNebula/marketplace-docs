@@ -19,8 +19,8 @@ Component versions
 ============================= ==================
 Component                     Version
 ============================= ==================
-WordPress                     5.1.3
-Contextualization package     6.0.0
+WordPress                     5.1.11
+Contextualization package     6.2.0
 ============================= ==================
 
 Quick Start
