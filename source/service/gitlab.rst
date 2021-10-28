@@ -19,8 +19,8 @@ Component versions
 ============================= ==================
 Component                     Version
 ============================= ==================
-GitLab                        13.12.3 CE
-Contextualization package     6.0.0
+GitLab                        14.4.0 CE
+Contextualization package     6.2.0
 ============================= ==================
 
 Quick Start
