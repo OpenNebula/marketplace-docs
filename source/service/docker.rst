@@ -20,8 +20,8 @@ Component versions
 ============================= ==================
 Component                     Version
 ============================= ==================
-Docker                        20.10.5 CE
-Contextualization package     6.0.0
+Docker                        20.10.7 CE
+Contextualization package     6.2.0
 ============================= ==================
 
 .. important::
