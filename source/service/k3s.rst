@@ -1,18 +1,20 @@
-.. _service_k8s:
+.. _service_k3s:
 
-================
-Kubernetes (K8s)
-================
+============================
+Lightweight Kubernetes (K3s)
+============================
 
-OpenNebula `Marketplace Appliance <https://marketplace.opennebula.io/appliance/1318e7ca-bd6d-11eb-9ae8-98fa9bde1a93>`_  with preinstalled `Kubernetes <https://kubernetes.io/>`_ service.
+OpenNebula `Marketplace Appliance <https://marketplace.opennebula.io/appliance/319d21ea-1a39-4c28-bc36-5ac86a966a48>`_  with preinstalled `K3s <https://k3s.io/>`_ service.
 
-Without any parameters provided, the appliance deploys as a single Kubernetes master node. Appliance can be customized with :ref:`contextualization <k8s_context_param>` parameters to support manually managed multi-node deployments, or automatically managed multi-node cluster as OpenNebula `OneFlow service <https://docs.opennebula.io/stable/management_and_operations/multivm_service_management/appflow_use_cli.html>`_.
+Without any parameters provided, the appliance deploys as a single Kubernetes master node (K3s flavour). The appliance can be further customized with :ref:`contextualization <k3s_context_param>` parameters to support manually managed multi-node deployments, or automatically managed multi-node cluster as OpenNebula `OneFlow service <https://docs.opennebula.io/stable/management_and_operations/multivm_service_management/appflow_use_cli.html>`_.
 
-.. include:: shared/features.txt
+.. include:: shared/features-alpine.txt
 * **Only single master clusters supported**.
-* Preconfigured with Canal CNI networking (`Calico <https://www.projectcalico.org/>`_, `Flannel <https://github.com/coreos/flannel>`_).
-* Installed with MetalLB LoadBalancer provider (`MetalLB <https://metallb.universe.tf/>`_)
-* Optional: :ref:`Kubernetes Dashboard <k8s_dashboard>`.
+* Supports multiple CNI networking: `Flannel <https://github.com/coreos/flannel>`_, `Calico <https://www.projectcalico.org/>`_ and Canal (Calico+Flannel).
+* `Klipper LB <https://github.com/k3s-io/klipper-lb>`_ as a default LoadBalancer (servicelb).
+* `MetalLB <https://metallb.universe.tf/>`_ LoadBalancer is supported as an alternative to the default K3s servicelb.
+* `Traefik <https://traefik.io/traefik/>`_ as a complement to the servicelb and traffic router.
+* `Local Path Provisioner <https://github.com/rancher/local-path-provisioner>`_ dynamic local volumes provisioner.
 
 Platform Notes
 ==============
@@ -26,38 +28,28 @@ Component versions
     +-----------------------------+------------------------------------------------------------------------------------------------------------------+
     | Component                   | Version                                                                                                          |
     +=============================+=====================================================================================+============================+
-    | `Kubernetes Appliance 1.21 <https://marketplace.opennebula.io/appliance/1318e7ca-bd6d-11eb-9ae8-98fa9bde1a93>`_   |                            |
+    | `K3s Appliance 1.21.5+k3s2 <https://marketplace.opennebula.io/appliance/319d21ea-1a39-4c28-bc36-5ac86a966a48>`_   |                            |
     +-----------------------------+-------------------------------------------------------------------------------------+                            |
-    | Kubernetes                  | 1.21.5                                                                              |                            |
+    | K3s                         | 1.21.5+k3s2                                                                         |                            |
     +-----------------------------+-------------------------------------------------------------------------------------+                            |
-    | Docker                      | 20.10.9 CE                                                                          |                            |
-    +-----------------------------+-------------------------------------------------------------------------------------+ |image-k8s-certified-logo| |
-    | Calico                      | 3.19.1                                                                              |                            |
+    | Alpine Linux                | 3.14                                                                                |                            |
     +-----------------------------+-------------------------------------------------------------------------------------+                            |
-    | MetalLB                     | 0.9.6                                                                               |                            |
-    +-----------------------------+-------------------------------------------------------------------------------------+                            |
-    | Contextualization package   | 6.2.0                                                                               |                            |
-    +-----------------------------+-------------------------------------------------------------------------------------+                            |
-    | `Kubernetes Appliance 1.18 <https://marketplace.opennebula.io/appliance/547ecdff-f392-43b9-abc9-5f10a9fa7aff>`_   |                            |
-    +-----------------------------+-------------------------------------------------------------------------------------+                            |
-    | Kubernetes                  | 1.18.18                                                                             |                            |
-    +-----------------------------+-------------------------------------------------------------------------------------+                            |
-    | Docker                      | 19.03.15 CE                                                                         |                            |
-    +-----------------------------+-------------------------------------------------------------------------------------+                            |
-    | Calico                      | 3.13                                                                                |                            |
+    | Containerd                  | 1.5.8-k3s1                                                                          |                            |
+    +-----------------------------+-------------------------------------------------------------------------------------+ |image-k3s-logo|           |
+    | Calico                      | 3.20                                                                                |                            |
     +-----------------------------+-------------------------------------------------------------------------------------+                            |
     | MetalLB                     | 0.9.6                                                                               |                            |
     +-----------------------------+-------------------------------------------------------------------------------------+                            |
-    | Contextualization package   | 6.2.0                                                                               |                            |
+    | Contextualization package   | 6.2.0-r1                                                                            |                            |
     +-----------------------------+-------------------------------------------------------------------------------------+----------------------------+
 
 Requirements
 ------------
 
-* OpenNebula 4.14 - 6.2
+* OpenNebula 5.12 - 6.2
 * `OneFlow <https://docs.opennebula.io/stable/management_and_operations/multivm_service_management/overview.html>`_ and `OneGate <https://docs.opennebula.io/stable/management_and_operations/multivm_service_management/onegate_usage.html>`_ for multi-node orchestration
-* Min. Memory: 3 GB (master), 1 GB (worker)
-* Min. Cores (VCPU): 2 (master), 1 (worker)
+* Min. Memory: 2 GB
+* Min. Cores (VCPU): 2
 
 Quick Start
 ===========
@@ -71,15 +63,17 @@ Quick Start
 .. include:: shared/update.txt
 .. include:: shared/run.txt
 
-The initial configuration can be customized with :ref:`contextualization <k8s_context_param>` parameters:
+The initial configuration can be customized with :ref:`contextualization <k3s_context_param>` parameters:
 
 |image-context-vars|
 
 .. note::
 
-    The first input for **Master node address** is important and the value may differ for the master node and the worker nodes in the same cluster. For example for the master node, it may be left empty and the actual IP address will be derived from your setup (:ref:`more info is below <k8s_master_node>`) or set it to an actual IP assigned inside the VM. For the worker nodes, it must be a real IP address (in all cases). More about this in :ref:`contextualization <k8s_context_param>`.
+    The first input can be ignored - it serves to override the used K3s version - meaning that the version with which the image came will be uninstalled and replaced with the new requested one.
 
-    The following two inputs (**Secret token** and **Secret hash**) are relevant for worker nodes only and they need to be set with values stored on the master node in :ref:`/etc/one-appliance/config <one_service_logs>`. Below is an :ref:`example <report_file_example>` of such file. These three inputs are mandatory for the worker node to join the cluster - **all of them must be set**. Otherwise, a new single master node will be created.
+    The second input **Master node address** is important and the value may differ for the master node and the worker nodes in the same cluster. For example for the master node, it may be left empty and the actual IP address will be derived from your setup (:ref:`more info is below <k8s_master_node>`) or set it to an actual IP assigned inside the VM. For the worker nodes, it must be a real IP address (in all cases). More about this in :ref:`contextualization <k3s_context_param>`.
+
+    The following input **Secret token** is relevant for worker nodes only and it needs to be set with a value stored on the master node in :ref:`/etc/one-appliance/config <one_service_logs>`. Below is an :ref:`example <report_file_example>` of such file. These two inputs (Master node address and Secret token) are mandatory for the worker node to join the cluster - **both of them must be set**. Otherwise, a new single master node will be created.
 
 After you are done, click on the button **Instantiate**. A virtual machine with the running service should be ready in a few minutes.
 
@@ -96,17 +90,13 @@ After you are done, click on the button **Instantiate**. A virtual machine with 
 
     All set and ready to serve 8)
 
-    [root@onekube-ip-192-168-122-10 ~]# cat /etc/one-appliance/config
-    [Kubernetes]
+    onek3s-ip-192-168-122-10:~# cat /etc/one-appliance/config
+    [K3s]
     k8s_connection = https://192.168.122.10:6443
     k8s_master = 192.168.122.10
-    k8s_join_command = kubeadm join 192.168.122.10:6443 --token meis0p.gxa5e4kvk8pv1xx6 --discovery-token-ca-cert-hash sha256:3b5441641c37af01c9847641c4024f1312755fb4dde1f66a388b9b4eb6ebe1a6
-    k8s_token = meis0p.gxa5e4kvk8pv1xx6
-    k8s_hash = 3b5441641c37af01c9847641c4024f1312755fb4dde1f66a388b9b4eb6ebe1a6
-    k8s_ui_proxy_url = http://localhost:8001/api/v1/namespaces/kube-system/services/https:kubernetes-dashboard:/proxy/
-    k8s_ui_login_token = eyJhbGciOiJSUzI1NiIsImtpZCI6IiJ9.eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1lc3BhY2UiOiJrdWJlLXN5c3RlbSIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VjcmV0Lm5hbWUiOiJvc3AtdG9rZW4taHZjam0iLCJrdWJlcm5ldGVzLmlvL3NlcnZpY2VhY2NvdW50L3NlcnZpY2UtYWNjb3VudC5uYW1lIjoib3NwIiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZXJ2aWNlLWFjY291bnQudWlkIjoiMzdjOTc4NjctNDVhOS0xMWU5LWJlMTEtMDIwMGMwYTg3YTBhIiwic3ViIjoic3lzdGVtOnNlcnZpY2VhY2NvdW50Omt1YmUtc3lzdGVtOm9zcCJ9.Z-zh1WdPrOGctKnjDs79R9DphFrN-5QGsa4NXvRH9112H5iZNjNZP_HE_MakSVnGn6lF1FEmUJppFmqEfsonz5FyP-fDvBzBnb3Xvo-Em12bYXfDfdcWQ90bvLpYIiYY8NhjJFXmAJmkZPmtiv1Eto_sK9ZlXNSTuBRsMAeF0Q7PeymSLKPHcwGCEGzPJQRZCxsBwZ7oKI4_LdcNopR6btULO0B9DesyAZaMPUbMs75KySOxloryockINFZoYYHmckB5fuiBQI_8Pni3mSwrEPU2lwnUrajRQDJuSSbNtbL1fSrMnj2suB20xLF9382yuJJ-2S9VjqrGiIAvDJ7F8g
+    k8s_token = K107e18223bb5472f7dcf058a3b217c98583453ee3f90150504e2dfc9016bdbac71::server:78e26029234b950c88bf2361845b3568
 
-.. _k8s_context_param:
+.. _k3s_context_param:
 
 Contextualization
 =================
@@ -118,26 +108,30 @@ Parameter                              Mandatory Default              Stage     
 ====================================== ========= ==================== ========= ======== ===========
 ``ONEAPP_K8S_ADDRESS``                           routable IP          configure all      Master node address
 ``ONEAPP_K8S_TOKEN``                                                  configure worker   Secret token - to join worker node to the cluster
-``ONEAPP_K8S_HASH``                                                   configure worker   Secret hash - to join worker node to the cluster
+``ONEAPP_K8S_OVERRIDE_VERSION``                                       configure master   Custom K3s version (**it overrides the preinstalled K3s version**)
 ``ONEAPP_K8S_NODENAME``                          hostname             configure master   Master Node Name
-``ONEAPP_K8S_PORT``                              ``6443``             configure master   Kubernetes API port on which nodes communicate
+``ONEAPP_K8S_PORT``                              ``6443``             configure master   K3s API port on which nodes communicate
 ``ONEAPP_K8S_TAINTED_MASTER``                    ``no``               configure master   Master node acts as control-plane only (**you will need to add worker nodes**)
-``ONEAPP_K8S_PODS_NETWORK``                      ``10.244.0.0/16``    configure master   Kubernetes pod network - pods will have IP from this range
-``ONEAPP_K8S_ADMIN_USERNAME``                    ``admin-user``       configure master   UI dashboard admin account - K8s secret's token is prefixed with this name
-``ONEAPP_K8S_LOADBALANCER_RANGE[0-9]``                                configure master   LoadBalancer IP range (can be used mutiple times with numbered suffix)
-``ONEAPP_K8S_LOADBALANCER_CONFIG``                                    configure master   Custom LoadBalancer config (encoded in Base64)
+``ONEAPP_K8S_CNI``                               ``flannel``          configure master   Container Network Interface (options: ``calico``, ``canal``)
+``ONEAPP_K8S_FLANNEL_BACKEND``                   ``vxlan``            configure master   Flannel CNI backend
+``ONEAPP_K8S_PODS_NETWORK``                      ``10.244.0.0/16``    configure master   K3s pod network in CIDR - pods will have IP from this range
+``ONEAPP_K8S_SERVICE_NETWORK``                   ``10.96.0.0/12``     configure master   K3s service network in CIDR - services will have IP from this range
+``ONEAPP_K8S_SERVICE_DNS``                       ``10.96.0.10``       configure master   K3s service network in CIDR - services will have IP from this range
+``ONEAPP_K8S_LOADBALANCER``                      ``servicelb``        configure master   LoadBalancer provider (options: ``metallb`` - useful when **MetalLB** is required)
+``ONEAPP_K8S_LOADBALANCER_RANGE[0-9]``                                configure master   MetalLB IP range (can be used mutiple times with numbered suffix)
+``ONEAPP_K8S_LOADBALANCER_CONFIG``                                    configure master   Custom MetalLB config (encoded in Base64)
 ====================================== ========= ==================== ========= ======== ===========
 
-If no contextualization parameter is provided, the appliance will create a :ref:`single node Kubernetes cluster <k8s_master_node>`. By default, it will listen on port ``6443`` of an IP address assigned to a default interface. You can still add more nodes to this cluster later by providing contextualization parameters required by a :ref:`worker node <k8s_worker_node>`.
+If no contextualization parameter is provided, the appliance will create a :ref:`single node K3s cluster <k3s_master_node>`. By default, it will listen on port ``6443`` of an IP address assigned to a default interface. You can still add more nodes to this cluster later by providing contextualization parameters required by a :ref:`worker node <k3s_worker_node>`.
 
-.. _k8s_master_node:
+.. _k3s_master_node:
 
 Master Node (or Single Node Deployment)
 ---------------------------------------
 
-In this type of deployment, you don't need to setup anything in advance. The appliance will bootstrap a fully functional single node Kubernetes cluster which can be extended by other worker nodes at any time later.
+In this type of deployment, you don't need to setup anything in advance. The appliance will bootstrap a fully functional single node K3s cluster which can be extended by other worker nodes at any time later.
 
-For other cases when the default behavior is not sufficient, you can contextualize the appliance with a few parameters. The most important is ``ONEAPP_K8S_ADDRESS`` and configuration of the :ref:`Kubernetes LoadBalancer <k8s_loadbalancer>`.
+For other cases when the default behavior is not sufficient, you can contextualize the appliance with a few parameters. The most important is ``ONEAPP_K8S_ADDRESS``, followed by the type of CNI networking (``ONEAPP_K8S_CNI`` or ``ONEAPP_K8S_FLANNEL_BACKEND``) and configuration of the :ref:`Kubernetes LoadBalancer <k3s_loadbalancer>`.
 
 .. important::
 
@@ -155,7 +149,13 @@ For other cases when the default behavior is not sufficient, you can contextuali
 
    For the **worker nodes**, the value must be strictly the advertised IP address of the master node!
 
-``ONEAPP_K8S_NODENAME`` is an option solely for a convenience (to easily distinct multiple clusters by a mere look on the name of the master node). It will set a name for the master node in the Kubernetes cluster and can be seen when you run:
+``ONEAPP_K8S_OVERRIDE_VERSION`` is useful when you need to use different version of K3s than the one actually preinstalled in the appliance image - the appliance will uninstall current version and try to install the requested one.
+
+.. important::
+
+   **The custom version is not tested nor verified to work! You are on your own when using this feature!**
+
+``ONEAPP_K8S_NODENAME`` is an option solely for a convenience (to easily distinct multiple clusters by a mere look on the name of the master node). It will set a name for the master node in the K3s cluster and can be seen when you run:
 
 .. prompt:: text [master]# auto
 
@@ -163,16 +163,31 @@ For other cases when the default behavior is not sufficient, you can contextuali
 
 If you don't set this parameter, the master node (and worker nodes) will have assigned the hostname as a Kubernetes node name.
 
-``ONEAPP_K8S_PORT`` provides a facility to change the default Kubernetes API port (``6443``).
+``ONEAPP_K8S_PORT`` provides a facility to change the default K3s API port (``6443``).
 
-``ONEAPP_K8S_PODS_NETWORK`` defines a range of private addresses on which pods will be deployed. By default, it is ``10.244.0.0/16``. Kubernetes service appliance uses the CNI networking plugin `Canal (Calico+Flannel) <https://docs.projectcalico.org/v3.8/getting-started/kubernetes/installation/flannel>`_ which combines two projects:
-
-* `Calico <https://www.projectcalico.org/>`_
-* `Flannel <https://github.com/coreos/flannel>`_
+``ONEAPP_K8S_PODS_NETWORK`` defines a range of private addresses on which **pods** will be deployed. By default, it is ``10.244.0.0/16``.
 
 .. important::
 
    **DO NOT CHANGE** the default value of ``ONEAPP_K8S_PODS_NETWORK`` unless you know what are you doing! It can break the internal networking!
+
+``ONEAPP_K8S_SERVICE_NETWORK`` defines a range of private addresses on which **services** will be exposed. By default, it is ``10.96.0.0/12``.
+
+.. important::
+
+   **BEWARE** that if you change the range for services then you must also adjust ``ONEAPP_K8S_SERVICE_DNS`` (default is ``10.96.0.10``).
+
+``ONEAPP_K8S_CNI`` sets the Kubernetes networking backend - by default it uses ``flannel``:
+
+K3s service appliance supports these CNI networking plugins:
+
+* ``flannel`` - `Flannel <https://github.com/coreos/flannel>`_
+* ``calico`` - `Calico <https://www.projectcalico.org/>`_
+* ``canal`` - `Canal (Calico+Flannel) <https://docs.projectcalico.org/v3.8/getting-started/kubernetes/installation/flannel>`_
+
+``ONEAPP_K8S_FLANNEL_BACKEND`` is usable only with the ``flannel`` CNI and defaults to ``vxlan`` - change it to use `other flannel options <https://rancher.com/docs/k3s/latest/en/installation/network-options/#flannel-options>`_.
+
+``ONEAPP_K8S_LOADBALANCER`` can switch the default ``servicelb`` LoadBalancer provider to `MetalLB <https://metallb.universe.tf/>`_ with ``metallb`` value.
 
 ``ONEAPP_K8S_LOADBALANCER_RANGE`` is the simplest way to configure the LoadBalancer type of services. The value must be a range (or multiple ranges by adding more params with numbered suffix), e.g.:
 
@@ -180,19 +195,15 @@ If you don't set this parameter, the master node (and worker nodes) will have as
 
     192.168.100.100-192.168.100.200
 
-More info is in the :ref:`LoadBalancer section <k8s_loadbalancer>`.
+More info is in the :ref:`LoadBalancer section <k3s_loadbalancer>`.
 
-``ONEAPP_K8S_ADMIN_USERNAME`` defaults to ``admin-user``. It is the service account name under which a Kubernetes token is created to enable login into :ref:`UI dashboard <k8s_dashboard>`. The token is stored in :ref:`/etc/one-appliance/config <one_service_logs>` as ``k8s_ui_login_token`` (you can see one in the :ref:`example <report_file_example>` above).
+.. note::
 
-The only reason to change the default is to easily find and manage the mentioned token with a command:
-
-.. prompt:: text [master]# auto
-
-    [master]# kubectl -n kube-system get secret | grep ${ONEAPP_K8S_ADMIN_USERNAME}-token
+   ``ONEAPP_K8S_LOADBALANCER_RANGE`` and ``ONEAPP_K8S_LOADBALANCER_CONFIG`` are applicable only if MetalLB is used.
 
 .. important::
 
-   Handle carefully the Kubernetes cluster token (``k8s_token`` in :ref:`/etc/one-appliance/config <one_service_logs>`) as it **never** expires. To use short-living tokens, delete the existing one and create a new token as described in the `kubeadm documentation <https://kubernetes.io/docs/setup/independent/create-cluster-kubeadm/#join-nodes>`_.
+   Handle carefully the K3s cluster token (``k8s_token`` in :ref:`/etc/one-appliance/config <one_service_logs>`) as it **never** expires.
 
 .. note::
 
@@ -200,26 +211,26 @@ The only reason to change the default is to easily find and manage the mentioned
 
     If you wish to run the master node in such way then set the ``ONEAPP_K8S_TAINTED_MASTER=YES``.
 
-.. _k8s_worker_node:
+.. _k3s_worker_node:
 
 Worker Node
 -----------
 
-New nodes can join already running Kubernetes cluster, if they are provided with following contextualization parameters:
+New nodes can join already running K3s cluster, if they are provided with following contextualization parameters:
 
 * ``ONEAPP_K8S_ADDRESS`` - master node's IP address
 * ``ONEAPP_K8S_TOKEN``
-* ``ONEAPP_K8S_HASH``
 
 .. important::
 
-   For the worker nodes, the ``ONEAPP_K8S_ADDRESS`` must be an exact IP address of the master node on which the Kubernetes advertises its API! All the three parameters must be defined together to take an effect (with correct values). Otherwise a node will be deployed as an independent master of a single-node cluster.
+   For the worker nodes, the ``ONEAPP_K8S_ADDRESS`` must be an exact IP address of the master node on which the K3s advertises its API!
+
+   Both parameters must be defined together to take an effect (with correct values). Otherwise a node will be deployed as an independent master of a single-node cluster.
 
 You can find all values for these parameters on the master node in the :ref:`/etc/one-appliance/config <one_service_logs>` (actual values will differ from our :ref:`example <report_file_example>`):
 
 * ``k8s_master``
 * ``k8s_token``
-* ``k8s_hash``
 
 The example use of these parameters can be seen on the figure:
 
@@ -232,20 +243,20 @@ Example:
 .. prompt:: text [master]# auto
 
    [master]# kubectl get nodes
-   NAME                                    STATUS   ROLES    AGE     VERSION
-   onekube-ip-192-168-122-10.localdomain   Ready    master   10h     v1.13.4
-   onekube-ip-192-168-122-11.localdomain   Ready    <none>   7h57m   v1.13.4
+   NAME                        STATUS   ROLES                  AGE    VERSION
+   onek3s-ip-192-168-150-101   Ready    control-plane,master   150m   v1.21.5+k3s2
+   onek3s-ip-192-168-150-102   Ready    <none>                 63s    v1.21.5+k3s2
 
-.. _k8s_oneflow:
+.. _k3s_oneflow:
 
 OneFlow Integration
 -------------------
 
 .. note::
 
-    On **OpenNebula 6.0 and newer** you can use dedicated appliance `Service Kubernetes 1.21 - KVM <https://marketplace.opennebula.io/appliance/dd6ed430-bd6d-11eb-9e90-98fa9bde1a93>`__ to run a Kubernetes cluster managed by OneFlow in a simple way. The result is very same as with the manual configuration described below.
+    On **OpenNebula 6.0 and newer** you can use dedicated appliance `Service K3s 1.21.5+k3s2 - KVM <https://marketplace.opennebula.io/appliance/aeb3dc2d-b0ba-4aed-ae87-3122e93edb65>`__ to run a K3s cluster managed by OneFlow in a simple way. The result is very same as with the manual configuration described below.
 
-The Kubernetes appliance (optionally) integrates with the OpenNebula `OneFlow service <https://docs.opennebula.io/stable/management_and_operations/multivm_service_management/appflow_use_cli.html>`_ to enable one-click multi-node cluster deployment. A template for OneFlow is not part of the imported Marketplace appliance and on older versions of OpenNebula (prior 6.0) it must be created manually (in OpenNebula 6.0+ you have access to the Kubernetes Service Template directly from the marketplace - as mentioned in the note above). The template can be created over the Sunstone wizard, or by providing a JSON specification.
+The K3s appliance (optionally) integrates with the OpenNebula `OneFlow service <https://docs.opennebula.io/stable/management_and_operations/multivm_service_management/appflow_use_cli.html>`_ to enable one-click multi-node cluster deployment. A template for OneFlow is not part of the imported Marketplace appliance and on older versions of OpenNebula (prior 6.0) it must be created manually (in OpenNebula 6.0+ you have access to the K3s Service Template directly from the marketplace - as mentioned in the note above). The template can be created over the Sunstone wizard, or by providing a JSON specification.
 
 .. important::
 
@@ -275,7 +286,7 @@ Step 2 - Role Master
 ^^^^^^^^^^^^^^^^^^^^
 
 - Fill the role name as ``master`` (**nothing else!**)
-- Pick the ``Kubernetes 1.21 - KVM`` (VM template)
+- Pick the ``Service K3s 1.21.5+k3s2 - KVM`` (VM template)
 
 The current status should resemble this picture with important parts highlighted:
 
@@ -289,7 +300,7 @@ As the next step, we setup a worker role:
 - Click on the blue button **+** next to **Roles**
 - Fill the role name as ``worker`` (**nothing else!**)
 - Optional: Set the **Number of VMs** run initially
-- Pick the ``Kubernetes 1.21 - KVM`` (VM template)
+- Pick the ``K3s 1.21.5+k3s2 - KVM`` (VM template)
 - In **Parent roles**, set **master** as a parent role
 
 The next status should resemble this picture with important parts highlighted:
@@ -319,7 +330,7 @@ Instead of going through the wizard, the service template can be passed in the J
 - Click on the green **+** button at the top
 - Click on **Advanced** tab
 - Put the service definition below into the text area
-- Replace all ``<<VM_TEMPLATE_ID>>`` placeholders with ID of your imported Kubernetes VM template
+- Replace all ``<<VM_TEMPLATE_ID>>`` placeholders with ID of your imported K3s VM template
 - Click on green **Create** button at the top
 
 Service template:
@@ -327,7 +338,7 @@ Service template:
 .. code::
 
     {
-      "name": "Kubernetes",
+      "name": "K3s",
       "deployment": "straight",
       "description": "",
       "roles": [
@@ -362,21 +373,21 @@ Instantiate Service
 To run the multi-node service:
 
 - Go to **Templates → Services** tab
-- Select the Kubernetes service template
+- Select the K3s service template
 - Click on the green **+** button at the top and **Instantiate**
 - For each role choose ``YES`` under the **Enable OneGate reporting? (req. for multi-node)**
 - Click on **Instantiate**
 
 .. important::
 
-   Mostly you shouldn't be asked for any inputs, but in case the OpenNebula provides you with a list of all K8s specific contextualization variables per role to customize before instantiation, you can leave all the parameters empty. **DO NOT** set any inputs for the **worker** role, the parameters will be configured automatically from the **master** node.
+   Mostly you shouldn't be asked for any inputs, but in case the OpenNebula provides you with a list of all K3s specific contextualization variables per role to customize before instantiation, you can leave all the parameters empty. **DO NOT** set any inputs for the **worker** role, the parameters will be configured automatically from the **master** node.
 
 |image-oneflow-part5|
 
 Follow the service deployment status in **Instances → Services** tab.
 
-Check Kubernetes Cluster Status
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Check K3s Cluster Status
+~~~~~~~~~~~~~~~~~~~~~~~~
 
 Log into the **master node** over SSH and check the cluster contains all the deployed nodes.
 
@@ -385,30 +396,40 @@ For example:
 .. prompt:: text # auto
 
    # kubectl get nodes -o wide
-   NAME                                    STATUS   ROLES    AGE     VERSION   INTERNAL-IP       EXTERNAL-IP   OS-IMAGE                KERNEL-VERSION              CONTAINER-RUNTIME
-   onekube-ip-192-168-122-10.localdomain   Ready    master   16m     v1.13.4   192.168.233.100   <none>        CentOS Linux 7 (Core)   3.10.0-957.5.1.el7.x86_64   docker://18.6.3
-   onekube-ip-192-168-122-11.localdomain   Ready    <none>   10m     v1.13.4   192.168.233.101   <none>        CentOS Linux 7 (Core)   3.10.0-957.5.1.el7.x86_64   docker://18.6.3
-   onekube-ip-192-168-122-12.localdomain   Ready    <none>   9m49s   v1.13.4   192.168.233.102   <none>        CentOS Linux 7 (Core)   3.10.0-957.5.1.el7.x86_64   docker://18.6.3
+   NAME                        STATUS   ROLES                  AGE   VERSION        INTERNAL-IP       EXTERNAL-IP   OS-IMAGE             KERNEL-VERSION   CONTAINER-RUNTIME
+   onek3s-ip-192-168-150-100   Ready    control-plane,master   56s   v1.21.5+k3s2   192.168.150.100   <none>        Alpine Linux v3.14   5.10.82-0-virt   containerd://1.4.11-k3s1
+   onek3s-ip-192-168-150-102   Ready    <none>                 17s   v1.21.5+k3s2   192.168.150.102   <none>        Alpine Linux v3.14   5.10.82-0-virt   containerd://1.4.11-k3s1
+   onek3s-ip-192-168-150-101   Ready    <none>                 18s   v1.21.5+k3s2   192.168.150.101   <none>        Alpine Linux v3.14   5.10.82-0-virt   containerd://1.4.11-k3s1
 
-.. _k8s_remote:
+.. _k3s_remote:
 
 Remote Usage
 ------------
 
-To control the Kubernetes cluster remotely, you need to have the ``kubectl`` CLI tool installed on your system (workstation, laptop). Follow the official `installation guide <https://kubernetes.io/docs/tasks/tools/install-kubectl/>`_. When finished, you can validate the correct installation by running:
+To control the K3s cluster remotely, you need to have the ``kubectl`` CLI tool installed on your system (workstation, laptop). Follow the official `installation guide <https://kubernetes.io/docs/tasks/tools/install-kubectl/>`_. When finished, you can validate the correct installation by running:
 
 .. prompt:: text [remote]$ auto
 
     [remote]$ kubectl --help
 
-You also need to have the configuration with cluster master IP address and access keys. This configuration can be taken from the **master** node from a file ``/etc/kubernetes/admin.conf`` and put on your remote system into ``~/.kube/config``.
+You also need to have the configuration with cluster master IP address and access keys. This configuration can be taken from the **master** node from a file ``/etc/rancher/k3s/k3s.yaml`` and put on your remote system into ``~/.kube/config``.
 
 For example (place a valid master node IP address):
 
 .. prompt:: text [remote]$ auto
 
     [remote]$ mkdir -p ~/.kube
-    [remote]$ scp root@203.0.113.10:/etc/kubernetes/admin.conf ~/.kube/config
+    [remote]$ scp root@203.0.113.10:/etc/rancher/k3s/k3s.yaml ~/.kube/config
+
+.. important::
+
+    Inside the file will be a line:
+
+    .. code::
+
+        server: https://127.0.0.1:6443
+
+    It is **crucial** to change ``127.0.0.1`` to the public IP of the K3s master node for your kubectl to work remotely!
 
 Validate the tool is configured properly by checking the cluster nodes status:
 
@@ -423,16 +444,22 @@ Validate the tool is configured properly by checking the cluster nodes status:
     - env. variable, e.g. ``KUBECONFIG=${HOME}/admin.conf kubectl get nodes``
     - CLI argument, e.g. ``kubectl --kubeconfig=${HOME}/admin.conf get nodes``
 
-.. _k8s_loadbalancer:
+.. _k3s_loadbalancer:
 
 LoadBalancer Service
 --------------------
 
 Pods or deployments can be exposed as a service of the type `LoadBalancer <https://kubernetes.io/docs/concepts/services-networking/service/#loadbalancer>`_ which is more flexible alternative to the simple type `NodePort <https://kubernetes.io/docs/concepts/services-networking/service/#nodeport>`_.
 
-OpenNebula's Kubernetes appliance is using the baremetal loadbalancer provider called `MetalLB <https://metallb.universe.tf/>`_.
+OpenNebula's K3s appliance is supporting both the default K3s `servicelb <https://rancher.com/docs/k3s/latest/en/networking/#service-load-balancer>`_ and the baremetal LoadBalancer provider called `MetalLB <https://metallb.universe.tf/>`_.
 
-It is by default configured as `ARP/Layer2 <https://metallb.universe.tf/concepts/layer2/>`_ LoadBalancer which means that the exposed LoadBalancer IP must be routed to one of the Kubernetes nodes by means outside of the scope of the appliance itself.
+.. note::
+
+   This section will describe the more flexible MetalLB - for the servicelb please refer to the official documentation of its implementation: `Klipper <https://rancher.com/docs/k3s/latest/en/networking/#service-load-balancer>`_.
+
+   We expect in the following text that the user configured the appliance with ``ONEAPP_K8S_LOADBALANCER=metallb``.
+
+It is by default configured as `ARP/Layer2 <https://metallb.universe.tf/concepts/layer2/>`_ LoadBalancer which means that the exposed LoadBalancer IP must be routed to one of the K3s nodes by means outside of the scope of the appliance itself.
 
 MetalLB supports also `BGP/Layer3 <https://metallb.universe.tf/concepts/bgp/>`_ loadbalancing. If the user is capable of setting up its network for this dynamic routing protocol then the user can provide the appliance with the proper configuration via the contextualization parameter ``ONEAPP_K8S_LOADBALANCER_CONFIG`` (Base64 encoded).
 
@@ -466,7 +493,7 @@ The most straightforward way is to just set the range via ``ONEAPP_K8S_LOADBALAN
 
 .. important::
 
-    For the LoadBalancer to work the range must be routable inside and outside of the Kubernetes nodes and must be reserved to the Kubernetes!
+    For the LoadBalancer to work the range must be routable inside and outside of the K3s nodes and must be reserved to the K3s cluster nodes!
 
 Trivial example to demonstrate how LoadBalancer can be used is below.
 
@@ -505,7 +532,7 @@ As we can see we have two ranges configured (which are routable) - now we can at
     kubernetes   ClusterIP      10.96.0.1      <none>           443/TCP        39h
     nginx        LoadBalancer   10.106.25.84   172.16.100.100   80:31980/TCP   12s
 
-Our service ``nginx`` is exposed on the next free loadbalanced IP from the provided range or ranges - in this case ``172.16.100.100`` - and can be reached outside of the Kubernetes appliance as expected:
+Our service ``nginx`` is exposed on the next free loadbalanced IP from the provided range or ranges - in this case ``172.16.100.100`` - and can be reached outside of the K3s appliance as expected:
 
 .. prompt:: text [remote]$ auto
 
@@ -643,42 +670,7 @@ This time we can expose the service on a desired address (with ``--load-balancer
 
     Use this only when you know what you are doing and can secure that no one will abuse this and create conflicts on the network!
 
-.. _k8s_dashboard:
-
-Dashboard
----------
-
-**Kubernetes Dashboard** (Web UI) is not accessible by default and must be enabled on the remote system (workstation, laptop) you'll access from.
-
-.. note::
-
-    You must have ``kubectl`` CLI :ref:`installed and configured <k8s_remote>` on the host you'll access the dashboard.
-
-Run the proxy command (command remains running on foreground, hit ``CTRL+C`` to terminate it at the end):
-
-.. prompt:: text [remote]$ auto
-
-    [remote]$ kubectl proxy
-    Starting to serve on 127.0.0.1:8001
-
-On the same host, open the web browser and reach the Kubernetes Dashboard URL:
-
-   `http://localhost:8001/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/ <http://localhost:8001/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/>`_
-
-You'll get on the Kubernetes Dashboard login screen.
-
-- Select the **Token** option
-- Paste the value of ``k8s_ui_login_token`` from :ref:`/etc/one-appliance/config <one_service_logs>` located on the master node
-
-|image-ui-login|
-
-The Kubernetes Dashboard is not only useful to explore the Kubernetes cluster, but also allows to deploy the applications by clicking on the **CREATE** button in the top-right corner:
-
-|image-ui-create|
-
-Check the `official documentation <https://kubernetes.io/docs/tasks/access-application-cluster/web-ui-dashboard/>`_.
-
-.. _k8s_tutorial:
+.. _k3s_tutorial:
 
 Example Application
 ===================
@@ -687,7 +679,7 @@ In this section, we demonstrate how to deploy a simple application.
 
 .. note::
 
-    All the actions need to be executed from the **master** node, or from a host which has ``kubectl`` CLI :ref:`installed and configured <k8s_remote>`.
+    All the actions need to be executed from the **master** node, or from a host which has ``kubectl`` CLI :ref:`installed and configured <k3s_remote>`.
 
 First, check the cluster is healthy and sees all deployed nodes:
 
@@ -698,7 +690,7 @@ First, check the cluster is healthy and sees all deployed nodes:
 Deploy Application
 ------------------
 
-We will loosely follow the `official guide <https://kubernetes.io/docs/tasks/run-application/run-stateless-application-deployment/>`_ as a demonstration how to deploy an application to our newly created Kubernetes cluster.
+We will loosely follow the `official guide <https://kubernetes.io/docs/tasks/run-application/run-stateless-application-deployment/>`_ as a demonstration how to deploy an application to our newly created K3s cluster.
 
 1. External IP without LoadBalancer
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -803,7 +795,7 @@ Or, in the web browser, e.g.:
 2. External IP with LoadBalancer
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-If we configured the :ref:`LoadBalancer <k8s_loadbalancer>` then we can improve on the previous example.
+If we configured the :ref:`LoadBalancer <k3s_loadbalancer>` then we can improve on the previous example.
 
 We expect that the intended **External IP** stayed the same (``203.0.113.10`` - **change to your setup!**) and that we correctly setup the LoadBalancer config, e.g.:
 
@@ -832,7 +824,7 @@ We expect that the intended **External IP** stayed the same (``203.0.113.10`` - 
 
 .. important::
 
-    This time the Kubernetes Appliance is using private virtual network and the public IP can be attached as an **External Alias** - as long as IP packets with this address arrive to the Appliance (i.e. the address is routed correctly).
+    This time the K3s Appliance is using private virtual network and the public IP can be attached as an **External Alias** - as long as IP packets with this address arrive to the Appliance (i.e. the address is routed correctly).
 
     In any case this IP cannot be actually assigned otherwise LoadBalancer will fail to work.
 
@@ -927,7 +919,7 @@ Or, in the web browser, e.g.:
 
     This simple example deployment could not properly demonstrate the advantages of the LoadBalancer type of service.
 
-    It's benefits are leveraged when there is more than one Kubernetes nodes. If the **External IP** is used without LoadBalancer then this IP will be bound to exactly one node and if this node becomes unavailable so does the service.
+    It's benefits are leveraged when there is more than one K3s nodes. If the **External IP** is used without LoadBalancer then this IP will be bound to exactly one node and if this node becomes unavailable so does the service.
 
     Such problem does not occur with the LoadBalancer because it will **failover** the **External IP** onto another healthy node.
 
@@ -947,23 +939,27 @@ Destroy the example application at the end, e.g.:
 
     More examples can be found in the `Kubernetes Quick Start Section <https://docs.opennebula.io/stable/quick_start/usage_basics/running_kubernetes_clusters.html>`_ of the OpenNebula documentation.
 
-.. |image-download| image:: /images/kubernetes/kubernetes-download.png
-.. |image-worker-values| image:: /images/kubernetes/kubernetes-worker-values.png
-.. |image-context-vars| image:: /images/kubernetes/kubernetes-context-vars.png
+.. |image-download| image:: /images/k3s/k3s-download.png
+.. |image-worker-values| image:: /images/k3s/k3s-worker-values.png
+.. |image-context-vars| image:: /images/k3s/k3s-context-vars.png
    :scale: 100%
 .. |image-ui-login| image:: /images/kubernetes/kubernetes-ui-login.png
 .. |image-ui-create| image:: /images/kubernetes/kubernetes-ui-create.png
 .. |image-kubetest| image:: /images/kubernetes/kubernetes-kubetest.png
-.. |image-oneflow-part1| image:: /images/kubernetes/kubernetes-oneflow-part1.png
-.. |image-oneflow-part2| image:: /images/kubernetes/kubernetes-oneflow-part2.png
+.. |image-oneflow-part1| image:: /images/k3s/k3s-oneflow-part1.png
+.. |image-oneflow-part2| image:: /images/k3s/k3s-oneflow-part2.png
 .. |image-oneflow-part3| image:: /images/kubernetes/kubernetes-oneflow-part3.png
 .. |image-oneflow-part4| image:: /images/kubernetes/kubernetes-oneflow-part4.png
-.. |image-oneflow-part5| image:: /images/kubernetes/kubernetes-oneflow-part5.png
+.. |image-oneflow-part5| image:: /images/k3s/k3s-oneflow-part5.png
 .. |image-oneflow-part6| image:: /images/kubernetes/kubernetes-oneflow-part6.png
 .. |image-k8s-certified-logo| image:: /images/kubernetes/certified-kubernetes-logo.svg
    :height: 120
    :align: middle
    :alt: CNCF Certified Logo of Kubernetes
    :target: https://landscape.cncf.io/selected=open-nebula-kubernetes-appliance
+.. |image-k3s-logo| image:: /images/k3s/k3s-logo.svg
+   :height: 120
+   :align: middle
+   :alt: K3s Logo
 .. |image-ssh-context| image:: /images/appliance-ssh-context.png
 .. |image-custom-vars-password| image:: /images/appliance-custom-vars-password.png
