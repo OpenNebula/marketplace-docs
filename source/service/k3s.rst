@@ -11,7 +11,10 @@ Without any parameters provided, the appliance deploys as a single Kubernetes ma
 .. include:: shared/features-alpine.txt
 * **Only single master clusters supported**.
 * Supports multiple CNI networking: `Flannel <https://github.com/coreos/flannel>`_, `Calico <https://www.projectcalico.org/>`_ and Canal (Calico+Flannel).
+* `Klipper LB <https://github.com/k3s-io/klipper-lb>`_ as a default LoadBalancer (servicelb).
 * `MetalLB <https://metallb.universe.tf/>`_ LoadBalancer is supported as an alternative to the default K3s servicelb.
+* `Traefik <https://traefik.io/traefik/>`_ as a complement to the servicelb and traffic router.
+* `Local Path Provisioner <https://github.com/rancher/local-path-provisioner>`_ dynamic local volumes provisioner.
 
 Platform Notes
 ==============
@@ -249,7 +252,11 @@ Example:
 OneFlow Integration
 -------------------
 
-The K3s appliance (optionally) integrates with the OpenNebula `OneFlow service <https://docs.opennebula.io/stable/management_and_operations/multivm_service_management/appflow_use_cli.html>`_ to enable one-click multi-node cluster deployment. A template for OneFlow is not part of the imported Marketplace appliance, it must be created in each OpenNebula manually. The template can be created over the Sunstone wizard, or by providing a JSON specification.
+.. note::
+
+    On **OpenNebula 6.0 and newer** you can use dedicated appliance `Service K3s 1.21.5+k3s2 - KVM <https://marketplace.opennebula.io/appliance/aeb3dc2d-b0ba-4aed-ae87-3122e93edb65>`__ to run a K3s cluster managed by OneFlow in a simple way. The result is very same as with the manual configuration described below.
+
+The K3s appliance (optionally) integrates with the OpenNebula `OneFlow service <https://docs.opennebula.io/stable/management_and_operations/multivm_service_management/appflow_use_cli.html>`_ to enable one-click multi-node cluster deployment. A template for OneFlow is not part of the imported Marketplace appliance and on older versions of OpenNebula (prior 6.0) it must be created manually (in OpenNebula 6.0+ you have access to the K3s Service Template directly from the marketplace - as mentioned in the note above). The template can be created over the Sunstone wizard, or by providing a JSON specification.
 
 .. important::
 
@@ -262,10 +269,6 @@ The K3s appliance (optionally) integrates with the OpenNebula `OneFlow service <
 
 Create OneFlow Service Template (Wizard)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-.. note::
-
-    On **OpenNebula 6.0 and newer** you can use dedicated appliance `Service K3s 1.21.5+k3s2 - KVM <https://marketplace.opennebula.io/appliance/aeb3dc2d-b0ba-4aed-ae87-3122e93edb65>`__ to run a K3s cluster managed by OneFlow in a simple way. The result is very same as with the manual configuration described below.
 
 Step 1 - General
 ^^^^^^^^^^^^^^^^
@@ -417,6 +420,16 @@ For example (place a valid master node IP address):
 
     [remote]$ mkdir -p ~/.kube
     [remote]$ scp root@203.0.113.10:/etc/rancher/k3s/k3s.yaml ~/.kube/config
+
+.. important::
+
+    Inside the file will be a line:
+
+    .. code::
+
+        server: https://127.0.0.1:6443
+
+    It is **crucial** to change ``127.0.0.1`` to the public IP of the K3s master node for your kubectl to work remotely!
 
 Validate the tool is configured properly by checking the cluster nodes status:
 

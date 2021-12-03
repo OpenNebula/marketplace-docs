@@ -241,7 +241,11 @@ Example:
 OneFlow Integration
 -------------------
 
-The Kubernetes appliance (optionally) integrates with the OpenNebula `OneFlow service <https://docs.opennebula.io/stable/management_and_operations/multivm_service_management/appflow_use_cli.html>`_ to enable one-click multi-node cluster deployment. A template for OneFlow is not part of the imported Marketplace appliance, it must be created in each OpenNebula manually. The template can be created over the Sunstone wizard, or by providing a JSON specification.
+.. note::
+
+    On **OpenNebula 6.0 and newer** you can use dedicated appliance `Service Kubernetes 1.21 - KVM <https://marketplace.opennebula.io/appliance/dd6ed430-bd6d-11eb-9e90-98fa9bde1a93>`__ to run a Kubernetes cluster managed by OneFlow in a simple way. The result is very same as with the manual configuration described below.
+
+The Kubernetes appliance (optionally) integrates with the OpenNebula `OneFlow service <https://docs.opennebula.io/stable/management_and_operations/multivm_service_management/appflow_use_cli.html>`_ to enable one-click multi-node cluster deployment. A template for OneFlow is not part of the imported Marketplace appliance and on older versions of OpenNebula (prior 6.0) it must be created manually (in OpenNebula 6.0+ you have access to the Kubernetes Service Template directly from the marketplace - as mentioned in the note above). The template can be created over the Sunstone wizard, or by providing a JSON specification.
 
 .. important::
 
@@ -254,10 +258,6 @@ The Kubernetes appliance (optionally) integrates with the OpenNebula `OneFlow se
 
 Create OneFlow Service Template (Wizard)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-.. note::
-
-    On **OpenNebula 6.0 and newer** you can use dedicated appliance `Service Kubernetes 1.21 - KVM <https://marketplace.opennebula.io/appliance/dd6ed430-bd6d-11eb-9e90-98fa9bde1a93>`__ to run a Kubernetes cluster managed by OneFlow in a simple way. The result is very same as with the manual configuration described below.
 
 Step 1 - General
 ^^^^^^^^^^^^^^^^
