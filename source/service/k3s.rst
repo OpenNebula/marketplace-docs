@@ -6,7 +6,7 @@ Lightweight Kubernetes (K3s)
 
 OpenNebula `Marketplace Appliance <https://marketplace.opennebula.io/appliance/319d21ea-1a39-4c28-bc36-5ac86a966a48>`_  with preinstalled `K3s <https://k3s.io/>`_ service.
 
-Without any parameters provided, the appliance deploys as a single Kubernetes master node (K3s flavour). Appliance can be customized with :ref:`contextualization <k3s_context_param>` parameters to support manually managed multi-node deployments, or automatically managed multi-node cluster as OpenNebula `OneFlow service <https://docs.opennebula.io/stable/management_and_operations/multivm_service_management/appflow_use_cli.html>`_.
+Without any parameters provided, the appliance deploys as a single Kubernetes master node (K3s flavour). The appliance can be further customized with :ref:`contextualization <k3s_context_param>` parameters to support manually managed multi-node deployments, or automatically managed multi-node cluster as OpenNebula `OneFlow service <https://docs.opennebula.io/stable/management_and_operations/multivm_service_management/appflow_use_cli.html>`_.
 
 .. include:: shared/features-alpine.txt
 * **Only single master clusters supported**.
@@ -46,7 +46,7 @@ Component versions
 Requirements
 ------------
 
-* OpenNebula 4.14 - 6.2
+* OpenNebula 5.12 - 6.2
 * `OneFlow <https://docs.opennebula.io/stable/management_and_operations/multivm_service_management/overview.html>`_ and `OneGate <https://docs.opennebula.io/stable/management_and_operations/multivm_service_management/onegate_usage.html>`_ for multi-node orchestration
 * Min. Memory: 2 GB
 * Min. Cores (VCPU): 2
