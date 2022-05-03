@@ -116,7 +116,7 @@ Contextualization parameters provided in the Virtual Machine template controls t
 ====================================== ========= ==================== ========= ======== ===========
 Parameter                              Mandatory Default              Stage     Role     Description
 ====================================== ========= ==================== ========= ======== ===========
-``ONEAPP_K8S_ADDRESS``                           routable IP          configure all      Master node address
+``ONEAPP_K8S_ADDRESS``                           routable IP          configure all      Master node address (or CIDR subnet - master only)
 ``ONEAPP_K8S_TOKEN``                                                  configure worker   Secret token - to join worker node to the cluster
 ``ONEAPP_K8S_HASH``                                                   configure worker   Secret hash - to join worker node to the cluster
 ``ONEAPP_K8S_NODENAME``                          hostname             configure master   Master Node Name
@@ -149,7 +149,10 @@ For other cases when the default behavior is not sufficient, you can contextuali
 
    If OneGate is not configured or deployment is not in a public cloud then the appliance defaults to **the first found routable IP** - which is usually the one on the first NIC.
 
-   Otherwise ``ONEAPP_K8S_ADDRESS`` must be setup manually and match the actual assigned IP on one of the NICs.
+   Otherwise ``ONEAPP_K8S_ADDRESS`` must be set manually and match the actual assigned IP on one of the NICs **or** (in the case of master) it can be set to a subnet network in CIDR notation and the correct IP will be derived from the correct interface on the said subnet:
+
+        * IP address, e.g. ``192.168.122.10``
+        * CIDR subnet, e.g. ``192.168.122.0/24`` (it will pick an IP on an interface which has route for this network)
 
    The purpose of this parameter is to pin Kubernetes communication to a designated interface and a network. So it will not be exposed on the default interface.
 
@@ -207,7 +210,7 @@ Worker Node
 
 New nodes can join already running Kubernetes cluster, if they are provided with following contextualization parameters:
 
-* ``ONEAPP_K8S_ADDRESS`` - master node's IP address
+* ``ONEAPP_K8S_ADDRESS`` - master node's IP address (**NOT** a subnet!)
 * ``ONEAPP_K8S_TOKEN``
 * ``ONEAPP_K8S_HASH``
 

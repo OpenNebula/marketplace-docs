@@ -23,6 +23,7 @@ OpenNebula Marketplace Appliance implementing various **Virtual Network Function
   * :ref:`DNS recursor <vnf_dns_context_param>`
   * :ref:`IPv4 Network Address Translation <vnf_nat4_context_param>`
   * :ref:`Virtual Networks Mapping via SNAT/DNAT <vnf_sdnat4_context_param>`
+  * :ref:`LoadBalancer <vnf_lb_context_param>`
   * Virtual Router (:ref:`VR <vnf_vrouter_context_param>`, :ref:`VM <vnf_router4_context_param>`)
 
 Platform Notes
@@ -249,6 +250,71 @@ Parameter                             Default        Description
 
 For more information continue to :ref:`Router4 <vnf_router4>` VNF documentation.
 
+<<<<<<< HEAD
+=======
+.. _vnf_lb_context_param:
+
+Function LB (LoadBalancer)
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The function provides LoadBalancer service which for defined incoming connections will forward and load balance the traffic to the pool of static and/or dynamic real servers (backends) per LB.
+
+**Generic parameters**:
+
+(These will affect all configured loadbalancers.)
+
+===================================== ============== ===========
+Parameter                             Default        Description
+===================================== ============== ===========
+``ONEAPP_VNF_LB_ENABLED``             ``NO``         Enable/disable LB function (``YES``/``NO``)
+``ONEAPP_VNF_LB_ONEGATE_ENABLED``     ``NO``         Enable/disable dynamic real servers via OneGate (``YES``/``NO``)
+``ONEAPP_VNF_LB_REFRESH_RATE``        ``30``         Refresh rate between updates of the pool of real servers (in seconds)
+``ONEAPP_VNF_LB_FWMARK_OFFSET``       ``10000``      Default starting firewall mark for LVS/IPVS
+``ONEAPP_VNF_LB_CONFIG`` [*]_         none           Individual LB config(s) (BASE64 encoded JSONs separated by commas)
+===================================== ============== ===========
+
+.. [*] If used then the rest of LB params or static real server params are ignored (those suffixed with ``[0-9]``) - dynamic real server params will still be applied.
+
+**Per LB parameters**:
+
+(These will define a loadbalancer - ignored if ``ONEAPP_VNF_LB_CONFIG`` is utilized.)
+
+===================================== ============== ===========
+LB Parameter                          Default        Description
+===================================== ============== ===========
+``ONEAPP_VNF_LB[0-9]_IP`` [*]_        none           Load balanced IP address (required)
+``ONEAPP_VNF_LB[0-9]_PORT``           empty          IP port to specify connection (optional)
+``ONEAPP_VNF_LB[0-9]_PROTOCOL``       empty          IP protocol to specify connection (optional - ``TCP``, ``UDP`` or ``BOTH``)
+``ONEAPP_VNF_LB[0-9]_METHOD`` [*]_    ``NAT``        LVS/IPVS method (``NAT`` or ``DR`` - Direct Routing)
+``ONEAPP_VNF_LB[0-9]_TIMEOUT``        ``10``         Tolerated timeout of any real server for this LB (in seconds)
+``ONEAPP_VNF_LB[0-9]_SCHEDULER``      ipvs default   LVS/IPVS scheduler (default is ``wlc`` [*]_)
+===================================== ============== ===========
+
+.. [*] If only the address is specified (both port and protocol is skipped) then all traffic on this load balanced IP will be forwarded on 1:1 basis to the real servers.
+.. [*] The Direct-Routing method will require additional steps on real servers for this setup to work - described in the separate :ref:`VNF LB section <vnf_lb_direct_routing>`.
+.. [*] Consult ``man ipvsadm`` to find out more about schedulers (other useful value can be ``rr`` - round robin)
+
+**Per real server parameters (STATIC)**:
+
+(These will define a **static** real server for the designated LB - ignored if ``ONEAPP_VNF_LB_CONFIG`` is utilized..)
+
+============================================== ============== ===========
+Static RS Parameter                            Default        Description
+============================================== ============== ===========
+``ONEAPP_VNF_LB[0-9]_SERVER[0-9]_HOST``        none           Real server address (IP or hostname - required)
+``ONEAPP_VNF_LB[0-9]_SERVER[0-9]_PORT``        none           Real server port (required if LB has port defined too)
+``ONEAPP_VNF_LB[0-9]_SERVER[0-9]_WEIGHT``      ipvs default   Real server weight (optional)
+``ONEAPP_VNF_LB[0-9]_SERVER[0-9]_ULIMIT``      ipvs default   Real server upper limit on connections (optional)
+``ONEAPP_VNF_LB[0-9]_SERVER[0-9]_LLIMIT``      ipvs default   Real server lower limit on connections (optional)
+============================================== ============== ===========
+
+.. note::
+
+    LoadBalancer service also supports :ref:`dynamic real servers <vnf_lb_dynamic_rs>` propagated via OneGate.
+
+For more information continue to :ref:`LB <vnf_lb>` VNF documentation.
+
+>>>>>>> master
 .. _vnf_vrouter_context_param:
 
 OpenNebula Virtual Router
@@ -646,6 +712,286 @@ Function might be disabled to work over TCP (via ``ONEAPP_VNF_DNS_TCP_DISABLED="
 
 To have full control over DNS VNF, you can provide the complete Unbound configuration file via ``ONEAPP_VNF_DNS_CONFIG`` contextualization parameter. It must a Base64 encoded string with valid `unbound.conf <https://nlnetlabs.nl/documentation/unbound/unbound.conf/>`_ content.
 
+<<<<<<< HEAD
+=======
+.. _vnf_lb:
+
+LB (LoadBalancer)
+-----------------
+
+See: :ref:`Contextualization Parameters <vnf_lb_context_param>`
+
+LoadBalancer function is provided by `LVS/IPVS feature <http://linuxvirtualserver.org/>`_ of the Linux kernel.
+
+.. important::
+
+    Some limitations apply due to the underlying implementation of the LVS/IPVS working on a lower layer of the Linux kernel networking stack.
+
+    There are obstacles to overcome when there is a need to connect to the load balanced address from the VNF/Vrouter (Director in the LVS/IPVS parlance) and from the real servers themselves.
+
+    Some workarounds can be found in the `HowTo pages <http://www.austintek.com/LVS/LVS-HOWTO/HOWTO/>`_.
+
+    **Please, consider this fact while defining your solution!**
+
+The best way to utilize the LB feature is to treat the VNF/Vrouter as a one-way blackbox where the traffic on the load balanced address is forwarded to the real servers (static or dynamic) and those do **NOT** need to connect via load balance address back to themselves.
+
+If the real servers need to communicate with each other then consider workarounds from the linked HowTo pages or run some cluster-aware software like `etcd <https://etcd.io/>`_ and let the nodes connect to localhost while exposing the cluster API via LB for the outside clients.
+
+Using ONEAPP_VNF_LB_CONFIG
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The ``ONEAPP_VNF_LB_CONFIG`` can be used instead of using many contextualization parameters to define the LBs and all static real servers and keeping track of all those integer suffixes (``[0-9]``) which must be in sync.
+
+``ONEAPP_VNF_LB_CONFIG`` provides a way to define complete LB setup in one contextualization parameter.
+
+Each LB with all its static real servers is a one JSON - multiple LBs can be stringed together and separated by commas.
+
+The following is a minimalist JSON config for one LB:
+
+.. code::
+
+    {
+      "index": 0,
+      "real-servers": [
+        {
+          "server-host": "192.168.101.100"
+        },
+        {
+          "server-host": "192.168.102.100"
+        }
+      ],
+      "lb-address": "192.168.150.101"
+    }
+
+.. important::
+
+    The above minimalist configuration will forward **ALL** the incoming traffic into one of the real servers including ``SSH`` because no port nor protocol was specified!
+
+    Therefore if the load-balanced IP (in this case ``192.168.150.101``) is the **only IP** on the VNF/Vrouter then the VNF/Vrouter itself becomes virtually **inaccessible**!
+
+And this one is using all possible options together:
+
+.. code::
+
+    {
+      "index": 0,
+      "real-servers": [
+        {
+          "server-host": "192.168.101.100",
+          "server-port": "8080",
+          "server-weight": 1,
+          "server-ulimit": 100,
+          "server-llimit": 0
+        },
+        {
+          "server-host": "192.168.102.100",
+          "server-port": "8080",
+          "server-weight": 2,
+          "server-ulimit": 100,
+          "server-llimit": 0
+        }
+      ],
+      "lb-address": "192.168.150.101",
+      "lb-port": "80",
+      "lb-protocol": "TCP",
+      "lb-scheduler": "wlc",
+      "lb-method": "NAT",
+      "lb-timeout": "10"
+    }
+
+.. note::
+
+    The keys should be self-explanatory and match the value semantics of suffixed contextualization parameters.
+
+.. important::
+
+    Just create one JSON per LB, separated them by commas and encode the whole text in ``BASE64`` or use the **user input** in the marketplace template.
+
+.. important::
+
+    Do not forget to **increment** the ``index`` of each LB!
+
+.. _vnf_lb_dynamic_rs:
+
+Dynamic real servers
+~~~~~~~~~~~~~~~~~~~~
+
+If the VNF is part of a OneFlow service then it is possible to dynamically update the LB's real server pool via OneGate.
+
+The idea is to create VMs running a program/script which will on the bootstrap or when a need arises instruct VNF to join this VM to the pool of real servers by signalling this fact via OneGate variables.
+
+This is the complete list of such variables and their semantics match of those of static real server contextualization parameters.
+
+===================================== ============== ===========
+OneGate variable                      Default        Description
+===================================== ============== ===========
+``ONEGATE_LB[0-9]_IP``                none           The load balanced IP address defined on VNF (required)
+``ONEGATE_LB[0-9]_PORT``              none           The load balanced IP port defined on VNF (required if used for LB)
+``ONEGATE_LB[0-9]_PROTOCOL``          none           The load balanced IP protocol defined on VNF (required if used for LB)
+``ONEGATE_LB[0-9]_SERVER_HOST``       none           Real server address (IP or hostname - required)
+``ONEGATE_LB[0-9]_SERVER_PORT``       none           Real server port (required if LB has port defined too)
+``ONEGATE_LB[0-9]_SERVER_WEIGHT``     none           Real server weight (optional)
+``ONEGATE_LB[0-9]_SERVER_ULIMIT``     none           Real server upper limit on connections (optional)
+``ONEGATE_LB[0-9]_SERVER_LLIMIT``     none           Real server lower limit on connections (optional)
+===================================== ============== ===========
+
+.. note::
+
+    You can define multiple LBs on each VM by simply suffixing the variables correctly and distinguish them by port/protocol.
+
+.. important::
+
+    The suffix does not need to match the index on the VNF but it must match the defined LB triplet (IP, port and protocol) or just load balanced IP if port nor protocol is defined for the LB.
+
+The VM script can inside use the following commands (for example):
+
+.. code::
+
+    onegate vm update --data ONEGATE_LB0_IP=192.168.150.100
+    onegate vm update --data ONEGATE_LB0_PROTOCOL=TCP
+    onegate vm update --data ONEGATE_LB0_PORT=80
+    onegate vm update --data ONEGATE_LB0_SERVER_HOST=192.168.101.1
+    onegate vm update --data ONEGATE_LB0_SERVER_PORT=8080
+
+.. note::
+
+    Notice that in the example above we used the same suffix (``0``) to define this one dynamic real server and to pair it to the right LB.
+
+.. _vnf_lb_direct_routing:
+
+LVS/IPVS method (NAT vs Direct-Routing)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+**NAT**
+
+The LoadBalancer will by default use ``NAT`` method where VNF/Vrouter will route the traffic between client and real servers (backends) through itself in both directions.
+
+The NATed method will require two interfaces on VNF/Vrouter and two vnets - one *public* from which the traffic will be initiated (client network) and *private* where real servers will be located.
+
+.. code::
+
+    NAT method:
+
+                     .--------.
+                     | Client |
+                     `--------`
+                    eth0: client IP
+                         |
+                         |
+
+                   (public vnet)
+
+        src: client IP <---> dest: LB IP
+
+                         |
+                         |
+                    eth0: LB IP
+                  .-------------.
+          DNAT >> | VNF/Vrouter | >> SNAT
+                  `-------------`
+                    eth1: Priv IP
+                         |
+                         |
+
+                   (private vnet)
+
+        src: client IP <---> dest: RS IP
+
+                         |
+                         |
+                    eth0: RS IP
+                  .-------------.
+                  | Real Server |
+                  `-------------`
+
+----
+
+**DR**
+
+Another option is to use the **Direct-Routing** method.
+
+E.g. some particular LoadBalancer (``LB0`` in this case) can be switched to Direct-Routing method by setting up the context parameter ``ONEAPP_VNF_LB0_METHOD`` to the value ``DR``.
+
+.. note::
+
+    Alternatively set the ``lb-method`` key in the case of JSON config (``ONEAPP_VNF_LB_CONFIG``) - also with the value ``DR``.
+
+In the DR scenario the VNF/Vrouter will see only the incoming traffic but the outgoing traffic from any real server will go back **directly** to the client.
+
+It is also mean that VNF/Vrouter will require only one interface and only one vnet is needed for the whole setup.
+
+.. important::
+
+    Direct-Routing method will not work without taking additional steps on each real server (described below)!
+
+.. code::
+
+    DR method:
+
+                     .--------.
+                     | Client |
+                     `--------`
+                    eth0: client IP
+
+                    ^               V
+                    ^               v
+                    ^                \______
+                    |                       \
+                    |                        `_____
+                    |                              \
+                    |                               \
+                    |
+                    |                src: client IP --> dest: LB IP
+                    |
+                    |                               |
+                    |
+                    |                          eth0: LB IP
+                                             .-------------.
+        src: LB IP --> dest: client IP       | VNF/Vrouter |
+                                             `-------------`
+                    |
+                    |                               |
+                    |
+                    |               src: client IP --> dest: LB IP (!!!)
+                    |
+                    |                               /
+                    |                        ______'
+                    |                       /
+                    |                ______'
+                    ^               /
+                    ^              v
+                    ^              V
+
+                    lo: LB IP (!!!)
+                    eth0: RS IP
+                  .-------------.
+                  | Real Server |
+                  `-------------`
+
+.. important::
+
+    From the schema above it is obvious that under normal circumstances this real server would reply on any ARP requests for the load-balanced IP and therefore we would have conflicting IP on the same subnet - ``LB IP`` is setup on both the real server and VNF/Vrouter!
+
+    Some additional steps must be taken to prevent that.
+
+- Each real server for that particular LB (using DR) must also have assigned the load-balanced IP - that should be done either on its loopback or some ``dummy`` interface (``modprobe dummy``)::
+
+    $ ip addr add <LB_IP> dev lo
+
+- Each real server also has to workaround the ARP flux problem to avoid unwanted ARP replies::
+
+    # e.g. in /etc/sysctl.conf
+    net.ipv4.ip_nonlocal_bind=1
+    net.ipv4.conf.eth0.arp_ignore = 1
+    net.ipv4.conf.eth0.arp_announce = 2
+
+For more information visit the official `LVS/IPVS wiki <https://web.archive.org/web/20211118135810/https://kb.linuxvirtualserver.org/wiki/Using_arp_announce/arp_ignore_to_disable_ARP>`_ or `LVS ARP HowTo <https://web.archive.org/web/20210323211958/http://www.austintek.com/LVS/LVS-HOWTO/HOWTO/LVS-HOWTO.arp_problem.html>`_.
+
+.. note::
+
+    Similar result can be also achieved with `arptables <https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/7/html/load_balancer_administration/s1-lvs-direct-vsa>`_ command too - if ``sysctl`` approach is undesirable.
+
+>>>>>>> master
 .. _vnf_tutorials:
 
 Tutorials
