@@ -250,8 +250,6 @@ Parameter                             Default        Description
 
 For more information continue to :ref:`Router4 <vnf_router4>` VNF documentation.
 
-<<<<<<< HEAD
-=======
 .. _vnf_lb_context_param:
 
 Function LB (LoadBalancer)
@@ -314,7 +312,6 @@ Static RS Parameter                            Default        Description
 
 For more information continue to :ref:`LB <vnf_lb>` VNF documentation.
 
->>>>>>> master
 .. _vnf_vrouter_context_param:
 
 OpenNebula Virtual Router
@@ -712,8 +709,6 @@ Function might be disabled to work over TCP (via ``ONEAPP_VNF_DNS_TCP_DISABLED="
 
 To have full control over DNS VNF, you can provide the complete Unbound configuration file via ``ONEAPP_VNF_DNS_CONFIG`` contextualization parameter. It must a Base64 encoded string with valid `unbound.conf <https://nlnetlabs.nl/documentation/unbound/unbound.conf/>`_ content.
 
-<<<<<<< HEAD
-=======
 .. _vnf_lb:
 
 LB (LoadBalancer)
@@ -991,7 +986,6 @@ For more information visit the official `LVS/IPVS wiki <https://web.archive.org/
 
     Similar result can be also achieved with `arptables <https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/7/html/load_balancer_administration/s1-lvs-direct-vsa>`_ command too - if ``sysctl`` approach is undesirable.
 
->>>>>>> master
 .. _vnf_tutorials:
 
 Tutorials

@@ -295,7 +295,7 @@ For your convenience the following "**retain**" version of the default storagecl
 
     When the **longhorn-retain** storage class is used the ``persistent volume (PV)`` must be destroyed manually even if ``persistent volume claim (PVC)`` is destroyed already. **That prevents data from being accidentally deleted**.
 
-.. _k8s_loadbalancer:
+.. _k8s_loadbalancer_service:
 
 LoadBalancer Service (K8s)
 --------------------------
@@ -407,7 +407,7 @@ This time we can expose the service on a desired address (with ``--load-balancer
 
     Use this only when you know what you are doing and can secure that no one will abuse this and create conflicts on the network!
 
-.. _k8s_tutorial:
+.. _k8s_tutorial_service:
 
 Example Application
 ===================
