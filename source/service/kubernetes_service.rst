@@ -1,8 +1,8 @@
 .. _service_ubuntu_k8s:
 
-========================
-OneFlow Kubernetes (K8s)
-========================
+=============================
+Kubernetes (K8s) 1.23 Service
+=============================
 
 OpenNebula `OneFlow service <https://docs.opennebula.io/stable/management_and_operations/multivm_service_management/appflow_use_cli.html>`_ / `Marketplace Appliance <https://marketplace.opennebula.io/appliance/b5033eba-cd31-487e-892a-035cd70441ef>`_  with preinstalled `Kubernetes <https://kubernetes.io/>`_ software.
 

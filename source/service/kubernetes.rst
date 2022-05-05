@@ -1,8 +1,8 @@
 .. _service_k8s:
 
-================
-Kubernetes (K8s)
-================
+===========================================
+Kubernetes (K8s) 1.18 and 1.21 [DEPRECATED]
+===========================================
 
 OpenNebula `Marketplace Appliance <https://marketplace.opennebula.io/appliance/1318e7ca-bd6d-11eb-9ae8-98fa9bde1a93>`_  with preinstalled `Kubernetes <https://kubernetes.io/>`_ service.
 
