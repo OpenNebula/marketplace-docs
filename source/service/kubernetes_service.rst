@@ -1,8 +1,8 @@
 .. _service_ubuntu_k8s:
 
-========================
-OneFlow Kubernetes (K8s)
-========================
+=============================
+Kubernetes (K8s) 1.23 Service
+=============================
 
 OpenNebula `OneFlow service <https://docs.opennebula.io/stable/management_and_operations/multivm_service_management/appflow_use_cli.html>`_ / `Marketplace Appliance <https://marketplace.opennebula.io/appliance/b5033eba-cd31-487e-892a-035cd70441ef>`_  with preinstalled `Kubernetes <https://kubernetes.io/>`_ software.
 
@@ -295,7 +295,7 @@ For your convenience the following "**retain**" version of the default storagecl
 
     When the **longhorn-retain** storage class is used the ``persistent volume (PV)`` must be destroyed manually even if ``persistent volume claim (PVC)`` is destroyed already. **That prevents data from being accidentally deleted**.
 
-.. _k8s_loadbalancer:
+.. _k8s_loadbalancer_service:
 
 LoadBalancer Service (K8s)
 --------------------------
@@ -407,7 +407,7 @@ This time we can expose the service on a desired address (with ``--load-balancer
 
     Use this only when you know what you are doing and can secure that no one will abuse this and create conflicts on the network!
 
-.. _k8s_tutorial:
+.. _k8s_tutorial_service:
 
 Example Application
 ===================
