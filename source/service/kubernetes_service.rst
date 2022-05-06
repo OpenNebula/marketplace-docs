@@ -11,17 +11,21 @@ The service appliance consists of four distinct roles:
 * **vnf**: `Virtual Network Functions <https://docs.opennebula.io/appliances/service/vnf.html>`_, a `Linux Virtual Server <http://www.linuxvirtualserver.org/>`_ load-balancer implementation for the Control-Plane.
 * **master**: Control-Plane nodes themselves.
 * **worker**: Nodes to run your workloads on.
-* **storage**: Modes to keep your persistent storage (**PV**/**PVC**) on.
+* **storage**: Nodes to keep your persistent storage (**PV**/**PVC**) on.
 
-Each distinct role is preconfigured to deploy multiple servers to work as a **highly-available** cluster:
+Each role is preconfigured to deploy a single server to work as a **non-Highly-Available (non-HA)** cluster:
 
-* **vnf**: Two servers managed by `keepalived <https://keepalived.readthedocs.io/en/latest/introduction.html>`_.
-* **master**: Three dedicated Control-Plane nodes.
-* **worker**: Two worker nodes (intended to be scaled up by the user).
-* **storage**: Three dedicated storage nodes to keep your Longhorn replicas on.
+* **vnf**: Single server managed by `keepalived <https://keepalived.readthedocs.io/en/latest/introduction.html>`_.
+* **master**: Single dedicated Control-Plane node.
+* **worker**: Single worker node.
+* **storage**: Single dedicated storage node to keep your Longhorn replicas on.
+
+.. important::
+
+    Each role can be scaled up to achieve **Highly-Available (HA)** setup.
 
 .. include:: shared/features-ubuntu.txt
-* Multi-master clusters deployed by default.
+* Multi-master ready.
 * Preconfigured with Canal CNI networking (`Calico <https://www.projectcalico.org/>`_, `Flannel <https://github.com/coreos/flannel>`_).
 * Preconfigured with `CNCF <https://www.cncf.io/>`_ Longhorn distributed storage solution for Kubernetes (`Longhorn <https://longhorn.io/>`_).
 * Installed with MetalLB LoadBalancer provider (`MetalLB <https://metallb.universe.tf/>`_).
@@ -43,7 +47,7 @@ Component versions
     | Ubuntu                      | 20.04.4 LTS                                                                         |                            |
     +-----------------------------+-------------------------------------------------------------------------------------+                            |
     | Kubernetes                  | 1.23.6                                                                              |                            |
-    +-----------------------------+-------------------------------------------------------------------------------------+                            |
+    +-----------------------------+-------------------------------------------------------------------------------------+ |image-k8s-certified-logo| |
     | Docker                      | 20.10.14 CE                                                                         |                            |
     +-----------------------------+-------------------------------------------------------------------------------------+                            |
     | Calico                      | 3.22                                                                                |                            |
@@ -52,7 +56,7 @@ Component versions
     +-----------------------------+-------------------------------------------------------------------------------------+                            |
     | MetalLB                     | 0.12.1                                                                              |                            |
     +-----------------------------+-------------------------------------------------------------------------------------+                            |
-    | Contextualization package   | 6.2.0                                                                               |                            |
+    | Contextualization package   | 6.4.0                                                                               |                            |
     +-----------------------------+-------------------------------------------------------------------------------------+----------------------------+
 
 Requirements
@@ -74,7 +78,7 @@ Instantiate the service (from the Sunstone UI)
 Download the service:
 
 - Go to **Storage → Apps** tab (on the left menu panel)
-- Find and select the ``Service Kubernetes 1.23 - KVM`` app
+- Find and select the ``Service Kubernetes 1.23`` app
 - Click the **Import into Datastore** button at the top
 
 |image-oneflow-step-01|
@@ -86,7 +90,7 @@ Download the service:
 Run the service:
 
 - Go to **Templates → Services** tab (on the left menu panel)
-- Find and select the ``Service Kubernetes 1.23 - KVM`` service template
+- Find and select the ``Service Kubernetes 1.23`` service template
 - Click on the green **+** button at the top and **Instantiate**
 
 |image-oneflow-step-03|
@@ -98,11 +102,20 @@ Enter parameters:
 
 |image-oneflow-step-04|
 
-- Enter a single IPv4 address into the ``Control Plane Endpoint`` box (it should be a free IPv4 address from the same VNET)
+- Enter a single IPv4 address into the ``Default Gateway VIP`` box (it should be a free IPv4 address from the ``Private`` VNET)
+- Enter a single IPv4 address into the ``Control Plane Endpoint VIP`` box (it should be a free IPv4 address from the ``Private`` VNET)
 - Optionally enter a single IPv4 address range for the ``MetalLB`` load-balancer
 - Click the **Instantiate** button at the top
 
 |image-oneflow-step-05|
+
+.. important::
+
+    The VNF Appliance is based on ``keepalived`` and can be scaled up to run on multiple VMs.
+
+    The ``Default Gateway VIP`` address is set on the **active** VNF node. The same address is later set as the **default gateway address** on every Kubernetes node (which allows all outgoing traffic comming from the private VNET to be NATed on VNF).
+
+    The ``Control Plane Endpoint VIP`` is a **LVS-DR** (Direct-Routing) load-balancer used for forming the Kubernetes Control-Plane. Because of the LVS-DR caveats it's not currently possible to reuse the endpoint to connect to the Kubernetes API from outside.
 
 Follow the service deployment status in **Instances → Services** and **Instances → VMs** tabs.
 
@@ -152,44 +165,10 @@ For example:
 .. prompt:: text [master]# auto
 
    [master]# kubectl get nodes -o wide
-   NAME                       STATUS   ROLES                  AGE   VERSION   INTERNAL-IP     EXTERNAL-IP   OS-IMAGE             KERNEL-VERSION      CONTAINER-RUNTIME
-   onekube-ip-172-16-100-10   Ready    <none>                 6m   v1.23.6   172.16.100.10   <none>        Ubuntu 20.04.4 LTS   5.4.0-109-generic   docker://20.10.14
-   onekube-ip-172-16-100-11   Ready    <none>                 6m   v1.23.6   172.16.100.11   <none>        Ubuntu 20.04.4 LTS   5.4.0-109-generic   docker://20.10.14
-   onekube-ip-172-16-100-4    Ready    control-plane,master   8m   v1.23.6   172.16.100.4    <none>        Ubuntu 20.04.4 LTS   5.4.0-109-generic   docker://20.10.14
-   onekube-ip-172-16-100-5    Ready    control-plane,master   8m   v1.23.6   172.16.100.5    <none>        Ubuntu 20.04.4 LTS   5.4.0-109-generic   docker://20.10.14
-   onekube-ip-172-16-100-6    Ready    control-plane,master   8m   v1.23.6   172.16.100.6    <none>        Ubuntu 20.04.4 LTS   5.4.0-109-generic   docker://20.10.14
-   onekube-ip-172-16-100-7    Ready    <none>                 7m   v1.23.6   172.16.100.7    <none>        Ubuntu 20.04.4 LTS   5.4.0-109-generic   docker://20.10.14
-   onekube-ip-172-16-100-8    Ready    <none>                 7m   v1.23.6   172.16.100.8    <none>        Ubuntu 20.04.4 LTS   5.4.0-109-generic   docker://20.10.14
-   onekube-ip-172-16-100-9    Ready    <none>                 6m   v1.23.6   172.16.100.9    <none>        Ubuntu 20.04.4 LTS   5.4.0-109-generic   docker://20.10.14
-
-.. _k8s_use_remotely:
-
-Use Kubernetes remotely
------------------------
-
-To control the Kubernetes cluster remotely, you need to have the ``kubectl`` CLI tool installed on your system (workstation, laptop). Follow the official `installation guide <https://kubernetes.io/docs/tasks/tools/install-kubectl/>`_. When finished, you can validate the correct installation by running:
-
-.. prompt:: text [remote]$ auto
-
-    [remote]$ kubectl --help
-
-You also need to have the configuration with cluster master IP (or the Control-Plane Endpoint) address and access keys. This configuration can be taken from any **master** node from a file ``/etc/kubernetes/admin.conf`` and put on your remote system into ``~/.kube/config``.
-
-For example (place a valid master node IP address):
-
-.. prompt:: text [remote]$ auto
-
-    [remote]$ mkdir -p ~/.kube/
-    [remote]$ scp root@172.16.100.4:/etc/kubernetes/admin.conf ~/.kube/config
-
-After this you should be able to manage all resources from the remote location via ``kubectl/kustomize`` or ``helm``, etc.
-
-.. note::
-
-    The access configuration can be placed into any custom file, but the location has be explicitly configured. Via
-
-    - env. variable, e.g. ``KUBECONFIG=${HOME}/admin.conf kubectl get nodes``
-    - CLI argument, e.g. ``kubectl --kubeconfig=${HOME}/admin.conf get nodes``
+   NAME                        STATUS   ROLES                  AGE    VERSION   INTERNAL-IP      EXTERNAL-IP   OS-IMAGE             KERNEL-VERSION      CONTAINER-RUNTIME
+   onekube-ip-172-20-100-101   Ready    control-plane,master   7m     v1.23.6   172.20.100.101   <none>        Ubuntu 20.04.4 LTS   5.4.0-109-generic   docker://20.10.15
+   onekube-ip-172-20-100-102   Ready    <none>                 9m     v1.23.6   172.20.100.102   <none>        Ubuntu 20.04.4 LTS   5.4.0-109-generic   docker://20.10.15
+   onekube-ip-172-20-100-103   Ready    <none>                 9m     v1.23.6   172.20.100.103   <none>        Ubuntu 20.04.4 LTS   5.4.0-109-generic   docker://20.10.15
 
 .. _k8s_contextualization:
 
@@ -204,53 +183,24 @@ The service appliance is designed to use couple of `custom attributes <https://d
 ====================================== ========= ==================== ========= ========================= ===========
 Parameter                              Mandatory Default              Stage     Role                      Description
 ====================================== ========= ==================== ========= ========================= ===========
-``ONEAPP_VNF_LB0_IP``                  ``YES``                        configure vnf master worker storage Control Plane Endpoint (I.P.V.4[:PORT])
+``ONEAPP_VROUTER_ETH1_VIP0``                                          configure vnf master worker storage Default Gateway VIP (IPv4)
+``ONEAPP_VNF_LB0_IP``                  ``YES``                        configure vnf master worker storage Control Plane Endpoint VIP (IPv4)
 ``ONEAPP_K8S_PORT``                              ``6443``             configure master worker storage     Kubernetes API port on which nodes communicate
 ``ONEAPP_K8S_PODS_NETWORK``                      ``10.244.0.0/16``    configure master worker storage     Kubernetes pod network - pods will have IP from this range
-``ONEAPP_K8S_LOADBALANCER_RANGE``                                     configure master worker storage     LoadBalancer IP range
+``ONEAPP_K8S_LOADBALANCER_RANGE``                                     configure master worker storage     LoadBalancer IP range (IPv4-IPv4)
 ``ONEAPP_K8S_LOADBALANCER_CONFIG``                                    configure master worker storage     Custom LoadBalancer config (encoded in Base64)
+``ONEAPP_STORAGE_DEVICE``              ``YES``   ``/dev/vdb``         configure storage                   Attached block device used by Longhorn to store Persistent Volume (PV) data
+``ONEAPP_STORAGE_FILESYSTEM``                    ``xfs``              configure storage                   Filesystem type to init Longhorn storage device
+``ONEAPP_VNF_NAT4_ENABLED``                      ``YES``              configure vnf                       Enable NAT for the whole Kubernetes cluster
+``ONEAPP_VNF_NAT4_INTERFACES_OUT``               ``eth0``             configure vnf                       NAT - Outgoing (public) interfaces
+``ONEAPP_VNF_ROUTER4_ENABLED``                   ``YES``              configure vnf                       Enable IPv4 forwarding for selected NICs
+``ONEAPP_VNF_ROUTER4_INTERFACES``                ``eth0,eth1``        configure vnf                       IPv4 Router - NICs selected for IPv4 forwarding
 ====================================== ========= ==================== ========= ========================= ===========
-
-VM templates
-------------
-
-Addtionally you can configure the following contextualization parameters per each VM template / role:
-
-.. _k8s_vnf_role:
-
-VNF (Load-balancer) role
-~~~~~~~~~~~~~~~~~~~~~~~~
-
-VNF provides not only the load-balancing solution, but also other features like NAT or DHCP. They are not used by default, but feel free to enable them.
-For detailed explanation of VNF parameters please refer to the `VNF documentation <https://docs.opennebula.io/appliances/service/vnf.html>`_.
-
-====================================== ========= ==================== ========= ====
-Parameter                              Mandatory Default              Stage     Role
-====================================== ========= ==================== ========= ====
-``ONEAPP_VNF_DNS_ENABLED``                       ``NO``               configure vnf
-``ONEAPP_VNF_DNS_INTERFACES``                                         configure vnf
-``ONEAPP_VNF_DNS_MAX_CACHE_TTL``                 ``3600``             configure vnf
-``ONEAPP_VNF_DNS_USE_ROOTSERVERS``               ``YES``              configure vnf
-``ONEAPP_VNF_LB_REFRESH_RATE``                   ``30``               configure vnf
-``ONEAPP_VNF_NAT4_ENABLED``                      ``NO``               configure vnf
-``ONEAPP_VNF_NAT4_INTERFACES_OUT``                                    configure vnf
-``ONEAPP_VNF_ROUTER4_ENABLED``                   ``NO``               configure vnf
-``ONEAPP_VNF_ROUTER4_INTERFACES``                                     configure vnf
-====================================== ========= ==================== ========= ====
 
 .. _k8s_storage_role:
 
 Storage (Longhorn) role
-~~~~~~~~~~~~~~~~~~~~~~~
-
-====================================== ========= ===================== ========= ======= ===========
-Parameter                              Mandatory Default               Stage     Role    Description
-====================================== ========= ===================== ========= ======= ===========
-``ONEAPP_STORAGE_DEVICE``              ``YES``   ``/dev/vdb``          configure storage Path to the attached dedicated storage disk
-``ONEAPP_STORAGE_FILESYSTEM``                    ``xfs``               configure storage Filesystem type to create (**xfs** or **ext4**)
-``ONEAPP_STORAGE_LABEL``                         ``STORAGE``           configure storage Filesystem label to use (must be shorter than 12 characters)
-``ONEAPP_STORAGE_MOUNTPOINT``                    ``/var/lib/longhorn`` configure storage Mountpoint for the dedicated disk
-====================================== ========= ===================== ========= ======= ===========
+-----------------------
 
 Storage nodes are deployed by the **storage** role. They are by default labeled with ``node.longhorn.io/create-default-disk: "true"`` and tainted with ``NoSchedule``, which allows Longhorn to hold ``persistent volume (PV)`` data on them exclusively.
 Deployment of regular pods onto the **storage** nodes is prevented, instead they are deployed into **worker** nodes only.
@@ -323,15 +273,15 @@ The configuration for the ARP loadbalancing can look similar to this:
         - name: default
           protocol: layer2
           addresses:
-          - 172.16.100.200-172.16.100.250
-          - 172.16.101.200-172.16.101.250
-          - 172.16.102.200-172.16.102.250
+          - 172.20.100.200-172.20.100.250
+          - 172.20.101.200-172.20.101.250
+          - 172.20.102.200-172.20.102.250
 
 The most straightforward way is to just set the range via ``ONEAPP_K8S_LOADBALANCER_RANGE``,
 
 .. code::
 
-    ONEAPP_K8S_LOADBALANCER_RANGE=172.16.100.124-172.16.100.128
+    ONEAPP_K8S_LOADBALANCER_RANGE=172.20.100.124-172.20.100.128
 
 .. important::
 
@@ -356,7 +306,7 @@ Let's first check how is LoadBalancer configured:
     - name: default
       protocol: layer2
       addresses:
-      - 172.16.100.124-172.16.100.128
+      - 172.20.100.124-172.20.100.128
 
     Events:  <none>
 
@@ -371,13 +321,13 @@ As we can see we have one range configured (which is routable) - now we can atte
     [master]# kubectl get services
     NAME         TYPE           CLUSTER-IP     EXTERNAL-IP      PORT(S)        AGE
     kubernetes   ClusterIP      10.96.0.1      <none>           443/TCP        125m
-    nginx        LoadBalancer   10.101.121.5   172.16.100.124   80:32546/TCP   8s
+    nginx        LoadBalancer   10.101.121.5   172.20.100.124   80:32546/TCP   8s
 
-Our service ``nginx`` is exposed on the next free loadbalanced IP from the provided range or ranges - in this case ``172.16.100.124`` - and can be reached outside of the Kubernetes appliance as expected:
+Our service ``nginx`` is exposed on the next free loadbalanced IP from the provided range or ranges - in this case ``172.20.100.124`` - and can be reached outside of the Kubernetes appliance as expected:
 
 .. prompt:: text [remote]$ auto
 
-    [remote]$ curl -fs http://172.16.100.124 | html2text
+    [remote]$ curl -fs http://172.20.100.124 | html2text
     ****** Welcome to nginx! ******
     If you see this page, the nginx web server is successfully installed and
     working. Further configuration is required.
@@ -398,10 +348,10 @@ This time we can expose the service on a desired address (with ``--load-balancer
 
 .. prompt:: text [master]# auto
 
-    [master]# kubectl expose pod nginx --type=LoadBalancer --load-balancer-ip=172.16.100.128
+    [master]# kubectl expose pod nginx --type=LoadBalancer --load-balancer-ip=172.20.100.128
     [master]# kubectl get service/nginx
     NAME         TYPE           CLUSTER-IP    EXTERNAL-IP      PORT(S)        AGE
-    nginx        LoadBalancer   10.110.6.11   172.16.100.128   80:32172/TCP   11s
+    nginx        LoadBalancer   10.110.6.11   172.20.100.128   80:32172/TCP   11s
 
 .. important::
 
@@ -442,7 +392,7 @@ Check ``MetalLB``'s config:
     - name: default
       protocol: layer2
       addresses:
-      - 172.16.100.124-172.16.100.128
+      - 172.20.100.124-172.20.100.128
 
     BinaryData
     ====
@@ -556,7 +506,7 @@ List all the created resources:
 
     NAME                 TYPE           CLUSTER-IP      EXTERNAL-IP      PORT(S)        AGE
     service/kubernetes   ClusterIP      10.96.0.1       <none>           443/TCP        32m
-    service/nginx        LoadBalancer   10.109.185.45   172.16.100.124   80:32624/TCP   23s
+    service/nginx        LoadBalancer   10.109.185.45   172.20.100.124   80:32624/TCP   23s
 
     NAME                          STATUS   VOLUME                                     CAPACITY   ACCESS MODES   STORAGECLASS      AGE
     persistentvolumeclaim/nginx   Bound    pvc-933533b2-1c58-459f-9e97-9c710a57063f   4Gi        RWO            longhorn-retain   23s
@@ -578,7 +528,7 @@ Verify if the LoadBalancer service works and pod correctly serves HTTP content:
 
 .. prompt:: text $ auto
 
-    $ curl -fs http://172.16.100.124 | html2text
+    $ curl -fs http://172.20.100.124 | html2text
     ****** Welcome to Example Kubernetes Service! ******
     If you see this page, your Kubernetes cluster is up and running.
 
@@ -598,6 +548,116 @@ Destroy the example application:
 
     To reuse a "**Released**" ``persistent volume (PV)`` execute ``kubectl patch pv <name> -p '{"spec":{"claimRef": null}}'``, which should change
     the status of the volume to "**Available**", then you can re-create the ``persistent volume claim (PVC)`` with the same exact name as before.
+
+.. _k8s_use_remotely:
+
+Use Kubernetes remotely
+=======================
+
+Connect to Kubernetes API
+-------------------------
+
+To control the Kubernetes cluster remotely, you need to have the ``kubectl`` CLI tool installed on your system (workstation, laptop). Follow the official `installation guide <https://kubernetes.io/docs/tasks/tools/install-kubectl/>`_. When finished, you can validate the correct installation by running:
+
+.. prompt:: text [remote]$ auto
+
+    [remote]$ kubectl --help
+
+You also need to have the configuration with cluster master IP (or the Control-Plane Endpoint) address and access keys. This configuration can be taken from any **master** node from a file ``/etc/kubernetes/admin.conf`` and put on your remote system into ``~/.kube/config``.
+
+For example (place a valid master node IP address):
+
+.. prompt:: text [remote]$ auto
+
+    [remote]$ mkdir -p ~/.kube/
+    [remote]$ scp root@172.20.100.4:/etc/kubernetes/admin.conf ~/.kube/config
+
+After this you should be able to manage all resources from the remote location via ``kubectl/kustomize`` or ``helm``, etc.
+
+.. note::
+
+    The access configuration can be placed into any custom file, but the location has be explicitly configured. Via
+
+    - env. variable, e.g. ``KUBECONFIG=${HOME}/admin.conf kubectl get nodes``
+    - CLI argument, e.g. ``kubectl --kubeconfig=${HOME}/admin.conf get nodes``
+
+.. _k8s_certificate_sans:
+
+Update Kubernetes PKI to use custom certificate SANs
+----------------------------------------------------
+
+If you intend to connect to Kubernetes API using SSH tunnels you will probably need to add/update certificate **Subject Alternative Names (SANs)**. Here's how:
+
+Obtain the ``ClusterConfiguration`` document:
+
+.. prompt:: text [master]# auto
+
+    [master]# kubectl -n kube-system get configmap kubeadm-config -o jsonpath='{.data.ClusterConfiguration}' > cc.yml
+
+Edit the document to add custom SANs:
+
+.. code::
+
+    apiServer:
+      certSANs:
+      - "my.custom.domain"
+      - "other.custom.domain"
+      - "10.11.12.13"
+      extraArgs:
+        authorization-mode: Node,RBAC
+      timeoutForControlPlane: 4m0s
+    apiVersion: kubeadm.k8s.io/v1beta3
+    certificatesDir: /etc/kubernetes/pki
+    clusterName: kubernetes
+    controlPlaneEndpoint: 172.20.100.2:6443
+    controllerManager: {}
+    dns: {}
+    etcd:
+      local:
+        dataDir: /var/lib/etcd
+    imageRepository: k8s.gcr.io
+    kind: ClusterConfiguration
+    kubernetesVersion: v1.23.6
+    networking:
+      dnsDomain: cluster.local
+      podSubnet: 10.244.0.0/16
+      serviceSubnet: 10.96.0.0/12
+    scheduler: {}
+
+**Move** (and backup) existing ApiServer Key and Certificate:
+
+.. prompt:: text [master]# auto
+
+    [master]# mv /etc/kubernetes/pki/apiserver.{key,crt} /var/tmp/
+
+Generate new ApiServer Key and Certificate:
+
+.. prompt:: text [master]# auto
+
+    [master]# kubeadm init phase certs apiserver --config cc.yml
+    [certs] Generating "apiserver" certificate and key
+    [certs] apiserver serving cert is signed for DNS names [kubernetes kubernetes.default kubernetes.default.svc kubernetes.default.svc.cluster.local my.custom.domain onekube-ip-172-20-100-101 other.custom.domain] and IPs [10.96.0.1 172.20.100.101 172.20.100.2 10.11.12.13]
+
+.. important::
+
+    If you have multiple masters you need to **copy**/replace existing ``/etc/kubernetes/pki/apiserver.{key,crt}`` files with newly generated ones to **all** masters.
+
+Use **docker** to destroy the ``kube-apiserver`` container:
+
+.. prompt:: text [master]# auto
+
+    [master]# docker ps | awk '/kube-apiserver/ && !/pause/ {print $1}' | xargs -rn1 docker kill
+
+.. important::
+
+    If you have multiple masters you need to destroy ``kube-apiserver`` containers on **all** masters.
+
+Update the ``kubeadm-config`` configmap:
+
+.. prompt:: text [master]# auto
+
+    [master]# kubeadm init phase upload-config kubeadm --config cc.yml
+    [upload-config] Storing the configuration used in ConfigMap "kubeadm-config" in the "kube-system" Namespace
 
 .. |image-oneflow-step-01| image:: /images/kubernetes_service/kubernetes_service_step_01.png
 .. |image-oneflow-step-02| image:: /images/kubernetes_service/kubernetes_service_step_02.png
