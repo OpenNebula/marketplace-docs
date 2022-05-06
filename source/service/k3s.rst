@@ -71,7 +71,7 @@ The initial configuration can be customized with :ref:`contextualization <k3s_co
 
     The first input can be ignored - it serves to override the used K3s version - meaning that the version with which the image came will be uninstalled and replaced with the new requested one.
 
-    The second input **Master node address** is important and the value may differ for the master node and the worker nodes in the same cluster. For example for the master node, it may be left empty and the actual IP address will be derived from your setup (:ref:`more info is below <k8s_master_node>`) or set it to an actual IP assigned inside the VM. For the worker nodes, it must be a real IP address (in all cases). More about this in :ref:`contextualization <k3s_context_param>`.
+    The second input **Master node address** is important and the value may differ for the master node and the worker nodes in the same cluster. For example for the master node, it may be left empty and the actual IP address will be derived from your setup (:ref:`more info is below <k3s_master_node>`) or set it to an actual IP assigned inside the VM. For the worker nodes, it must be a real IP address (in all cases). More about this in :ref:`contextualization <k3s_context_param>`.
 
     The following input **Secret token** is relevant for worker nodes only and it needs to be set with a value stored on the master node in :ref:`/etc/one-appliance/config <one_service_logs>`. Below is an :ref:`example <report_file_example>` of such file. These two inputs (Master node address and Secret token) are mandatory for the worker node to join the cluster - **both of them must be set**. Otherwise, a new single master node will be created.
 
