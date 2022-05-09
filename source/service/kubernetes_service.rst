@@ -587,34 +587,9 @@ Connect to Kubernetes API (via SSH)
 
 By default the context parameter ``ONEAPP_K8S_EXTRA_SANS`` is set to **localhost,127.0.0.1** which allows to access Kubernetes API via SSH tunnels.
 
-To create a SSH tunnel through a VNF node you need to allow ``AllowTcpForwarding yes`` and (optionally) ``AllowAgentForwarding yes`` inside the **/etc/ssh/sshd_config** file on VNF nodes:
+.. note::
 
-.. prompt:: text [vnf]# auto
-
-    [vnf]# gawk -i inplace -f- /etc/ssh/sshd_config <<'EOF'
-    BEGIN { update = "AllowTcpForwarding yes" }
-    /^#*AllowTcpForwarding / { $0 = update; found = 1 }
-    { print }
-    END { if (!found) print update >>FILENAME }
-    EOF
-
-.. prompt:: text [vnf]# auto
-
-    [vnf]# gawk -i inplace -f- /etc/ssh/sshd_config <<'EOF'
-    BEGIN { update = "AllowAgentForwarding yes" }
-    /^#*AllowAgentForwarding / { $0 = update; found = 1 }
-    { print }
-    END { if (!found) print update >>FILENAME }
-    EOF
-
-After successful config update reload the sshd service:
-
-.. prompt:: text [vnf]# auto
-
-    [vnf]# rc-service sshd reload
-    * Reloading sshd ... [ ok ]
-
-We recommend using the ``ProxyCommand`` SSH feature, for example:
+    We recommend using the ``ProxyCommand`` SSH feature.
 
 To download the **/etc/kubernetes/admin.conf** (kubeconfig) file:
 
@@ -623,7 +598,9 @@ To download the **/etc/kubernetes/admin.conf** (kubeconfig) file:
    [remote]$ mkdir -p ~/.kube/
    [remote]$ scp -o ProxyCommand='ssh -A root@10.2.11.200 -W %h:%p' root@172.20.1.101:/etc/kubernetes/admin.conf ~/.kube/config
 
-Where ``10.2.11.200`` is a **public** address of a VNF node, ``172.20.1.101`` is a **private** address of a master node (inside internal VNET).
+.. note::
+
+    The ``10.2.11.200`` is a **public** address of a VNF node, ``172.20.1.101`` is a **private** address of a master node (inside internal VNET).
 
 To create SSH tunnel, forward ``6443`` port and query cluster nodes:
 
