@@ -180,22 +180,23 @@ Custom attributes
 
 The service appliance is designed to use couple of `custom attributes <https://docs.opennebula.io/6.2/management_and_operations/multivm_service_management/appflow_use_cli.html#using-custom-attributes>`_ to provide easier configuration across multiple VM templates.
 
-====================================== ========= ==================== ========= ========================= ===========
-Parameter                              Mandatory Default              Stage     Role                      Description
-====================================== ========= ==================== ========= ========================= ===========
-``ONEAPP_VROUTER_ETH1_VIP0``                                          configure vnf master worker storage Default Gateway VIP (IPv4)
-``ONEAPP_VNF_LB0_IP``                  ``YES``                        configure vnf master worker storage Control Plane Endpoint VIP (IPv4)
-``ONEAPP_K8S_PORT``                              ``6443``             configure master worker storage     Kubernetes API port on which nodes communicate
-``ONEAPP_K8S_PODS_NETWORK``                      ``10.244.0.0/16``    configure master worker storage     Kubernetes pod network - pods will have IP from this range
-``ONEAPP_K8S_LOADBALANCER_RANGE``                                     configure master worker storage     LoadBalancer IP range (IPv4-IPv4)
-``ONEAPP_K8S_LOADBALANCER_CONFIG``                                    configure master worker storage     Custom LoadBalancer config (encoded in Base64)
-``ONEAPP_STORAGE_DEVICE``              ``YES``   ``/dev/vdb``         configure storage                   Attached block device used by Longhorn to store Persistent Volume (PV) data
-``ONEAPP_STORAGE_FILESYSTEM``                    ``xfs``              configure storage                   Filesystem type to init Longhorn storage device
-``ONEAPP_VNF_NAT4_ENABLED``                      ``YES``              configure vnf                       Enable NAT for the whole Kubernetes cluster
-``ONEAPP_VNF_NAT4_INTERFACES_OUT``               ``eth0``             configure vnf                       NAT - Outgoing (public) interfaces
-``ONEAPP_VNF_ROUTER4_ENABLED``                   ``YES``              configure vnf                       Enable IPv4 forwarding for selected NICs
-``ONEAPP_VNF_ROUTER4_INTERFACES``                ``eth0,eth1``        configure vnf                       IPv4 Router - NICs selected for IPv4 forwarding
-====================================== ========= ==================== ========= ========================= ===========
+====================================== ========= ======================= ========= ========================= ===========
+Parameter                              Mandatory Default                 Stage     Role                      Description
+====================================== ========= ======================= ========= ========================= ===========
+``ONEAPP_VROUTER_ETH1_VIP0``                                             configure vnf master worker storage Default Gateway VIP (IPv4)
+``ONEAPP_VNF_LB0_IP``                  ``YES``                           configure vnf master worker storage Control Plane Endpoint VIP (IPv4)
+``ONEAPP_K8S_PORT``                              ``6443``                configure master worker storage     Kubernetes API port on which nodes communicate
+``ONEAPP_K8S_PODS_NETWORK``                      ``10.244.0.0/16``       configure master worker storage     Kubernetes pod network - pods will have IP from this range
+``ONEAPP_K8S_EXTRA_SANS``                        ``localhost,127.0.0.1`` configure master                    ApiServer extra certificate SANs
+``ONEAPP_K8S_LOADBALANCER_RANGE``                                        configure master worker storage     LoadBalancer IP range (IPv4-IPv4)
+``ONEAPP_K8S_LOADBALANCER_CONFIG``                                       configure master worker storage     Custom LoadBalancer config (encoded in Base64)
+``ONEAPP_STORAGE_DEVICE``              ``YES``   ``/dev/vdb``            configure storage                   Attached block device used by Longhorn to store Persistent Volume (PV) data
+``ONEAPP_STORAGE_FILESYSTEM``                    ``xfs``                 configure storage                   Filesystem type to init Longhorn storage device
+``ONEAPP_VNF_NAT4_ENABLED``                      ``YES``                 configure vnf                       Enable NAT for the whole Kubernetes cluster
+``ONEAPP_VNF_NAT4_INTERFACES_OUT``               ``eth0``                configure vnf                       NAT - Outgoing (public) interfaces
+``ONEAPP_VNF_ROUTER4_ENABLED``                   ``YES``                 configure vnf                       Enable IPv4 forwarding for selected NICs
+``ONEAPP_VNF_ROUTER4_INTERFACES``                ``eth0,eth1``           configure vnf                       IPv4 Router - NICs selected for IPv4 forwarding
+====================================== ========= ======================= ========= ========================= ===========
 
 .. _k8s_storage_role:
 
@@ -554,8 +555,8 @@ Destroy the example application:
 Use Kubernetes remotely
 =======================
 
-Connect to Kubernetes API
--------------------------
+Connect to Kubernetes API (directly)
+------------------------------------
 
 To control the Kubernetes cluster remotely, you need to have the ``kubectl`` CLI tool installed on your system (workstation, laptop). Follow the official `installation guide <https://kubernetes.io/docs/tasks/tools/install-kubectl/>`_. When finished, you can validate the correct installation by running:
 
@@ -581,10 +582,80 @@ After this you should be able to manage all resources from the remote location v
     - env. variable, e.g. ``KUBECONFIG=${HOME}/admin.conf kubectl get nodes``
     - CLI argument, e.g. ``kubectl --kubeconfig=${HOME}/admin.conf get nodes``
 
+Connect to Kubernetes API (via SSH)
+-----------------------------------
+
+By default the context parameter ``ONEAPP_K8S_EXTRA_SANS`` is set to **localhost,127.0.0.1** which allows to access Kubernetes API via SSH tunnels.
+
+To create a SSH tunnel through a VNF node you need to allow ``AllowTcpForwarding yes`` and (optionally) ``AllowAgentForwarding yes`` inside the **/etc/ssh/sshd_config** file on VNF nodes:
+
+.. prompt:: text [vnf]# auto
+
+    [vnf]# gawk -i inplace -f- /etc/ssh/sshd_config <<'EOF'
+    BEGIN { update = "AllowTcpForwarding yes" }
+    /^#*AllowTcpForwarding / { $0 = update; found = 1 }
+    { print }
+    END { if (!found) print update >>FILENAME }
+    EOF
+
+.. prompt:: text [vnf]# auto
+
+    [vnf]# gawk -i inplace -f- /etc/ssh/sshd_config <<'EOF'
+    BEGIN { update = "AllowAgentForwarding yes" }
+    /^#*AllowAgentForwarding / { $0 = update; found = 1 }
+    { print }
+    END { if (!found) print update >>FILENAME }
+    EOF
+
+After successful config update reload the sshd service:
+
+.. prompt:: text [vnf]# auto
+
+    [vnf]# rc-service sshd reload
+    * Reloading sshd ... [ ok ]
+
+We recommend using the ``ProxyCommand`` SSH feature, for example:
+
+To download the **/etc/kubernetes/admin.conf** (kubeconfig) file:
+
+.. prompt:: text [remote]$ auto
+
+   [remote]$ mkdir -p ~/.kube/
+   [remote]$ scp -o ProxyCommand='ssh -A root@10.2.11.200 -W %h:%p' root@172.20.1.101:/etc/kubernetes/admin.conf ~/.kube/config
+
+Where ``10.2.11.200`` is a **public** address of a VNF node, ``172.20.1.101`` is a **private** address of a master node (inside internal VNET).
+
+To create SSH tunnel, forward ``6443`` port and query cluster nodes:
+
+.. prompt:: text [remote]$ auto
+
+   [remote]$ ssh -o ProxyCommand='ssh -A root@10.2.11.200 -W %h:%p' -L 6443:localhost:6443 root@172.20.1.101
+
+..and then in another terminal:
+
+.. prompt:: text [remote]$ auto
+
+   [remote]$ kubectl get nodes
+   NAME                      STATUS   ROLES                  AGE    VERSION
+   onekube-ip-172-20-1-101   Ready    control-plane,master   13m    v1.23.6
+   onekube-ip-172-20-1-102   Ready    <none>                 11m    v1.23.6
+   onekube-ip-172-20-1-103   Ready    <none>                 11m    v1.23.6
+
+.. important::
+
+    You must make sure that the cluster endpoint inside the kubeconfig file (**~/.kube/config**) points to **localhost**, for example:
+
+    .. prompt:: text [remote]$ auto
+
+        gawk -i inplace -f- ~/.kube/config <<'EOF'
+        /^    server: / { $0 = "    server: https://localhost:6443" }
+        { print }
+        EOF
+
 .. _k8s_certificate_sans:
 
-Update Kubernetes PKI to use custom certificate SANs
-----------------------------------------------------
+Update Kubernetes PKI to use custom certificate SANs (in an existing cluster)
+-----------------------------------------------------------------------------
 
 If you intend to connect to Kubernetes API using SSH tunnels you will probably need to add/update certificate **Subject Alternative Names (SANs)**. Here's how:
 
