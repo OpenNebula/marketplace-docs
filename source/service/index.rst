@@ -10,7 +10,7 @@ Service Appliances
    Overview <overview>
    AWS IoT Greengrass <aws-greengrass>
    GitLab <gitlab>
-   Kubernetes 1.23 Service <kubernetes_service>
+   OneKE Service (K8s) <oneke>
    Lightweight Kubernetes (K3s) <k3s>
    Docker <docker>
    WordPress <wordpress>
