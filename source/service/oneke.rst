@@ -349,8 +349,150 @@ On Kubernetes nodes the Routing/DNS configuration will look like these listings:
     The default gateway on every Kubernetes node is automatically set to the **private** VIP address
     which facilitates (NATed) access to the public Internet.
 
-Deploy OneKE
-============
+Template Modifications
+======================
+
+It is possible to modify templates (downloaded from the Marketplace before instantiation) to add more VM memory,
+VCPU cores, etc. Let's as an example add a ``VM Group`` resource to achieve proper Host/VM
+`affinity/anti-affinity <https://docs.opennebula.io/6.4/management_and_operations/capacity_planning/affinity.html#virtual-machine-affinity>`_.
+
+Let's assume that ``epsilon`` and ``omicron`` are hosts we want to use to deploy OneKE, an example VM Group
+may be created like that:
+
+.. prompt:: bash $ auto
+
+    $ onevmgroup create /dev/fd/0 <<EOF
+    NAME = "Service OneKE 1.24 CE"
+    ROLE = [
+        NAME         = "vnf",
+        HOST_AFFINED = "epsilon,omicron",
+        POLICY       = "ANTI_AFFINED"
+    ]
+    ROLE = [
+        NAME         = "master",
+        HOST_AFFINED = "epsilon,omicron",
+        POLICY       = "ANTI_AFFINED"
+    ]
+    ROLE = [
+        NAME         = "worker",
+        HOST_AFFINED = "epsilon,omicron"
+    ]
+    ROLE = [
+        NAME         = "storage",
+        HOST_AFFINED = "epsilon,omicron",
+        POLICY       = "ANTI_AFFINED"
+    ]
+    EOF
+    ID: 1
+
+.. important::
+
+    The **worker** role does not have ``POLICY`` defined, this allows to reuse hosts multiple times!
+
+Now, let's modify the OneKE OneFlow template that we downloaded already:
+
+.. prompt:: bash $ auto
+
+    $ oneflow-template show 'Service OneKE 1.24 CE' --json | >/tmp/OneKE-update.json jq -r --arg vmgroup 'Service OneKE 1.24 CE' -f /dev/fd/3 3<<'EOF'
+    .DOCUMENT.TEMPLATE.BODY | del(.registration_time) | . += {
+      roles: .roles | map(
+        .vm_template_contents = "VMGROUP=[VMGROUP_NAME=\"\($vmgroup)\",ROLE=\"\(.name)\"]\n" + .vm_template_contents
+      )
+    }
+    EOF
+
+Content of the update (``/tmp/OneKE-update.json``) will look like this:
+
+.. code-block:: json
+
+    {
+      "name": "Service OneKE 1.24 CE",
+      "deployment": "straight",
+      "description": "",
+      "roles": [
+        {
+          "name": "vnf",
+          "cardinality": 1,
+          "min_vms": 1,
+          "vm_template_contents": "VMGROUP=[VMGROUP_NAME=\"Service OneKE 1.24 CE\",ROLE=\"vnf\"]\nNIC=[NAME=\"NIC0\",NETWORK_ID=\"$Public\"]\nNIC=[NAME=\"NIC1\",NETWORK_ID=\"$Private\"]\nONEAPP_VROUTER_ETH0_VIP0=\"$ONEAPP_VROUTER_ETH0_VIP0\"\nONEAPP_VROUTER_ETH1_VIP0=\"$ONEAPP_VROUTER_ETH1_VIP0\"\nONEAPP_VNF_NAT4_ENABLED=\"$ONEAPP_VNF_NAT4_ENABLED\"\nONEAPP_VNF_NAT4_INTERFACES_OUT=\"$ONEAPP_VNF_NAT4_INTERFACES_OUT\"\nONEAPP_VNF_ROUTER4_ENABLED=\"$ONEAPP_VNF_ROUTER4_ENABLED\"\nONEAPP_VNF_ROUTER4_INTERFACES=\"$ONEAPP_VNF_ROUTER4_INTERFACES\"\nONEAPP_VNF_HAPROXY_INTERFACES=\"$ONEAPP_VNF_HAPROXY_INTERFACES\"\nONEAPP_VNF_HAPROXY_REFRESH_RATE=\"$ONEAPP_VNF_HAPROXY_REFRESH_RATE\"\nONEAPP_VNF_HAPROXY_CONFIG=\"$ONEAPP_VNF_HAPROXY_CONFIG\"\nONEAPP_VNF_HAPROXY_LB0_IP=\"$ONEAPP_VROUTER_ETH0_VIP0\"\nONEAPP_VNF_HAPROXY_LB0_PORT=\"9345\"\nONEAPP_VNF_HAPROXY_LB1_IP=\"$ONEAPP_VROUTER_ETH0_VIP0\"\nONEAPP_VNF_HAPROXY_LB1_PORT=\"6443\"\nONEAPP_VNF_HAPROXY_LB2_IP=\"$ONEAPP_VROUTER_ETH0_VIP0\"\nONEAPP_VNF_HAPROXY_LB2_PORT=\"$ONEAPP_VNF_HAPROXY_LB2_PORT\"\nONEAPP_VNF_HAPROXY_LB3_IP=\"$ONEAPP_VROUTER_ETH0_VIP0\"\nONEAPP_VNF_HAPROXY_LB3_PORT=\"$ONEAPP_VNF_HAPROXY_LB3_PORT\"\nONEAPP_VNF_KEEPALIVED_VRID=\"$ONEAPP_VNF_KEEPALIVED_VRID\"\n",
+          "elasticity_policies": [],
+          "scheduled_policies": [],
+          "vm_template": 255
+        },
+        {
+          "name": "master",
+          "cardinality": 1,
+          "min_vms": 1,
+          "vm_template_contents": "VMGROUP=[VMGROUP_NAME=\"Service OneKE 1.24 CE\",ROLE=\"master\"]\nNIC=[NAME=\"NIC0\",NETWORK_ID=\"$Private\"]\nONEAPP_VROUTER_ETH0_VIP0=\"$ONEAPP_VROUTER_ETH0_VIP0\"\nONEAPP_VROUTER_ETH1_VIP0=\"$ONEAPP_VROUTER_ETH1_VIP0\"\nONEAPP_K8S_EXTRA_SANS=\"$ONEAPP_K8S_EXTRA_SANS\"\nONEAPP_K8S_LOADBALANCER_RANGE=\"$ONEAPP_K8S_LOADBALANCER_RANGE\"\nONEAPP_K8S_LOADBALANCER_CONFIG=\"$ONEAPP_K8S_LOADBALANCER_CONFIG\"\n",
+          "parents": [
+            "vnf"
+          ],
+          "elasticity_policies": [],
+          "scheduled_policies": [],
+          "vm_template": 256
+        },
+        {
+          "name": "worker",
+          "cardinality": 1,
+          "vm_template_contents": "VMGROUP=[VMGROUP_NAME=\"Service OneKE 1.24 CE\",ROLE=\"worker\"]\nNIC=[NAME=\"NIC0\",NETWORK_ID=\"$Private\"]\nONEAPP_VROUTER_ETH0_VIP0=\"$ONEAPP_VROUTER_ETH0_VIP0\"\nONEAPP_VROUTER_ETH1_VIP0=\"$ONEAPP_VROUTER_ETH1_VIP0\"\nONEAPP_VNF_HAPROXY_LB2_IP=\"$ONEAPP_VROUTER_ETH0_VIP0\"\nONEAPP_VNF_HAPROXY_LB2_PORT=\"$ONEAPP_VNF_HAPROXY_LB2_PORT\"\nONEAPP_VNF_HAPROXY_LB3_IP=\"$ONEAPP_VROUTER_ETH0_VIP0\"\nONEAPP_VNF_HAPROXY_LB3_PORT=\"$ONEAPP_VNF_HAPROXY_LB3_PORT\"\n",
+          "parents": [
+            "vnf"
+          ],
+          "elasticity_policies": [],
+          "scheduled_policies": [],
+          "vm_template": 256
+        },
+        {
+          "name": "storage",
+          "cardinality": 1,
+          "min_vms": 1,
+          "vm_template_contents": "VMGROUP=[VMGROUP_NAME=\"Service OneKE 1.24 CE\",ROLE=\"storage\"]\nNIC=[NAME=\"NIC0\",NETWORK_ID=\"$Private\"]\nONEAPP_VROUTER_ETH0_VIP0=\"$ONEAPP_VROUTER_ETH0_VIP0\"\nONEAPP_VROUTER_ETH1_VIP0=\"$ONEAPP_VROUTER_ETH1_VIP0\"\nONEAPP_STORAGE_DEVICE=\"$ONEAPP_STORAGE_DEVICE\"\nONEAPP_STORAGE_FILESYSTEM=\"$ONEAPP_STORAGE_FILESYSTEM\"\n",
+          "parents": [
+            "vnf"
+          ],
+          "elasticity_policies": [],
+          "scheduled_policies": [],
+          "vm_template": 257
+        }
+      ],
+      "networks": {
+        "Public": "M|network|Public||id:",
+        "Private": "M|network|Private||id:"
+      },
+      "custom_attrs": {
+        "ONEAPP_VROUTER_ETH0_VIP0": "M|text|Control Plane Endpoint VIP (IPv4)||",
+        "ONEAPP_VROUTER_ETH1_VIP0": "O|text|Default Gateway VIP (IPv4)||",
+        "ONEAPP_K8S_EXTRA_SANS": "O|text|ApiServer extra certificate SANs||localhost,127.0.0.1",
+        "ONEAPP_K8S_LOADBALANCER_RANGE": "O|text|MetalLB IP range (default none)||",
+        "ONEAPP_K8S_LOADBALANCER_CONFIG": "O|text64|MetalLB custom config (default none)||",
+        "ONEAPP_STORAGE_DEVICE": "M|text|Storage device path||/dev/vdb",
+        "ONEAPP_STORAGE_FILESYSTEM": "O|text|Storage device filesystem||xfs",
+        "ONEAPP_VNF_NAT4_ENABLED": "O|boolean|Enable NAT||YES",
+        "ONEAPP_VNF_NAT4_INTERFACES_OUT": "O|text|NAT - Outgoing Interfaces||eth0",
+        "ONEAPP_VNF_ROUTER4_ENABLED": "O|boolean|Enable Router||YES",
+        "ONEAPP_VNF_ROUTER4_INTERFACES": "O|text|Router - Interfaces||eth0,eth1",
+        "ONEAPP_VNF_HAPROXY_INTERFACES": "O|text|Interfaces to run Haproxy on||eth0",
+        "ONEAPP_VNF_HAPROXY_REFRESH_RATE": "O|number|Haproxy refresh rate||30",
+        "ONEAPP_VNF_HAPROXY_CONFIG": "O|text|Custom Haproxy config (default none)||",
+        "ONEAPP_VNF_HAPROXY_LB2_PORT": "O|number|HTTPS ingress port||443",
+        "ONEAPP_VNF_HAPROXY_LB3_PORT": "O|number|HTTP ingress port||80",
+        "ONEAPP_VNF_KEEPALIVED_VRID": "O|number|Global vrouter id (1-255)||1"
+      },
+      "ready_status_gate": true
+    }
+
+.. note::
+
+    We removed the **registration_time** key from the document as it is immutable.
+
+Next, let's update the template:
+
+.. prompt:: bash $ auto
+
+    $ oneflow-template update 'Service OneKE 1.24 CE' /tmp/OneKE-update.json
+
+OneKE Deployment
+================
 
 In this section we focus on a deployment of OneKE using CLI commands. For an easier Sunstone UI guide (with screenshots) please refer
 to the `Running Kubernetes Clusters <https://docs.opennebula.io/6.4/quick_start/usage_basics/running_kubernetes_clusters.html>`_
