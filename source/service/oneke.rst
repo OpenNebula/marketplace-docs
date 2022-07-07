@@ -291,6 +291,27 @@ VIP                          IPv4
 ``ONEAPP_VROUTER_ETH1_VIP0`` ``172.20.0.86``
 ============================ ===============
 
+.. graphviz::
+
+    digraph {
+      graph [splines=true rankdir=LR ranksep=0.7 bgcolor=transparent];
+      edge [dir=both color=blue arrowsize=0.6];
+      node [shape=record style=rounded fontsize="11em"];
+
+      i1 [label="Internet" shape=ellipse style=dashed];
+      v1 [label="<f0>vnf / 1|<f1>eth0:\n10.2.11.86|<f2>NAT ⇅|<f3>eth1:\n172.20.0.86"];
+      m1 [label="<f0>master / 1|<f1>eth0:\n172.20.0.101|<f2>GW: 172.20.0.86\nDNS: 1.1.1.1"];
+      w1 [label="<f0>worker / 1|<f1>eth0:\n172.20.0.102|<f2>GW: 172.20.0.86\nDNS: 1.1.1.1"];
+      s1 [label="<f0>storage / 1|<f1>eth0:\n172.20.0.103|<f2>GW: 172.20.0.86\nDNS: 1.1.1.1"];
+
+      i1:e -> v1:f1:w;
+      v1:f3:e -> m1:f1:w [dir=forward];
+      v1:f3:e -> w1:f1:w;
+      v1:f3:e -> s1:f1:w [dir=forward];
+    }
+
+|
+
 On a leader VNF node IP/NAT configuration will look like these listings:
 
 .. prompt:: bash localhost:~# auto
@@ -613,6 +634,27 @@ This HAProxy instance can be used in two ways:
 - As a stable Control Plane endpoint for the whole Kubernetes cluster.
 - As an external Kubernetes API endpoint that can be reached from outside of the internal VNET.
 
+.. graphviz::
+
+    digraph {
+      graph [splines=true rankdir=LR ranksep=0.7 bgcolor=transparent];
+      edge [dir=both color=blue arrowsize=0.6];
+      node [shape=record style=rounded fontsize="11em"];
+
+      i1 [label="Internet" shape=ellipse style=dashed];
+      v1 [label="<f0>vnf / 1|<f1>haproxy / \*:6443|<f2>eth0:\n10.2.11.86|<f3>NAT ⇅|<f4>eth1:\n172.20.0.86"];
+      m1 [label="<f0>master / 1|<f1>kube-apiserver / \*:6443|<f2>eth0:\n172.20.0.101|<f3>GW: 172.20.0.86"];
+      w1 [label="<f0>worker / 1|<f1>eth0:\n172.20.0.102|<f2>GW: 172.20.0.86"];
+      s1 [label="<f0>storage / 1|<f1>eth0:\n172.20.0.103|<f2>GW: 172.20.0.86"];
+
+      i1:e -> v1:f2:w;
+      v1:f4:e -> m1:f2:w [dir=forward];
+      v1:f4:e -> w1:f1:w;
+      v1:f4:e -> s1:f1:w [dir=forward];
+    }
+
+|
+
 To expose Kubernetes API you'll need a **kubeconfig** file
 which in case of RKE2 can be copied from the ``/etc/rancher/rke2/rke2.yaml`` file located on every master nodes, for example:
 
@@ -806,6 +848,27 @@ Traefik is deployed during the cluster creation from an official Helm chart with
 - Traefik is exposed on a ``NodePort`` type of the `Kubernetes Service <https://kubernetes.io/docs/concepts/services-networking/service/>`_.
   By default HAProxy instance (running on the leader VNF node) connects to all worker nodes to ports ``32080`` and ``32443``,
   then forwards all traffic comming to HAProxy to ports ``80`` and ``443`` to the Traefik instance (running inside Kubernetes).
+
+.. graphviz::
+
+    digraph {
+      graph [splines=true rankdir=LR ranksep=0.7 bgcolor=transparent];
+      edge [dir=both color=blue arrowsize=0.6];
+      node [shape=record style=rounded fontsize="11em"];
+
+      i1 [label="Internet" shape=ellipse style=dashed];
+      v1 [label="<f0>vnf / 1|<f1>haproxy / \*:80,443|<f2>eth0:\n10.2.11.86|<f3>NAT ⇅|<f4>eth1:\n172.20.0.86"];
+      m1 [label="<f0>master / 1|<f1>eth0:\n172.20.0.101|<f2>GW: 172.20.0.86"];
+      w1 [label="<f0>worker / 1|<f1>traefik / \*:32080,32443|<f2>eth0:\n172.20.0.102|<f3>GW: 172.20.0.86"];
+      s1 [label="<f0>storage / 1|<f1>eth0:\n172.20.0.103|<f2>GW: 172.20.0.86"];
+
+      i1:e -> v1:f2:w;
+      v1:f4:e -> m1:f1:w [dir=forward];
+      v1:f4:e -> w1:f2:w;
+      v1:f4:e -> s1:f1:w [dir=forward];
+    }
+
+|
 
 In-cluster On-prem Load Balancing (MetalLB)
 -------------------------------------------
