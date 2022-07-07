@@ -1213,12 +1213,20 @@ Here's a handy bash snippet to illustrate the procedure:
     #!/usr/bin/env bash
 
     : "${SUC_VERSION:=0.9.1}"
-    : "${RKE2_VERSION:=v1.24.2-rc1+rke2r1}"
+    : "${RKE2_VERSION:=v1.24.2-rc2+rke2r1}"
 
     set -o errexit -o nounset
 
+    # Deploy the System Upgrade Controller.
     kubectl apply -f "https://github.com/rancher/system-upgrade-controller/releases/download/v${SUC_VERSION}/system-upgrade-controller.yaml"
 
+    # Wait for required Custom Resource Definitions to appear.
+    for RETRY in 9 8 7 6 5 4 3 2 1 0; do
+      if kubectl get crd/plans.upgrade.cattle.io --no-headers; then break; fi
+      sleep 5
+    done && [[ "$RETRY" -gt 0 ]]
+
+    # Plan the upgrade.
     kubectl apply -f- <<EOF
     ---
     # Server plan
@@ -1257,7 +1265,7 @@ Here's a handy bash snippet to illustrate the procedure:
       labels:
         rke2-upgrade: agent
     spec:
-      concurrency: 2
+      concurrency: 1
       nodeSelector:
         matchExpressions:
           - {key: rke2-upgrade, operator: Exists}
@@ -1270,6 +1278,11 @@ Here's a handy bash snippet to illustrate the procedure:
         - server-plan
         image: rancher/rke2-upgrade
       serviceAccountName: system-upgrade
+      tolerations:
+        - key: node.longhorn.io/create-default-disk
+          value: "true"
+          operator: Equal
+          effect: NoSchedule
       cordon: true
       drain:
         force: true
@@ -1278,6 +1291,7 @@ Here's a handy bash snippet to illustrate the procedure:
       version: "$RKE2_VERSION"
     EOF
 
+    # Enable/Start the upgrade process on all cluster nodes.
     kubectl label nodes --all rke2-upgrade=true
 
 .. important::
