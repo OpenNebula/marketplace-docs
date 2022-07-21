@@ -5,7 +5,7 @@ ONE Kubernetes Engine (OneKE)
 OneKE is a minimal `hyperconverged <https://en.wikipedia.org/wiki/Hyper-converged_infrastructure>`_ Kubernetes platform that comes with OpenNebula out of the box.
 
 OneKE is based on `RKE2 - Rancher's Next Generation Kubernetes Distribution <https://docs.rke2.io/>`_ with preinstalled components to handle
-persistence, ingress traffic, and on-prem load-balancing.
+persistence, ingress traffic, and on-prem load balancing.
 
 Platform Notes
 ==============
@@ -71,7 +71,7 @@ Architecture Overview
 
 OneKE is available as a Virtual Appliance from the `OpenNebula Public MarketPlace <https://marketplace.opennebula.io/appliance>`_.
 
-OneKE comes in two flavors: **CE** (Community Edition) and **EE** (Enterprise Edition). Currently as OneKE is just a **Technology Preview** the only difference between **CE** and **EE** versions is that **EE** version is a fully airgapped installation and can be installed in isolated VNETs.
+OneKE comes in two flavors: **CE** (Community Edition) and **EE** (Enterprise Edition). Currently, as OneKE is just a **Technology Preview** the only difference between **CE** and **EE** versions is that **EE** version is a fully airgapped installation and can be installed in isolated VNETs.
 
 Let's take a closer look at the **OneKE 1.24 CE** MarketPlace app:
 
@@ -85,7 +85,7 @@ Let's take a closer look at the **OneKE 1.24 CE** MarketPlace app:
     OneKE 1.24 CE VNF
     OneKE 1.24 CE Storage disk
 
-A specific version of OneKE/CE consist of:
+A specific version of OneKE/CE consists of:
 
 - A single OneFlow template ``Service OneKE .. CE`` used to instantiate a cluster.
 - VM templates ``OneKE .. CE VNF``, ``OneKE .. CE``, ``OneKE .. CE Storage`` used to instantiate VMs.
@@ -94,12 +94,12 @@ A specific version of OneKE/CE consist of:
 
 .. note::
 
-    A service template links to VM templates which link to disk images, in such a way that everything is recursively downloaded when importing the Virtual Appliance in the OpenNebula Cloud
+    A service template links to VM templates which link to disk images, in such a way that everything is recursively downloaded when importing the Virtual Appliance in the OpenNebula Cloud.
 
 OneFlow Service
 ----------------
 
-OneKE Virtual Appliance is implemented as a OneFlow Service. OneFlow allows to define, execute and manage multi-tiered applications, so called Services, composed of interconnected Virtual Machines with deployment dependencies between them. 
+OneKE Virtual Appliance is implemented as a OneFlow Service. OneFlow allows you to define, execute, and manage multi-tiered applications, so called Services, composed of interconnected Virtual Machines with deployment dependencies between them. 
 Each group of Virtual Machines is deployed and managed as a single entity (called role). 
 
 .. note::
@@ -130,10 +130,10 @@ Each role is described in more detail in the following sections.
 VNF (Virtual Network Functions) Role
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-VNF is a multi-node service that provides Routing, NAT and Load-Balancing to OneKE clusters. VNF has been implemented on top of
+VNF is a multi-node service that provides Routing, NAT, and Load-Balancing to OneKE clusters. VNF has been implemented on top of
 `Keepalived <https://www.keepalived.org/>`_ which allows for a basic HA/Failover functionality via Virtual IPs (VIPs).
 
-OneKE has been designed to run in a dual-subnet environment, VNF provides NAT and Routing between public and private VNETs,
+OneKE has been designed to run in a dual subnet environment: VNF provides NAT and Routing between public and private VNETs,
 and when the public VNET is a gateway to the public Internet it also enables Internet connectivity to all internal VMs.
 
 Dedicated documentation for VNF can be found at `VNF documentation <https://docs.opennebula.io/appliances/service/vnf.html>`_.
@@ -141,12 +141,12 @@ Dedicated documentation for VNF can be found at `VNF documentation <https://docs
 Master Role
 ^^^^^^^^^^^
 
-The master role is responsible for running RKE2's **Control Plane**, managing the etcd database, API server, controller manager and scheduler, along with the worker nodes. It has been implemented according to principles defined in the `RKE2's High Availability <https://docs.rke2.io/install/ha/>`_ section. Specifically the **fixed registration address** is a HAProxy instanceexposing TCP port ``9345`` on a VNF node.
+The master role is responsible for running RKE2's **Control Plane**, managing the etcd database, API server, controller manager and scheduler, along with the worker nodes. It has been implemented according to principles defined in the `RKE2's High Availability <https://docs.rke2.io/install/ha/>`_ section. Specifically, the **fixed registration address** is an HAProxy instance exposing TCP port ``9345`` on a VNF node.
 
 Worker Role
 ^^^^^^^^^^^
 
-The worker role deploys just standard RKE2 nodes without any taints or labels and it is the default destination for regular workloads.
+The worker role deploys only standard RKE2 nodes without any taints or labels and it is the default destination for regular workloads.
 
 Storage Role
 ^^^^^^^^^^^^
@@ -193,16 +193,16 @@ The storage role deploys `labeled and tainted <https://kubernetes.io/docs/concep
 
     Each storage node expects a dedicated storage block device to be attached to the VM (``/dev/vdb`` by default)
     to hold Longhorn's replicas (mounted at ``/var/lib/longhorn/``).
-    **Please note, deleting a cluster will also remove all its Longhorn's replicas.. Always backup your data!**
+    **Please note, deleting a cluster will also remove all its Longhorn replicas.. Always back up your data!**
 
 Networking
 ^^^^^^^^^^
 
-OneKE's OneFlow Service requires OneKE's OneFlow Service requires two networks: a **public** and a **private** VNET.
-These two VNETs can be for example just a simple `bridged networks <https://docs.opennebula.io/6.4/open_cluster_deployment/networking_setup/bridged.html>`_.
+OneKE's OneFlow Service requires two networks: a **public** and a **private** VNET.
+These two VNETs can be, for example, just a simple `bridged networks <https://docs.opennebula.io/6.4/open_cluster_deployment/networking_setup/bridged.html>`_.
 
 .. note::
-  - In case of the **CE** flavor the **public** VNET must have access to the public Internet to allow Kubernetes to download the in-cluster components, ie. ``Longhorn``, ``Traefik``, ``MetalLB``, and other suplementary docker images when required.
+  - In case of the **CE** flavor the **public** VNET must have access to the public Internet to allow Kubernetes to download the in-cluster components, i.e. ``Longhorn``, ``Traefik``, ``MetalLB``, and other supplementary docker images when required.
   - In case of the **CE** flavor the **private** VNET must have the ``DNS`` context parameter defined, for example ``1.1.1.1``, ``8.8.8.8``, or any other DNS server/proxy capable of resolving public domains.
 
 Let's assume the following:
@@ -300,7 +300,7 @@ On Kubernetes nodes the Routing/DNS configuration will look like these listings:
 
 .. note::
 
-    The default gateway on every Kubernetes node is automatically set to the **private** VIP address
+    The default gateway on every Kubernetes node is automatically set to the **private** VIP address,
     which facilitates (NATed) access to the public Internet.
 
 In-Cluster Components
@@ -413,7 +413,7 @@ Traefik is deployed during the cluster creation from an official Helm chart with
 
 - A dedicated namespace ``traefik-system`` is provided.
 - An `anti-affinity <https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#affinity-and-anti-affinity>`_ rule is applied to Traefik pods to minmize potential downtime during failures and upgrades.
-- Traefik is exposed on a ``NodePort`` type of the `Kubernetes Service <https://kubernetes.io/docs/concepts/services-networking/service/>`_. By default HAProxy instance (running on the leader VNF node) connects to all worker nodes to ports ``32080`` and ``32443``, then forwards all traffic comming to HAProxy to ports ``80`` and ``443`` to the Traefik instance (running inside Kubernetes).
+- Traefik is exposed on a ``NodePort`` type of the `Kubernetes Service <https://kubernetes.io/docs/concepts/services-networking/service/>`_. By default HAProxy instance (running on the leader VNF node) connects to all worker nodes to ports ``32080`` and ``32443``, then forwards all traffic coming to HAProxy to ports ``80`` and ``443``, to the Traefik instance (running inside Kubernetes).
 
 .. graphviz::
 
@@ -466,20 +466,20 @@ Load Balancing (MetalLB)
 
 - A dedicated namespace ``metallb-system`` is provided.
 - `Image Pull Policy <https://kubernetes.io/docs/concepts/containers/images/#image-pull-policy>`_ is optimized for airgapped deployments.
-- A precreated ``ConfigMap/config`` resource is provided (not managed by the Helm chart). Please refer for the official documentation on `MetalLB's configuration <https://metallb.universe.tf/configuration/>`_ to learn what are the use cases of MetalLB.
+- A precreated ``ConfigMap/config`` resource is provided (not managed by the Helm chart). Please refer for the official documentation on `MetalLB's configuration <https://metallb.universe.tf/configuration/>`_ to learn what the use cases of MetalLB are.
 
 .. warning::
 
-   MetalLB is not suitable to be used in
+   MetalLB is not suitable for use in
    `AWS Edge Clusters <https://docs.opennebula.io/6.2/management_and_operations/edge_cluster_management/aws_cluster.html>`_,
-   that's because AWS VPC is API-oriented and doesn't fully support networking protocols like ARP or BGP in a standard way.
+   this is because AWS VPC is API-oriented and doesn't fully support networking protocols like ARP or BGP in a standard way.
    Please refer to the `MetalLB's Cloud Compatibility <https://metallb.universe.tf/installation/clouds/>`_ document for more info.
 
 Cleanup Routine (One-Cleaner)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 ``One-Cleaner`` is a simple ``CronJob`` resource deployed by default in OneKE during cluster creation.
-It is triggered every ``2`` minutes and its sole purpose is to remove/cleanup non-existent/destroyed nodes from the cluster by comparing Kubernetes and OneGate states.
+It is triggered every ``2`` minutes and its sole purpose is to remove/clean up non-existent/destroyed nodes from the cluster by comparing Kubernetes and OneGate states.
 
 
 Deployment
@@ -513,7 +513,7 @@ Let's run the following command to import in the OpenNebula Cloud the whole set 
 Create a K8s Cluster
 --------------------
 
-Once the OneKE Virtual Appliance has been imported, a new cluster can be created by instantiating the OneKE OneFlow Service as it is shown in the following
+Once the OneKE Virtual Appliance has been imported, a new cluster can be created by instantiating the OneKE OneFlow Service as shown here:
 
 .. prompt:: bash $ auto
 
@@ -576,9 +576,9 @@ and all VMs are also in RUNNING state
 Deployment Customization
 ------------------------
 
-It is possible to modify VM templates related to the OneKE Virtual Appliance in order to customize the deployment for example by adding more VM memory, VCPU cores to the workers and resizing the Disk for the storage nodes. This should be done before the creation of the K8s cluster, i.e. before instantiating the OneKE OneFlow Service Template.
+It is possible to modify VM templates related to the OneKE Virtual Appliance in order to customize the deployment, for example by adding more VM memory, VCPU cores to the workers, and resizing the Disk for the storage nodes. This should be done before the creation of the K8s cluster, i.e. before instantiating the OneKE OneFlow Service Template.
 
-When instantiating the OneKE's OneFlow Service Template, you can further customize the deployment using the following
+When instantiating OneKE's OneFlow Service Template, you can further customize the deployment using the following
 `custom attributes <https://docs.opennebula.io/6.4/management_and_operations/multivm_service_management/appflow_use_cli.html#using-custom-attributes>`_:
 
 ==================================== ============ ======================= ========= ======= ===========
@@ -606,26 +606,26 @@ Parameter                            Mandatory    Default                 Stage 
 .. important::
 
     ``ONEAPP_VROUTER_ETH0_VIP0`` - VNF cluster uses this VIP to bind and expose Kubernetes API port ``6443`` and RKE2's management port ``9345``.
-    The ``eth0`` NIC is supposed to be connected to the **public** subnet (Routed or NATed).
+    The ``eth0`` NIC should be connected to the **public** subnet (Routed or NATed).
 
 .. important::
 
     ``ONEAPP_VROUTER_ETH1_VIP0`` - VNF cluster uses this VIP to act as a NAT gateway for every other VM deployed inside the **private** subnet.
-    The ``eth1`` NIC is supposed to be connected to the **private** subnet.
+    The ``eth1`` NIC should be connected to the **private** subnet.
 
 .. warning::
 
     If you intend to reuse your public/private subnets to deploy multiple OneKE clusters into them,
-    then please make sure to provide a distinct value for the ``ONEAPP_VNF_KEEPALIVED_VRID`` context parameter for each OneKE cluster.
+    please make sure to provide a distinct value for the ``ONEAPP_VNF_KEEPALIVED_VRID`` context parameter for each OneKE cluster.
     This will allow for VNF instances to correctly synchronize using VRRP protocol.
 
 
 High-Availability 
 -----------------
 
-By default, OneKE Virtual Appliance is preconfigured to work as a non-Highly-Available K8s cluster, since OneFlow Service Templates deploys each service role as a single VM. Kubernetes High-Availability is about setting up a Kubernetes cluster, along with its components, in a way that there is no single point of failure. To achieve high-availability, the following OneKE components should be scaled up: VNF (at least 2 VMs), master (at least 3 VMs) and storage (at least 2 VMs). 
+By default, OneKE Virtual Appliance is preconfigured to work as a non-Highly-Available K8s cluster, since OneFlow Service Templates deploys each service role as a single VM. Kubernetes High-Availability is about setting up a Kubernetes cluster, along with its components, in such a way that there is no single point of failure. To achieve high-availability, the following OneKE components should be scaled up: VNF (at least 2 VMs), master (at least 3 VMs) and storage (at least 2 VMs). 
 
-OneKE HA setup can be achieved by modifying the OneFlow Service Template before creating the cluster or scaling up each role after the cluster creation.
+OneKE HA setup can be achieved by modifying the OneFlow Service Template before creating the cluster or by scaling up each role after the cluster creation.
 
 For example, to scale the **master** role from a single node to ``3``, you can use the following command:
 
@@ -636,7 +636,7 @@ For example, to scale the **master** role from a single node to ``3``, you can u
 .. warning::
 
    You can scale the master role up to an odd number of masters, but be careful while scaling down as it may break your cluster.
-   If you require multi-master HA, then just start with a single master and then scale up to 3 and keep it that way.
+   If you require multi-master HA, just start with a single master and then scale up to 3 and keep it that way.
 
 After a while we can examine the service log:
 
@@ -667,18 +667,18 @@ And afterwards we can list cluster nodes using ``kubectl``:
 
 .. warning::
 
-    Please plan ahead and avoid scaling down **master** and **storage** roles as it may break ETCD's quorum or cause dataloss.
-    There is no obvious restriction for the **worker** role though, it can be safely rescaled at will.
+    Please plan ahead and avoid scaling down **master** and **storage** roles as it may break ETCD's quorum or cause data loss.
+    There is no obvious restriction for the **worker** role, however. It can be safely rescaled at will.
 
 Anti-affinity
 ^^^^^^^^^^^^^
 
-VMs related to the same role should be scheduled on different physical hosts in a HA setup to guarantee HA in case of an host failure. OpenNebula provides ``VM Group`` resources to achieve proper Host/VM
+VMs related to the same role should be scheduled on different physical hosts in an HA setup to guarantee HA in case of a host failure. OpenNebula provides ``VM Group`` resources to achieve proper Host/VM
 `affinity/anti-affinity <https://docs.opennebula.io/6.4/management_and_operations/capacity_planning/affinity.html#virtual-machine-affinity>`_.
 
-In the following, we provide an example how to create  ``VM Group`` resources and how to modify OneKE OneFlow Service Template to include VM groups.
+In the following section, we provide an example of how to create  ``VM Group`` resources and how to modify OneKE's OneFlow Service Template to include VM groups.
 
-Let's assume that ``epsilon`` and ``omicron`` are hosts we want to use to deploy OneKE; a VM Group may be created like in the following:
+Let's assume that ``epsilon`` and ``omicron`` are hosts we want to use to deploy OneKE; a VM Group may be created in the following way:
 
 .. prompt:: bash $ auto
 
@@ -708,9 +708,9 @@ Let's assume that ``epsilon`` and ``omicron`` are hosts we want to use to deploy
 
 .. important::
 
-    The **worker** role does not have ``POLICY`` defined, this allows to reuse hosts multiple times!
+    The **worker** role does not have ``POLICY`` defined, this allows you to reuse hosts multiple times!
 
-Then, let's modify the OneKE OneFlow Service Template:
+Now, let's modify the OneKE OneFlow Service Template:
 
 .. prompt:: bash $ auto
 
@@ -819,12 +819,12 @@ Operations
 Accessing K8s Cluster
 ---------------------
 
-The leader VNF node runs a HAProxy instance that by default exposes Kubernetes API port ``6443`` on the **public** VIP address over the HTTPS protocol (secured with two-way SSL/TLS certificates).
+The leader VNF node runs an HAProxy instance that by default exposes Kubernetes API port ``6443`` on the **public** VIP address over the HTTPS protocol (secured with two-way SSL/TLS certificates).
 
 This HAProxy instance can be used in two ways:
 
 - As a stable Control Plane endpoint for the whole Kubernetes cluster.
-- As an external Kubernetes API endpoint that can be reached from outside of the internal VNET.
+- As an external Kubernetes API endpoint that can be reached from outside the internal VNET.
 
 .. graphviz::
 
@@ -847,7 +847,7 @@ This HAProxy instance can be used in two ways:
 
 |
 
-To access the Kubernetes API you'll need a **kubeconfig** file which in case of RKE2 can be copied from the ``/etc/rancher/rke2/rke2.yaml`` file located on every master nodes, for example:
+To access the Kubernetes API you'll need a **kubeconfig** file which, in the case of RKE2, can be copied from the ``/etc/rancher/rke2/rke2.yaml`` file located on every master node, for example:
 
 .. prompt:: bash $ auto
 
@@ -880,13 +880,13 @@ And then your local ``kubectl`` command should work just fine:
 
 .. important::
 
-    If you'd like to use a custom domain name for the Control Plane endpoint instead af the direct public VIP address,
-    then you need to add the domain to the ``ONEAPP_K8S_EXTRA_SANS`` context parameter, for example ``localhost,127.0.0.1,k8s.yourdomain.it`` and set the domain inside the ``~/.kube/config`` file as well. You can setup your domain in a public/private DNS server or in your local ``/etc/hosts`` file, whatever works.
+    If you'd like to use a custom domain name for the Control Plane endpoint instead of the direct public VIP address,
+    you need to add the domain to the ``ONEAPP_K8S_EXTRA_SANS`` context parameter, for example ``localhost,127.0.0.1,k8s.yourdomain.it``, and set the domain inside the ``~/.kube/config`` file as well. You can set up your domain in a public/private DNS server or in your local ``/etc/hosts`` file, whatever works for you.
 
 Accessing K8s API via SSH tunnels
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-By default Kubernetes API Server's extra SANs are set to ``localhost,127.0.0.1`` which allows to access Kubernetes API via SSH tunnels.
+By default Kubernetes API Server's extra SANs are set to ``localhost,127.0.0.1`` which allows you to access Kubernetes API via SSH tunnels.
 
 .. note::
 
@@ -910,7 +910,7 @@ Create SSH tunnel, forward the ``6443`` TCP port:
 
     $ ssh -o ProxyCommand='ssh -A root@10.2.11.86 -W %h:%p' -L 6443:localhost:6443 root@172.20.0.101
 
-and then run ``kubectl`` in an another terminal:
+and then run ``kubectl`` in another terminal:
 
 .. prompt:: bash $ auto
 
@@ -929,7 +929,7 @@ Usage Example
 Create a Longhorn PVC 
 ^^^^^^^^^^^^^^^^^^^^^
 
-To create a 4 GiB persistent volume apply the following manifest using ``kubectl``.
+To create a 4 GiB persistent volume apply the following manifest using ``kubectl``:
 
 .. code-block:: yaml
 
@@ -964,12 +964,12 @@ To create a 4 GiB persistent volume apply the following manifest using ``kubectl
 .. important::
 
     The `Retain reclaim policy <https://kubernetes.io/docs/concepts/storage/persistent-volumes/#retain>`_ may protect your persistent data
-    from accidental removal. Always backup your data!
+    from accidental removal. Always back up your data!
 
-Create a NGINX Deployment
+Create an NGINX Deployment
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
-To deploy a NGINX instance, using the PVC created previously, apply the following manifest using ``kubectl``:
+To deploy an NGINX instance using the PVC created previously, apply the following manifest using ``kubectl``:
 
 .. code-block:: yaml
 
@@ -1226,7 +1226,7 @@ Component Upgrade
 By default OneKE deploys Longhorn, Traefik, and MetalLB during cluster bootstrap. All these apps are deployed
 as **Addons** using `RKE2's Helm Integration <https://docs.rke2.io/helm/#helm-integration>`_ and official Helm charts.
 
-To illustrate the process let's upgrade Traefik Helm chart from the ``10.23.0`` to the ``10.24.0`` version in the
+To illustrate the process let's upgrade Traefik Helm chart from the ``10.23.0`` to the ``10.24.0`` version according to these
 four basic steps:
 
 1. To avoid downtime make sure the number of worker nodes is at least ``2`` so ``2`` (anti-affined) Traefik replicas are running.
@@ -1319,9 +1319,9 @@ and
 `OneGate Configuration <https://docs.opennebula.io/6.4/installation_and_configuration/opennebula_services/onegate.html>`_
 documents.
 
-Because OneKE is an OneFlow service it requires OneFlow and OneGate OpenNebula components to be operational.
+Because OneKE is a OneFlow service it requires OneFlow and OneGate OpenNebula components to be operational.
 
-If the OneKE service is stuck in the ``DEPLOYING`` state and only VMs from the vnf role are visible, then it is likely
+If the OneKE service is stuck in the ``DEPLOYING`` state and only VMs from the VNF role are visible, it is likely
 there is some networking or configuration issue regarding the OneGate component. You can try to confirm if OneGate is
 reachable from VNF nodes by logging in to a VNF node via SSH and executing the following command:
 
@@ -1334,9 +1334,9 @@ reachable from VNF nodes by logging in to a VNF node via SSH and executing the f
 
 If the OneGate endpoint is not reachable from VNF nodes, you'll see an error/timeout message.
 
-If the OneKE service is stuck in the ``DEPLOYING`` state, and all VMs from all roles are visible, and you've confirmed that
-VMs from the vnf role can access the OneGate component, there still may be networking issue on the leader VNF node itself.
-You can try to confirm if OneGate is reachable from Kubernetes nodes via SSH executing the following command:
+If the OneKE service is stuck in the ``DEPLOYING`` state and all VMs from all roles are visible, and you've also confirmed that
+VMs from the VNF role can access the OneGate component, there still may be a networking issue on the leader VNF node itself.
+You can try to confirm if OneGate is reachable from Kubernetes nodes via SSH by executing the following command:
 
 .. prompt:: bash # auto
 
@@ -1352,7 +1352,7 @@ on the leader VNF VM, specifically the ``/var/log/messages`` file.
 Broken access to the public Internet
 ------------------------------------
 
-If you're constantly getting the ``ImagePullBackOff`` error in Kubernetes, please login to a worker node and check:
+If you're constantly getting the ``ImagePullBackOff`` error in Kubernetes, please log in to a worker node and check:
 
 - Check if the default gateway points to the private VIP address: \
     .. prompt:: bash # auto
@@ -1369,20 +1369,20 @@ If you're constantly getting the ``ImagePullBackOff`` error in Kubernetes, pleas
         Warning: Permanently added '172.20.0.102' (ED25519) to the list of known hosts.
         nameserver 1.1.1.1
 
-If in all above cases everything looks correct, then you should investigate networking config and logs
+If in all the above cases everything looks correct, then you should investigate networking config and logs
 on the leader VNF VM, specifically the ``/var/log/messages`` file.
 
 OneFlow service is stuck in DEPLOYING but RKE2 looks healthy
 ------------------------------------------------------------
 
 If the OneKE service is stuck in the ``DEPLOYING`` state and
-you can see the following error messages inside the ``/var/log/one/oneflow.log`` file on your OpenNebula frontend machine:
+you can see the following error messages inside the ``/var/log/one/oneflow.log`` file on your OpenNebula Front-end machine:
 
 .. code-block:: text
 
     [E]: [LCM] [one.document.info] User couldn't be authenticated, aborting call.
 
-Then most likely you've hit this known issue `OneFlow resilient to oned timeouts <https://github.com/OpenNebula/one/issues/5814>`_,
-recreating the OneKE cluster is your best option here.
+then most likely you've hit this known issue `OneFlow resilient to oned timeouts <https://github.com/OpenNebula/one/issues/5814>`_,
+and recreating the OneKE cluster is your best option here.
 
 .. |image-oneke-architecture| image:: /images/kubernetes/oneke-architecture.png
