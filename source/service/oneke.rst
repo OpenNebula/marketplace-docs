@@ -488,7 +488,7 @@ Deployment
 In this section we focus on a deployment of OneKE using CLI commands. For an easier Sunstone UI guide (with screenshots) please refer to the `Running Kubernetes Clusters <https://docs.opennebula.io/6.4/quick_start/usage_basics/running_kubernetes_clusters.html>`_ quick-start document.
 
 Importing the OneKE Virtual Appliance
----------------------------------
+-------------------------------------
 
 Let's run the following command to import in the OpenNebula Cloud the whole set of resources corresponding to the OneKE Virtual Appliance (CE flavor). An image datastore must be specified for storing the Virtual Appliance images.
 
