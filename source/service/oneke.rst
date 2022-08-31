@@ -1,5 +1,5 @@
 =============================
-ONE Kubernetes Engine (OneKE)
+OpenNebula Kubernetes Engine (OneKE)
 =============================
 
 OneKE is a minimal `hyperconverged <https://en.wikipedia.org/wiki/Hyper-converged_infrastructure>`_ Kubernetes platform that comes with OpenNebula out of the box.
@@ -99,7 +99,7 @@ A specific version of OneKE/CE consists of:
 OneFlow Service
 ----------------
 
-OneKE Virtual Appliance is implemented as a OneFlow Service. OneFlow allows you to define, execute, and manage multi-tiered applications, so called Services, composed of interconnected Virtual Machines with deployment dependencies between them. 
+The OneKE virtual appliance is implemented as a OneFlow Service. OneFlow allows you to define, execute, and manage multi-tiered applications, so called Services, composed of interconnected Virtual Machines with deployment dependencies between them. 
 Each group of Virtual Machines is deployed and managed as a single entity (called role). 
 
 .. note::
@@ -487,8 +487,8 @@ Deployment
 
 In this section we focus on a deployment of OneKE using CLI commands. For an easier Sunstone UI guide (with screenshots) please refer to the `Running Kubernetes Clusters <https://docs.opennebula.io/6.4/quick_start/usage_basics/running_kubernetes_clusters.html>`_ quick-start document.
 
-Importing OneKE Virtual Appliance
----------------------------------
+Importing the OneKE Virtual Appliance
+-------------------------------------
 
 Let's run the following command to import in the OpenNebula Cloud the whole set of resources corresponding to the OneKE Virtual Appliance (CE flavor). An image datastore must be specified for storing the Virtual Appliance images.
 
